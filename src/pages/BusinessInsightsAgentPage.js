@@ -166,7 +166,38 @@ const BusinessInsightsAgentPageContent = () => {
 };
 
 const BusinessInsightsAgentPage = () => (
-  <PageRevealWrapper>
+  <PageRevealWrapper
+    heading="Business Intelligence Explainer Bot"
+    description="Transform raw business data into insightful, human-readable reports—automatically and intelligently. Our AI-powered Business Intelligence Assistant ingests structured datasets (CSV, Excel, Google Sheets), detects key KPIs such as revenue, top products, and regional performance, and generates clear summaries with recommendations, trends, and issue detection—all delivered via email or your preferred reporting destination. Built for business teams, analysts, and decision-makers, this assistant removes manual work, minimizes errors, and accelerates decision-making with data-driven insights. Whether triggered by upload, webhook, or schedule, this AI agent functions as your round-the-clock data analyst—no coding required. With automatic anomaly detection, logging, and semantic summary generation using OpenAI, it plugs directly into your reporting stack, supporting spreadsheet integrations, email delivery, and custom visual output."
+    details={
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Sales Reporting: Automatically summarize weekly/monthly sales with KPIs like total revenue, top product, and region growth.</li>
+            <li>Marketing Performance: Generate campaign reports showing performance shifts, spikes, and suggestions.</li>
+            <li>Executive Dashboards: Deliver simplified summaries directly to executives' inboxes or Notion pages.</li>
+            <li>Ops & Logistics Teams: Track metrics like costs, complaints, or delivery delays, and highlight anomalies.</li>
+            <li>BI Automation: Use as a preprocessing layer to summarize data before loading into dashboards or vector databases.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Multi-Channel Data Intake: Ingests files via webhook, Google Sheets, cloud storage, or scheduled runs.</li>
+            <li>LLM-Powered Analysis: Uses OpenAI (via LangChain) to analyze trends, detect anomalies, and summarize KPIs.</li>
+            <li>Structured KPI Outputs: Automatically extracts and logs metrics like revenue, top product, and growth zones to Google Sheets.</li>
+            <li>Automated Summary Delivery: Sends plain-English email reports with charts and metric highlights to stakeholders.</li>
+            <li>Error Logging & Feedback: Captures issues (like missing fields) and recommends fixes to the user.</li>
+            <li>AI-Ready Output Format: Compatible with downstream analytics, dashboards, or semantic search tools.</li>
+          </ul>
+        </div>
+        <div className="mt-6 text-center">
+          <span className="inline-block bg-gradient-to-r from-indigo-500 via-blue-500 to-green-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Try our Business Intelligence Assistant today—upload your dataset and get your first automated report in minutes. No code. No formulas. Just insights.</span>
+        </div>
+      </div>
+    }
+  >
     <BusinessInsightsAgentPageContent />
   </PageRevealWrapper>
 );

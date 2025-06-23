@@ -221,8 +221,37 @@ const ContractRedFlagDetectorPageContent = () => {
 const ContractRedFlagDetectorPage = () => {
   return (
     <PageRevealWrapper
-      heading="Detect Contract Risks Instantly"
-      description="Our AI-powered tool scans contracts for potential risks and red flags, helping you mitigate legal issues before they arise."
+      heading="AI Contract Risk Assistant"
+      description="Effortlessly scan, analyze, and assess legal contracts with AI. The Contract Red Flag Detector Agent automates first-pass legal reviews by extracting risky clauses, identifying missing sections, and generating structured risk summaries in seconds. Whether you're a legal ops team, procurement manager, startup founder, or compliance officer—this assistant transforms contract review from bottleneck to breeze. Upload or email a contract and receive an AI-generated report with risk scoring, red flag insights, and recommendations—automatically emailed and stored in your database. Built on LLMs, vector-ready storage, PDF parsing, and robust fallback logic, this agent gives you the peace of mind of a human review—on autopilot, 24/7."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Legal Ops Teams: Pre-screen contracts before routing to legal counsel to save time and highlight concerns early.</li>
+              <li>Procurement & Vendor Management: Automatically check contracts for unfavorable terms or missing clauses before onboarding vendors.</li>
+              <li>Compliance & Audit: Get red-flag summaries and store contract metadata in a searchable database for future reference.</li>
+              <li>Startups & Founders: Reduce risk by auto-flagging termination or indemnity issues in investor or partnership agreements.</li>
+              <li>Email-Based Intake: Just forward a contract to a predefined address and receive a risk report PDF in return—no UI required.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Multi-Channel Intake: Upload via webhook, email, or Drive—support for both scanned and digital PDFs.</li>
+              <li>LLM-Powered Legal Understanding: Not just regex extraction—semantic detection of vague or high-risk legal phrasing.</li>
+              <li>Structured Risk Report: Flags clause-level risks, missing sections, and returns an HTML + PDF summary.</li>
+              <li>Feedback Loop: Alerts users when files are unreadable (e.g., poor scans) and suggests alternatives.</li>
+              <li>Database Logging: Stores document name, user email, red flag count, risk score, and status in PostgreSQL for analytics.</li>
+              <li>Smart Fallback Handling: If parsing fails, auto-notify the sender and attempt alternate extraction methods.</li>
+              <li>LLM & Vector-Search Ready: Outputs structured JSON—perfect for building contract intelligence dashboards or search tools.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Try our Contract Risk Assistant free—upload your first 25 contracts and get instant legal insights, no human review needed.</span>
+          </div>
+        </div>
+      }
     >
       <ContractRedFlagDetectorPageContent />
     </PageRevealWrapper>

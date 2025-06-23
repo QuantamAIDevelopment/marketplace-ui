@@ -204,14 +204,43 @@ const LeavesClassifierPageContent = () => {
 };
 
 const LeavesClassifierPage = () => {
-    return (
-        <PageRevealWrapper
-            heading="AI-Powered Leaves Classifier"
-            description="Automatically categorize and manage employee leave requests with intelligent AI. Streamline approvals and gain insights into leave patterns."
-        >
-            <LeavesClassifierPageContent />
-        </PageRevealWrapper>
-    );
+  return (
+    <PageRevealWrapper
+      heading="Leave Balance Chatbot Agent"
+      description="Instantly respond to employee leave balance queries—without human involvement. The Leave Balance Chatbot Agent reads emails from your team, identifies the requesting employee, and automatically fetches their leave data from a connected Postgres database. It calculates used, remaining casual, and sick leaves—then sends back a friendly, formatted summary via email. Powered by GPT and integrated with Gmail and databases, this agent acts as a virtual HR helpdesk available 24/7. It handles both successful and failed requests (e.g., invalid email IDs), logs everything for transparency, and even stores responses in audit tables for historical tracking. Built for HR teams looking to modernize employee support and reduce repetitive queries, it turns leave requests into delightful, automated conversations."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>HR Automation: Stop manually checking leave records. Let employees email their requests and get instant replies.</li>
+              <li>Internal Self-Service Portals: Plug into your helpdesk or intranet to enable real-time leave queries.</li>
+              <li>Audit Logging: Store every query and system-generated response into a Postgres database for compliance tracking.</li>
+              <li>Error Handling with Feedback: Notify employees if their ID/email is missing or unmatched, with a polite message and log for HR review.</li>
+              <li>Employee Onboarding Kits: Include this chatbot as a smart assistant in welcome documentation and employee handbooks.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Email-Based Trigger: Activates automatically when employees send leave queries via Gmail.</li>
+              <li>GPT-Driven Search Matching: Uses OpenAI to match email text to relevant employee records in the database.</li>
+              <li>Real-Time Leave Calculation: Dynamically calculates total used, remaining sick and casual leaves for each employee.</li>
+              <li>Personalized Email Replies: Crafts friendly, branded emails tailored to the employee with a clean leave summary.</li>
+              <li>Error Messaging & Logging: Sends alternate response if email is unmatched and logs it into a fallback table.</li>
+              <li>Dual Postgres Integration: One for leave data fetch, another for logging both success and failure events.</li>
+              <li>Auto Timestamped Replies: Every response includes a date reference, formatted for clarity and HR records.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Automate your HR helpdesk now—let your team ask for leave balances via email and get instant responses, 100% powered by AI.</span>
+          </div>
+        </div>
+      }
+    >
+      <LeavesClassifierPageContent />
+    </PageRevealWrapper>
+  );
 };
 
 export default LeavesClassifierPage; 

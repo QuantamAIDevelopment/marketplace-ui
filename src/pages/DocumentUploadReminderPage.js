@@ -133,8 +133,36 @@ const DocumentUploadReminderPageContent = () => {
 const DocumentUploadReminderPage = () => {
   return (
     <PageRevealWrapper
-      heading="Automate Document Upload Reminders"
-      description="Ensure timely document submission by sending automated reminders to employees. Track compliance and manage documents effortlessly."
+      heading="Document Upload Reminder Assistant"
+      description="Ensure smooth onboarding with zero document delays. This intelligent reminder system continuously monitors document submission status for new hires and automatically triggers alerts when items are missing. Whether candidates forget, delay, or miss communication, this assistant ensures follow-ups are always sent on time—without human intervention. From detecting missing items to escalating unresolved cases to HR, the system adapts its behavior based on document due dates. Reminders and escalation emails are automatically sent via Gmail, while all actions are logged in your PostgreSQL database. Perfect for HR teams handling scale, this agent removes the need for manual tracking and chasing, making onboarding faster and frictionless."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>HR Teams: Auto-send reminders to candidates missing onboarding documents.</li>
+              <li>Recruitment Process Outsourcing (RPO): Monitor and enforce compliance for required uploads.</li>
+              <li>Enterprise Onboarding Pipelines: Track due dates and escalate overdue submissions directly to HR.</li>
+              <li>Bootcamps or Training Programs: Ensure all enrolled students submit identity, qualification, and fee documents.</li>
+              <li>Freelancer Vetting: Automate document compliance before activation.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">⚡ Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Smart Detection: Compares submitted vs required docs using JS logic.</li>
+              <li>Due-Date Aware: Calculates remaining days till submission deadline.</li>
+              <li>Multi-Tier Reminders: Sends regular, final, and overdue escalation alerts.</li>
+              <li>Database Logging: Updates missing items, thread IDs, and follow-up history in PostgreSQL.</li>
+              <li>Personalized Gmail Alerts: Auto-customizes emails based on name, missing items, and timeline.</li>
+              <li>Workflow Trigger: Runs via manual or scheduled trigger for periodic checks.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Automate your onboarding follow-ups today—remind, escalate, and stay compliant without lifting a finger.</span>
+          </div>
+        </div>
+      }
     >
       <DocumentUploadReminderPageContent />
     </PageRevealWrapper>

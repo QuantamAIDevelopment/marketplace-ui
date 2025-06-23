@@ -264,8 +264,42 @@ const EmailAttachmentProcessingPageContent = () => {
 const EmailAttachmentProcessingPage = () => {
   return (
     <PageRevealWrapper
-      heading="Process Email Attachments Automatically"
-      description="Extract, categorize, and process email attachments with our intelligent automation tool. Save time and reduce manual errors."
+      heading="Email Attachment Processing Agent for HRMS"
+      description="Process candidate documents automatically from HR inboxes—reliably and intelligently. This HRMS Email Attachment Processor reads emails from your HR documents inbox, extracts candidate metadata and attachments, uses AI to classify the document types (e.g., Resume, ID Proof, Certificates), stores them on Google Drive, and logs the results in Google Sheets. If documents are missing or the email contains no attachments, it triggers auto-replies and flags errors in logs. From parsing resumes to ensuring document completeness, this workflow operates as a full-time virtual assistant for your HR department—reducing manual document handling to zero."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>HR Teams & Recruiters: Automatically process candidate emails with attachments and categorize documents for onboarding or compliance.</li>
+              <li>Remote Hiring Pipelines: Centralize candidate documentation submitted via email without human intervention.</li>
+              <li>Recruitment Process Outsourcing (RPO): Reduce errors in collecting, classifying, and organizing candidate submissions at scale.</li>
+              <li>Compliance Tracking: Log missing or incomplete submissions and trigger alerts to follow up automatically.</li>
+              <li>Digital Document Management: Store all attachments in organized Google Drive folders, mapped with metadata.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">⚡Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Smart Email Ingestion<br/>Pulls emails from Gmail, extracts subject, sender, message, and all attachments.</li>
+              <li>AI Document Classification<br/>Uses OpenAI to classify each attachment as Resume, ID Proof, or Certificates based on file name and content.</li>
+              <li>Google Drive Sync<br/>Uploads all valid documents to Drive for centralized document storage.</li>
+              <li>Google Sheets Logging<br/>Logs expected vs. received vs. missing documents for every candidate in a Google Sheet—ideal for HR audits.</li>
+              <li>Automatic Follow-Up
+                <ul className="list-disc ml-6">
+                  <li>If documents are missing: Sends candidate an email reminder.</li>
+                  <li>If no attachments at all: Notifies HR and sends a polite response to the sender.</li>
+                </ul>
+              </li>
+              <li>Verification Logic<br/>Checks if all three required documents are received. If not, marks as incomplete and logs the incident.</li>
+              <li>Merge, Wait, Retry<br/>Merges metadata, waits for processing, and logs everything cleanly with retry safeguards.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Install the HRMS Document Agent and ensure every hiring document is collected, categorized, and logged—automatically.</span>
+          </div>
+        </div>
+      }
     >
       <EmailAttachmentProcessingPageContent />
     </PageRevealWrapper>

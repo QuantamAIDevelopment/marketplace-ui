@@ -195,9 +195,67 @@ const InventoryManagementPageContent = () => {
 };
 
 const InventoryManagementPage = () => (
-    <PageRevealWrapper>
-      <InventoryManagementPageContent />
-    </PageRevealWrapper>
-  );
+  <PageRevealWrapper
+    heading="Inventory Management Automation Assistant"
+    description="Streamline and automate inventory operations—without lifting a finger. This AI-powered Inventory Management Assistant continuously monitors your stock levels, flags low and overstocked items, sends alerts, updates your database, and communicates with suppliers—all without manual intervention. With multi-channel triggers, automated decision-making, and smart restocking logic, it ensures you're never under or over-stocked. The assistant responds to return orders, calculates restocking needs, alerts inventory managers, emails suppliers, and logs every detail into Google Sheets for auditing. With retry logic and built-in error handling, it's a robust plug-and-play solution for any business that holds physical inventory."
+    details={
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>E-Commerce & Retailers: Automatically restock popular items and avoid stockouts.</li>
+            <li>Warehousing Operations: Weekly overstock alerts help reduce carrying costs and deadstock.</li>
+            <li>Manufacturing Units: Instantly update inventory from returned raw materials or components.</li>
+            <li>Supply Chain Teams: Forward database changes and auto-email suppliers based on live inventory signals.</li>
+            <li>Inventory Auditors: Get structured log entries in Google Sheets for every system action.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-purple-700 mb-2">⚡Why This Stands Out (based on your workflow)</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Multi-channel Triggers: Supports webhook-based return updates, scheduled stock checks, and manual triggers.</li>
+            <li>Intelligent Logic:
+              <ul className="list-disc ml-6">
+                <li>Automatically checks low stock using DB queries.</li>
+                <li>Compares stock levels with reorder thresholds.</li>
+                <li>Calculates restocking units precisely.</li>
+              </ul>
+            </li>
+            <li>Structured Output:
+              <ul className="list-disc ml-6">
+                <li>Logs inventory actions (stock added, email sent, alert triggered) into Google Sheets.</li>
+                <li>Stores product metadata, timestamps, trigger type, and errors.</li>
+              </ul>
+            </li>
+            <li>Smart Automation:
+              <ul className="list-disc ml-6">
+                <li>Sends Slack alerts for low stock.</li>
+                <li>Sends supplier emails with auto-generated restock details.</li>
+                <li>Flags overstock via Trello.</li>
+              </ul>
+            </li>
+            <li>Built-In Feedback & Error Handling:
+              <ul className="list-disc ml-6">
+                <li>Sends emails for system errors.</li>
+                <li>Retries failed workflows up to 3 times with delay.</li>
+              </ul>
+            </li>
+            <li>Plug & Play Design:
+              <ul className="list-disc ml-6">
+                <li>Connects to Postgres, Gmail, Slack, Google Sheets, and Trello.</li>
+                <li>Includes deduplication, retry loops, and semantic action logging.</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div className="mt-6 text-center">
+          <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Deploy your Inventory Management Assistant and automate your stock flow in minutes—no code, no worries.</span>
+        </div>
+      </div>
+    }
+  >
+    <InventoryManagementPageContent />
+  </PageRevealWrapper>
+);
   
 export default InventoryManagementPage; 

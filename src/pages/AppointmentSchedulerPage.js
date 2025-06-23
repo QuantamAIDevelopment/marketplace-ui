@@ -37,11 +37,8 @@ const AppointmentSchedulerPageContent = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-xl mx-auto">
-      <motion.h1 initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-bold text-center mb-6 text-gray-800">
-        Appointment Scheduler
-      </motion.h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-xl mx-auto">
         <div className="flex flex-col gap-2">
           <label className="font-semibold flex items-center gap-2"><FaUser /> Name</label>
           <input type="text" name="name" value={form.name} onChange={handleChange} className="bg-gray-100 rounded-lg px-4 py-2" required />
@@ -78,12 +75,56 @@ const AppointmentSchedulerPageContent = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 
 const AppointmentSchedulerPage = () => (
-  <PageRevealWrapper>
+  <PageRevealWrapper
+    heading="AI-Powered Appointment Scheduler: Smart, Seamless, and Automated"
+    description="Effortlessly manage and book appointments with our intelligent AI-driven scheduler. This workflow leverages advanced LLMs, Google Calendar, and Google Sheets to automate the entire process—from capturing user details to checking availability, booking slots, and storing contact information. Designed for businesses, clinics, consultants, and community managers, this system ensures a frictionless experience for both users and administrators."
+    details={
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">Features</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Multi-Channel Input: Accepts appointment requests via web forms and API/webhooks.</li>
+            <li>LLM-Driven Validation: Uses AI to validate required fields and interpret user intent.</li>
+            <li>Google Calendar Integration: Checks real-time slot availability and books appointments directly.</li>
+            <li>Google Sheets Sync: Automatically stores user contact details for future reference and analytics.</li>
+            <li>Customizable Prompts: AI agent tailors responses and actions based on user requests.</li>
+            <li>Timezone Handling: Ensures all bookings are made in IST (Asia/Kolkata) with accurate time conversion.</li>
+            <li>Error Handling: Provides instant feedback for missing or invalid information.</li>
+            <li>Secure & Scalable: Built for privacy, reliability, and easy scaling across teams or locations.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-purple-700 mb-2">Example Use Cases</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Clinics & Healthcare: Patients book doctor appointments online, with instant calendar sync and reminders.</li>
+            <li>Consultants & Agencies: Clients schedule meetings, discovery calls, or demos without back-and-forth emails.</li>
+            <li>Community Managers: Organize events, workshops, or interviews with automated slot management.</li>
+            <li>Educational Institutions: Students or parents book counseling, admissions, or parent-teacher meetings.</li>
+            <li>Service Providers: Salons, repair shops, or trainers automate their booking process and reduce no-shows.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">⚡ Why This Stands Out</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>End-to-End Automation: From user input to calendar booking and contact storage—no manual steps needed.</li>
+            <li>AI-Powered Flexibility: Handles ambiguous requests, validates data, and adapts to custom workflows.</li>
+            <li>Seamless Integrations: Connects with Google Calendar, Sheets, and vector search for context-aware actions.</li>
+            <li>Instant Feedback: Users receive immediate confirmation or error messages for a smooth experience.</li>
+            <li>Timezone Intelligence: All bookings are managed in IST, reducing confusion and missed appointments.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-green-700 mb-2">Get Started</h2>
+          <p className="text-gray-700 text-sm">Fill out the form below to book your appointment. The AI agent will handle the rest—validating your details, checking availability, and confirming your slot instantly!</p>
+        </div>
+      </div>
+    }
+  >
     <AppointmentSchedulerPageContent />
   </PageRevealWrapper>
 );

@@ -171,7 +171,82 @@ const FraudDetectionPageContent = () => {
 };
 
 const FraudDetectionPage = () => (
-  <PageRevealWrapper>
+  <PageRevealWrapper
+    heading="🛡️Fraud Detection Agent"
+    description="An intelligent agent that flags risky transactions using AI and logic-based rules. It auto-extracts order data, applies fraud heuristics, and escalates anomalies to operations in real time. Works as a silent auditor behind the scenes, built to safeguard revenue and trust."
+    details={
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">⚙️ How It Works</h2>
+          <ol className="list-decimal list-inside text-gray-700 text-sm space-y-1">
+            <li><b>Input Intake</b>
+              <ul className="list-disc ml-6">
+                <li>Accepts transaction data via webhook or file upload (CSV, JSON, etc.).</li>
+                <li>Parses fields like orderId, email, IP, shippingAddress, orderValue, etc.</li>
+              </ul>
+            </li>
+            <li><b>Rule-Based Analysis</b>
+              <ul className="list-disc ml-6">
+                <li>Applies business rules to identify red flags:</li>
+                <li>• Mismatched shipping vs. billing address</li>
+                <li>• Disposable email domains (e.g., tempmail)</li>
+                <li>• Suspicious IPs (e.g., VPN or local addresses)</li>
+                <li>• High-value orders</li>
+              </ul>
+            </li>
+            <li><b>AI-Powered Scoring</b>
+              <ul className="list-disc ml-6">
+                <li>Sends transaction context to a fraud LLM (LLaMA3-based) via API</li>
+                <li>Returns:
+                  <ul className="list-disc ml-6">
+                    <li>score: 0–100</li>
+                    <li>notes: Explanation of fraud risk</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li><b>Aggregation & Storage</b>
+              <ul className="list-disc ml-6">
+                <li>Stores results in:
+                  <ul className="list-disc ml-6">
+                    <li>Google Sheets (Manual Review Panel)</li>
+                    <li>Postgres (fraud_c table)</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li><b>Alerting & Escalation</b>
+              <ul className="list-disc ml-6">
+                <li>Risk score &gt; threshold triggers:
+                  <ul className="list-disc ml-6">
+                    <li>Email alert to Ops team</li>
+                    <li>Summary report sent daily or on trigger</li>
+                    <li>Manual review panel entry for further triage</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ol>
+        </div>
+        <div>
+          <h2 className="font-semibold text-purple-700 mb-2">🧠 Key Features</h2>
+          <table className="min-w-full text-sm text-left border border-gray-200">
+            <tbody>
+              <tr className="border-b"><td className="font-semibold">Multi-Source Input</td><td>Webhook, file upload, or database feed</td></tr>
+              <tr className="border-b"><td className="font-semibold">Rule + AI Detection</td><td>Combined logic and language model fraud scoring</td></tr>
+              <tr className="border-b"><td className="font-semibold">Alerting Layer</td><td>Real-time Ops escalation via Gmail + Webhook</td></tr>
+              <tr className="border-b"><td className="font-semibold">Feedback Loop</td><td>Captures manual review decisions in Google Sheets & DB</td></tr>
+              <tr className="border-b"><td className="font-semibold">Smart Fallbacks</td><td>Ensures resilient scoring even with missing data fields</td></tr>
+              <tr className="border-b"><td className="font-semibold">JSON-Aware Enrichment</td><td>Handles fields like triggeredRules, aiNotes, riskScore, finalAction dynamically</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div className="mt-6 text-center">
+          <span className="inline-block bg-gradient-to-r from-red-500 via-orange-500 to-green-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Enable AI-powered fraud protection with zero guesswork. Start detecting suspicious orders automatically today—no code required.</span>
+        </div>
+      </div>
+    }
+  >
     <FraudDetectionPageContent />
   </PageRevealWrapper>
 );

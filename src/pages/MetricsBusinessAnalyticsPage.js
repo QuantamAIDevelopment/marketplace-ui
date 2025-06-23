@@ -144,7 +144,39 @@ const MetricsBusinessAnalyticsPageContent = () => {
 };
 
 const MetricsBusinessAnalyticsPage = () => (
-  <PageRevealWrapper>
+  <PageRevealWrapper
+    heading="AI Business Insights Agent"
+    description="Turn raw business data into executive-ready insights—automatically and accurately. The AI Business Insights Agent ingests quarterly files (orders, inventory, customers, marketing, and traffic), processes them through intelligent logic, and transforms them into a clear, actionable summary. From SKU trends to traffic conversions, this workflow merges analytics, AI summarization, and multi-source aggregation—then delivers a concise quarterly report via email or dashboard. Whether you're a founder, analyst, or marketing lead, get a full picture of your business without touching a spreadsheet. With built-in semantic analysis, funnel drop-off detection, and margin calculations, this agent is your always-on business analyst."
+    details={
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Startup Growth Teams: Upload quarterly reports and instantly get performance summaries to share with investors or teams.</li>
+            <li>Ecommerce Owners: Identify top-selling SKUs, low stock items, and high returns—without Excel.</li>
+            <li>Marketing Leaders: See CTR, ROAS, and spend effectiveness across campaigns in one view.</li>
+            <li>Product Teams: Understand what's selling, what's stagnating, and what to restock.</li>
+            <li>Operations Managers: Get funnel performance and traffic changes to refine user journeys.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Multi-Source Parsing: Reads PDFs, spreadsheets, or raw data—no manual prep needed</li>
+            <li>LLM-Powered Summary: Translates complex data into human-readable reports using AI</li>
+            <li>End-to-End Funnel Analysis: Includes traffic-to-cart and cart-to-purchase drop-offs</li>
+            <li>Inventory & Return Alerts: Detects low stock and high-return items early</li>
+            <li>Profitability Insights: Calculates margins, AOV, and customer segments</li>
+            <li>Instant Output: Final summary emailed or sent to Notion/Slack in real-time</li>
+            <li>Modular Design: Plug in your existing stack—zero-code automation</li>
+          </ul>
+        </div>
+        <div className="mt-6 text-center">
+          <span className="inline-block bg-gradient-to-r from-orange-500 via-pink-500 to-green-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Try the AI Business Insights Agent for your next quarterly review—just upload your reports and get your insights in minutes.</span>
+        </div>
+      </div>
+    }
+  >
     <MetricsBusinessAnalyticsPageContent />
   </PageRevealWrapper>
 );

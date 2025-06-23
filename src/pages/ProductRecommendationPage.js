@@ -274,8 +274,35 @@ const ProductRecommendationPageContent = () => {
 const ProductRecommendationPage = () => {
   return (
     <PageRevealWrapper
-      heading="AI-Powered Product Recommendations"
-      description="Deliver personalized product recommendations to your customers with our intelligent recommendation engine. Boost sales and customer satisfaction."
+      heading="Product Recommendation Agent"
+      description="Serve smart, personalized product recommendations—automatically. The Product Recommendation Agent leverages user-product interaction history, semantic vector search, and business filters to deliver high-quality, personalized product suggestions in real-time. Whether it's for e-commerce emails, CRM outreach, or in-app banners, this agent matches the right product to the right user—without the guesswork. Built on PostgreSQL, Pinecone, and OpenAI, it's ideal for marketers, growth teams, and product-led businesses looking to increase conversion and engagement."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Abandoned Cart Recovery: Suggest similar or alternative products based on viewed/carted items.</li>
+              <li>Email Marketing Automation: Trigger daily/weekly recommendations for each user segment.</li>
+              <li>CRM Enrichment: Feed relevant product picks to CRM fields or dashboards.</li>
+              <li>On-Site Personalization: Power banners and in-app sections with real-time, interest-matched recommendations.</li>
+              <li>Marketplace Growth: Provide smart recommendations across categories to aid discovery.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Semantic Search with Pinecone: Matches products based on meaning, not just tags.</li>
+              <li>LLM-Powered Scoring Layer: OpenAI agent applies reasoning to refine suggestions.</li>
+              <li>Filters by Stock & Price: Ensures product relevance and availability.</li>
+              <li>Multi-Channel Delivery: Supports webhook, Gmail, and JSON outputs for full flexibility.</li>
+              <li>Google Sheets Logging: Stores run logs, inputs, and product counts for QA and analytics.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Delight your users with spot-on product suggestions—automatically personalized and pipeline-ready.</span>
+          </div>
+        </div>
+      }
     >
       <ProductRecommendationPageContent />
     </PageRevealWrapper>

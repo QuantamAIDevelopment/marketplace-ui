@@ -164,7 +164,40 @@ const DynamicPricingAgentPageContent = () => {
 };
 
 const DynamicPricingAgentPage = () => (
-  <PageRevealWrapper>
+  <PageRevealWrapper
+    heading="Dynamic Pricing Agent"
+    description="The Dynamic Pricing Agent is a smart, rule-driven pricing automation system designed for eCommerce businesses. It automatically reads live product and market data from sources like Google Sheets, evaluates pricing using AI, and updates pricing while logging changes, generating reports, and alerting stakeholders. This agent eliminates manual pricing guesswork by using an AI-powered decision engine to apply predefined pricing rules (e.g., competitor undercutting, stock aging, demand surges). It integrates seamlessly with your spreadsheets, APIs, and email for full-cycle pricing management. With built-in deduplication, audit logging, failure alerts, and formatted reporting, this no-code pricing agent helps eCommerce teams scale pricing intelligently and effortlessly."
+    details={
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>eCommerce Platforms: Automatically adjust product prices on Shopify/WooCommerce based on inventory, views, or competitor pricing.</li>
+            <li>B2B Catalog Management: Keep large product catalogs competitively priced in real-time without human intervention.</li>
+            <li>Promotional Campaign Scheduling: Enable automatic time/day-based discounts or surge pricing logic.</li>
+            <li>Data-Driven Decisioning: Generate structured logs and visual reports for audit or analytics.</li>
+            <li>Pricing API Gateway: Expose an endpoint for external systems to submit product data for real-time pricing suggestions.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Multi-Channel Data Sync<br/>Reads product details from spreadsheets, API files, and webhook payloads—ensuring wide compatibility.</li>
+            <li>AI-Driven Pricing Brain<br/>Applies rules using a GPT-based LLM that interprets product context to recommend smart prices.</li>
+            <li>Structured Output and Logging<br/>Saves price changes and reasoning to different Google Sheets (e.g., pricing history, audit logs).</li>
+            <li>Conditional Routing<br/>Only logs or notifies when pricing changes occur. Otherwise, it explains the reason for no change.</li>
+            <li>Automated Reports<br/>Generates HTML tables with all changes and sends them via Gmail as formatted emails.</li>
+            <li>🛡 Error Alerts & Audit Trails<br/>Emails the team on pricing failures and saves reasoning for audit compliance.</li>
+            <li>Webhook & API Integration<br/>Includes webhook for external trigger and uses append/update logic to maintain up-to-date records.</li>
+            <li>LLM & Groq Integration<br/>Uses LLM nodes with Groq for fast and cost-efficient AI processing with strict JSON output enforcement.</li>
+          </ul>
+        </div>
+        <div className="mt-6 text-center">
+          <span className="inline-block bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Use the Dynamic Pricing Agent to automate your pricing decisions today. Launch in minutes, no code required—just connect your sheet and go!</span>
+        </div>
+      </div>
+    }
+  >
     <DynamicPricingAgentPageContent />
   </PageRevealWrapper>
 );

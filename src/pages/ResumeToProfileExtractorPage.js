@@ -183,8 +183,37 @@ const ResumeToProfileExtractorPageContent = () => {
 const ResumeToProfileExtractorPage = () => {
   return (
     <PageRevealWrapper
-      heading="Extract Profiles from Resumes Instantly"
-      description="Our AI-powered tool automatically extracts and structures candidate information from resumes, saving you hours of manual data entry."
+      heading="Resume Auto Extractor & Screening Assistant"
+      description="Eliminate resume overload with a powerful AI agent that transforms PDF resumes into clean, structured, searchable candidate profiles—automatically. This Resume Auto Extractor is a smart workflow that listens for resumes arriving via Gmail, reads and extracts meaningful data using GPT-4.1, and stores structured profiles into Supabase and Google Sheets—ready for recruiter access or system integration. It doesn't stop at parsing. This agent checks for duplicates, updates existing entries, and ensures data completeness. If a resume is missing key information, it auto-sends an email to the candidate requesting updates—ensuring every profile is useful. Designed to be your screening co-pilot, this assistant takes resume parsing, deduplication, follow-up, and storage entirely off your plate—so you can focus on selecting the right talent."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Campus Hiring Portals: Automatically organize hundreds of student resumes submitted via email.</li>
+              <li>Startup HR Teams: Create structured candidate pipelines with no manual data entry.</li>
+              <li>Recruiting Agencies: Preprocess and index resumes into Supabase or Sheets for further filtering or AI matching.</li>
+              <li>Career Platforms: Accept resume uploads and convert them into formatted profile rows with links and extracted data.</li>
+              <li>Candidate Re-engagement: Automatically follow up with applicants whose resumes are incomplete or unreadable.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">⚡Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>GPT-4.1 Semantic Extraction: Uses OpenAI's language model to extract name, email, number, skills, projects, and experience—even from unstructured resumes.</li>
+              <li>Duplicate Handling: Checks Supabase for existing emails and updates candidate records if found.</li>
+              <li>Smart Follow-ups: Triggers a personalized email if important resume fields are missing.</li>
+              <li>Google Sheets Integration: Appends full profile details and resume links to a shared sheet for easy browsing.</li>
+              <li>Google Drive Upload: Stores all resumes automatically in a specific Drive folder for centralized access.</li>
+              <li>Gmail Trigger: Pulls resumes directly from your inbox—fully automated.</li>
+              <li>No Code Needed: Built in n8n, it connects modern tools like Supabase, OpenAI, Gmail, and Google Drive effortlessly.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Let your AI assistant handle the first 500 resumes—connect it to your inbox, and let automation build your candidate database today.</span>
+          </div>
+        </div>
+      }
     >
       <ResumeToProfileExtractorPageContent />
     </PageRevealWrapper>

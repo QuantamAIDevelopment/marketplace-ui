@@ -240,8 +240,37 @@ const PolicyChangeNotificationPageContent = () => {
 const PolicyChangeNotificationPage = () => {
   return (
     <PageRevealWrapper
-      heading="Automate Policy Change Notifications"
-      description="Inform your team about important policy updates with automated notifications. Track acknowledgments and ensure compliance across the organization."
+      heading="Policy Change Notification & Acknowledgment Tracker"
+      description="Ensure every employee sees, reads, and acknowledges updated policies—automatically and with full visibility. Our AI-powered Policy Change Notification & Acknowledgment Tracker handles everything from sending policy documents, generating acknowledgment links, and tracking responses, to sending reminders and escalations—all with zero manual follow-up. Whether your HR team updates a leave policy or releases a new compliance protocol, this no-code agent ensures every employee gets notified, reminded, and logged—with acknowledgment stored in your database and tracked through email confirmations. With form-based triggers, smart acknowledgment links, scheduled follow-ups, and multi-round escalation support, it's the ultimate silent compliance enforcer in your HR automation stack."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>HR Teams: Automatically notify employees of new or updated policies and collect structured acknowledgments.</li>
+              <li>Compliance Officers: Track and prove employee engagement with updated legal or regulatory requirements.</li>
+              <li>People Ops: Schedule reminders, handle escalations for missed acknowledgments, and log everything.</li>
+              <li>Education & Training: Distribute mandatory policy PDFs and ensure acknowledgment by students or faculty.</li>
+              <li>Startups & Enterprises: Scale compliance without chasing responses manually.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Multi-Source Triggering: Accepts policy uploads via webhook or form trigger.</li>
+              <li>Auto Email Delivery: Sends acknowledgment request emails to all users in your system (PostgreSQL-based).</li>
+              <li>Dynamic Acknowledgment Links: Each employee gets a personalized link to confirm they've read the policy.</li>
+              <li>Reminders & Escalations: If acknowledgment is not received within 3 days, sends reminders; escalates after 7.</li>
+              <li>Database-Driven: Looks up users, tracks policy IDs, and logs responses directly in your PostgreSQL DB.</li>
+              <li>Attachment-Aware: Processes policy attachments, maintains file integrity and naming.</li>
+              <li>No Code Required: Fully operational within n8n using built-in nodes and Gmail/DB integrations.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Automate your next policy rollout—track acknowledgments, send reminders, and close the loop without manual follow-up. Try our Policy Acknowledgment Tracker free.</span>
+          </div>
+        </div>
+      }
     >
       <PolicyChangeNotificationPageContent />
     </PageRevealWrapper>

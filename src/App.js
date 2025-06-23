@@ -6,7 +6,6 @@ import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
-import CandidateDetailsSyncPage from './pages/CandidateDetailsSyncPage';
 import CandidateHiringStatusPage from './pages/CandidateHiringStatusPage';
 import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
@@ -39,7 +38,6 @@ function App() {
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
-              <Route path="/workflows/candidate-details-sync" element={<CandidateDetailsSyncPage />} />
               <Route path="/workflows/candidate-hiring-status" element={<CandidateHiringStatusPage />} />
               <Route path="/workflows/payslip-encryption" element={<PayslipAutoEncryptedPage />} />
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />

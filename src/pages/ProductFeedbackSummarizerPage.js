@@ -251,7 +251,37 @@ const ProductFeedbackSummarizerPageContent = () => {
 };
 
 const ProductFeedbackSummarizerPage = () => (
-  <PageRevealWrapper>
+  <PageRevealWrapper
+    heading="AI Product Feedback Summarizer"
+    description="Automatically transforms raw customer feedback from spreadsheets or webhook inputs into structured summaries—including praises, complaints, sentiment, and keywords—ready for decision-makers. Whether triggered manually or on a daily schedule, this AI-powered agent cleans, filters, and semantically summarizes reviews by product. Output is sent as a clean summary to Google Sheets and via email to stakeholders, helping PMs, sellers, and support teams prioritize and act faster."
+    details={
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Product Teams: Get daily insights on what users love and hate—without manual review.</li>
+            <li>Customer Support: Spot emerging pain points in feedback logs.</li>
+            <li>SaaS Analytics: Enrich NPS/CSAT data with qualitative analysis.</li>
+            <li>E-commerce: Monitor product-level sentiment from reviews and returns.</li>
+            <li>AI Copilot for PMs: Plug into tools like Notion or Slack for daily summaries.</li>
+          </ul>
+        </div>
+        <div>
+          <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+            <li>Multi-Trigger Flow: Runs daily or on webhook (real-time).</li>
+            <li>Data Cleaning Built-In: Automatically strips noise and normalizes feedback.</li>
+            <li>LLM Summarization: Not keyword matching—semantic understanding with GPT/Groq.</li>
+            <li>Structured Output: Saves JSON summaries with sentiment % and keyword tags.</li>
+            <li>HTML Email Digest: Sends a beautiful, table-formatted summary to your inbox.</li>
+          </ul>
+        </div>
+        <div className="mt-6 text-center">
+          <span className="inline-block bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Summarize your customer feedback in minutes—start with 100 free insights today.</span>
+        </div>
+      </div>
+    }
+  >
     <ProductFeedbackSummarizerPageContent />
   </PageRevealWrapper>
 );

@@ -155,8 +155,93 @@ const BirthdayWorkAnniversaryPageContent = () => {
 const BirthdayWorkAnniversaryPage = () => {
   return (
     <PageRevealWrapper
-      heading="Celebrate Your Team's Milestones"
-      description="Never miss a birthday or work anniversary again. Automate personalized greetings and recognitions to boost team morale."
+      heading="🎉Birthday & Work Anniversary Notification Workflow"
+      description="An automation workflow that celebrates employees by sending personalized birthday and work anniversary messages via Gmail. It pulls data from a Google Sheet, filters events for today (or previous weekend if run on Monday), and ensures each celebration is recognized promptly and professionally."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">📆 Trigger & Scheduling</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li><b>Daily Trigger:</b> Every weekday at 9:00 AM.</li>
+              <li><b>Weekend Handling:</b> Skips Saturday/Sunday and rechecks on Monday for any missed events.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">🧩 Workflow Steps</h2>
+            <ol className="list-decimal list-inside text-gray-700 text-sm space-y-1">
+              <li><b>Schedule Trigger</b>
+                <ul className="list-disc ml-6">
+                  <li>Runs every weekday morning.</li>
+                  <li>Uses a date/time filter to avoid weekends.</li>
+                </ul>
+              </li>
+              <li><b>Google Sheets Fetch</b>
+                <ul className="list-disc ml-6">
+                  <li>Retrieves employee data including Name, Birthday, Work Anniversary Date.</li>
+                </ul>
+              </li>
+              <li><b>Date Comparison Logic</b>
+                <ul className="list-disc ml-6">
+                  <li>Checks if today's date matches Birthday or Work Anniversary (MM-DD format).</li>
+                  <li>Includes weekend catch-up logic on Mondays.</li>
+                </ul>
+              </li>
+              <li><b>Message Generation</b>
+                <ul className="list-disc ml-6">
+                  <li>Creates messages such as: "Happy Birthday, [Name]!" or "Happy [X] Year Work Anniversary!"</li>
+                </ul>
+              </li>
+              <li><b>Filtering</b>
+                <ul className="list-disc ml-6">
+                  <li>Only continues if either birthday or work anniversary is flagged for today.</li>
+                </ul>
+              </li>
+              <li><b>Email Notification</b>
+                <ul className="list-disc ml-6">
+                  <li>Sends Gmail notification to recipient (e.g. HR, manager).</li>
+                  <li>Subject: "Today's Celebrations"</li>
+                  <li>Body: Custom message for each employee.</li>
+                </ul>
+              </li>
+              <li><b>Google Sheets Logging</b>
+                <ul className="list-disc ml-6">
+                  <li>Appends details into another tab or document: Name, Date, Event Type (Birthday/Anniversary), Message</li>
+                </ul>
+              </li>
+            </ol>
+          </div>
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">🔍 Example Messages</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Happy Birthday, Priya!</li>
+              <li>Happy 3 Year Work Anniversary, Raj!</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">⚙️ Smart Features</h2>
+            <table className="min-w-full text-sm text-left border border-gray-200">
+              <tbody>
+                <tr className="border-b"><td className="font-semibold">Scheduled Runs</td><td>Automatically triggers each weekday morning</td></tr>
+                <tr className="border-b"><td className="font-semibold">Sheet Integration</td><td>Connects directly to Google Sheets to fetch employee data</td></tr>
+                <tr className="border-b"><td className="font-semibold">Weekend CatchUp</td><td>Backfills missed events from Sat/Sun when running Monday</td></tr>
+                <tr className="border-b"><td className="font-semibold">Email Alerts</td><td>Automatically emails celebration messages</td></tr>
+                <tr className="border-b"><td className="font-semibold">Logging</td><td>Records messages sent to avoid duplicates or for reporting</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">✅ Integration Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>HR Teams: Automate internal celebration emails.</li>
+              <li>Startups: Build company culture without extra manual effort.</li>
+              <li>Remote Teams: Foster engagement across distributed staff.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Keep your team happy, seen, and celebrated with zero effort. Set up your birthday and anniversary reminders once—and enjoy it forever!</span>
+          </div>
+        </div>
+      }
     >
       <BirthdayWorkAnniversaryPageContent />
     </PageRevealWrapper>
