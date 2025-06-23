@@ -1,0 +1,680 @@
+{
+  "name": "candidate-hiring-status",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "/details-sync",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        420
+      ],
+      "id": "9965c383-a57b-4f76-9062-cde6974deca9",
+      "name": "ATS Webhook",
+      "webhookId": "485e7845-9675-428f-887e-287628503eda"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -320,
+        380
+      ],
+      "id": "12dad638-edb8-4f5c-9ea1-3afcb1566c05",
+      "name": "Merge Triggers"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "candidates",
+          "mode": "list",
+          "cachedResultName": "candidates"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -120,
+        380
+      ],
+      "id": "9a74ae08-eff7-47ad-bef0-79f13ad1b9fe",
+      "name": "Get Updated Candidates",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Enhanced status mapping, duplicate handling, and detailed sync tracking\nconst items = $input.all();\nconst processedIds = new Set();\nconst updatedItems = [];\nconst syncStats = {\n  successCount: 0,   // Successful sync count\n  pendingCount: 0,   // Pending sync count\n  failedCount: 0     // Failed sync count\n};\nconst syncStatus = [];\n\nfor (const item of items) {\n  const candidateId = item?.json?.id;\n\n  // Handle duplicates - skip if already processed\n  if (processedIds.has(candidateId)) {\n    item.json.isDuplicate = true;\n    item.json.action = 'skip';\n    item.json.processedAt = new Date().toISOString();\n    updatedItems.push(item);\n    continue;\n  }\n  processedIds.add(candidateId);\n\n  // Validate required fields\n  if (!candidateId || !item?.json?.name) {\n    item.json.error = 'Missing required fields (id or name)';\n    item.json.action = 'error';\n    item.json.processedAt = new Date().toISOString();\n    updatedItems.push(item);\n    syncStats.failedCount++;\n    syncStatus.push({\n      type: \"error\",\n      profileId: candidateId || \"unknown\",\n      message: item.json.error,\n      status: \"Failed\"\n    });\n    continue;\n  }\n\n  // Status mapping\n  const atsStatus = (item?.json?.status || \"\").toLowerCase().trim();\n  let hrmsStatus = \"In Progress\"; // Default fallback\n  let action = \"sync\";\n\n  const statusMap = {\n    \"offer accepted\": \"Ready for Onboarding\",\n    \"offer extended\": \"Pending Offer Response\",\n    \"rejected\": \"Disqualified\",\n    \"withdrawn\": \"Withdrawn\",\n    \"application received\": \"Under Review\",\n    \"phone screening\": \"Phone Screen\",\n    \"interview scheduled\": \"Interview Scheduled\",\n    \"interview completed\": \"Interview Completed\",\n    \"reference check\": \"Reference Check\",\n    \"background check\": \"Background Check\",\n    \"final review\": \"Final Review\",\n    \"hired\": \"Hired\",\n    \"on hold\": \"On Hold\"\n  };\n\n  if (statusMap[atsStatus]) {\n    hrmsStatus = statusMap[atsStatus];\n  } else if (atsStatus !== \"\") {\n    item.json.error = `Unknown ATS status: ${atsStatus}`;\n    action = \"review\";\n    syncStats.failedCount++;\n    syncStatus.push({\n      type: \"error\",\n      profileId: candidateId,\n      message: item.json.error,\n      status: \"Retry needed\"\n    });\n  }\n\n  // Determine stats and sync status\n  if (action === \"sync\") {\n    syncStats.successCount++;\n    syncStatus.push({\n      type: \"pending\",\n      profileId: candidateId,\n      message: `Syncing in progress for ${hrmsStatus}`,\n      status: hrmsStatus\n    });\n  }\n\n  // Add metadata fields\n  item.json.hrmsStatus = hrmsStatus;\n  item.json.action = action;\n  item.json.originalStatus = item?.json?.status;\n  item.json.processedAt = new Date().toISOString();\n\n  updatedItems.push(item);\n}\n\n// Final output with stats and status log\nreturn [\n    \n  {\n    json: {\n      stats: syncStats,\n      syncStatus: syncStatus\n    }\n  },\n  ...updatedItems\n\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        380
+      ],
+      "id": "30a2a614-4033-4bdc-8ff5-b48152ca4cb1",
+      "name": "Enhanced Status Mapping"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "sync-condition",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "sync",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        360
+      ],
+      "id": "fb6df185-31f4-484f-8ed6-07e2257727af",
+      "name": "Filter for Sync"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 731820563,
+          "mode": "list",
+          "cachedResultName": "candidates-details-sync",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=731820563"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "error",
+              "displayName": "error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hrmsStatus",
+              "displayName": "hrmsStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processedAt",
+              "displayName": "processedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "originalStatus",
+              "displayName": "originalStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stats",
+              "displayName": "stats",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "syncStatus",
+              "displayName": "syncStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        380,
+        980
+      ],
+      "id": "ac17e416-3c79-4f07-9fc7-c8227b12bc31",
+      "name": "Log Skipped Records",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "Candidate Status Update",
+        "message": "=Candidate status is {{ $json.originalStatus }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1460,
+        1160
+      ],
+      "id": "5d1452e3-d8cc-4c7a-b0fc-c2539e88dec7",
+      "name": "Gmail",
+      "webhookId": "766a915d-d3c6-47c4-be5e-871bc81ffd80",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "candidates",
+          "mode": "list",
+          "cachedResultName": "candidates"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Get Updated Candidates').item.json.id }}",
+            "name": "={{ $('Get Updated Candidates').item.json.name }}",
+            "status": "={{ $('Get Updated Candidates').item.json.status }}",
+            "updated_at": "={{ $now }}",
+            "notes": "={{ $('Get Updated Candidates').item.json.notes }}",
+            "email": "={{ $('Enhanced Status Mapping').item.json.email }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": true,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "updated_at",
+              "displayName": "updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1220,
+        320
+      ],
+      "id": "94fcd3b2-93ef-4e65-9cf8-a4a8a36732cb",
+      "name": "Postgres1",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const successCount = items[0].json.successCount || 0;\nconst pendingCount = items[0].json.pendingCount || 0;\nconst failedCount = items[0].json.failedCount || 0;\nconst syncStatus = items[0].json.syncStatus || [];\n\n// Dynamically format the syncStatus data to match the required structure\nconst formattedSyncStatus = syncStatus.map(status => {\n  let type = \"error\";  // Default type is \"error\"\n  let statusMessage = \"Unknown status\";  // Default message if status is unknown\n\n  // Dynamically set type based on hrmsStatus or status\n  if (status.hrmsStatus && status.hrmsStatus.toLowerCase().includes(\"onboarding\")) {\n    type = \"pending\";\n  } else if (status.status && (status.status.toLowerCase().includes(\"accepted\") || status.status.toLowerCase().includes(\"scheduled\"))) {\n    type = \"pending\";\n  } else if (status.status && status.status.toLowerCase().includes(\"error\")) {\n    type = \"error\";\n  }\n\n  // Determine the message dynamically\n  statusMessage = status.notes || status.message || `Processed at: ${status.processedAt || \"Unknown time\"} - Status: ${status.status || \"No status\"}`;\n\n  return {\n    type: type,  // Dynamically determine type\n    profileId: status.id || \"N/A\",  // Use `id` as profileId\n    message: statusMessage,  // Use dynamic message logic\n    status: status.status || \"Unknown\"  // Use the status field\n  };\n});\n\nconsole.log(\"Formatted Sync Status:\", formattedSyncStatus);\n\nreturn [\n  {\n    json: {\n      stats: {\n        syncedProfiles: successCount,  // Number of successful syncs\n        pendingSync: pendingCount,     // Number of pending syncs\n        failedSync: failedCount        // Number of failed syncs\n      },\n      syncStatus: formattedSyncStatus  // Sync status details in the required format\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        320
+      ],
+      "id": "fe436a5a-bcc1-43b4-b6f0-508ede3165e8",
+      "name": "Prepare Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.filter(item => {\n  return item.json && item.json.email; // or check for whatever Gmail needs\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        440
+      ],
+      "id": "59810386-aad8-4b30-97fe-88126d1305c6",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const successCount = items[0].json.successCount || 0;\nconst pendingCount = items[0].json.pendingCount || 0;\nconst failedCount = items[0].json.failedCount || 0;\nconst syncStatus = items[0].json.syncStatus || [];\n\n// Dynamically format the syncStatus data to match the required structure\nconst formattedSyncStatus = syncStatus.map(status => {\n  let type = \"error\";  // Default type is \"error\"\n  let statusMessage = \"Unknown status\";  // Default message if status is unknown\n\n  // Dynamically set type based on hrmsStatus or status\n  if (status.hrmsStatus && status.hrmsStatus.toLowerCase().includes(\"onboarding\")) {\n    type = \"pending\";\n  } else if (status.status && (status.status.toLowerCase().includes(\"accepted\") || status.status.toLowerCase().includes(\"scheduled\"))) {\n    type = \"pending\";\n  } else if (status.status && status.status.toLowerCase().includes(\"error\")) {\n    type = \"error\";\n  }\n\n  // Determine the message dynamically\n  statusMessage = status.notes || status.message || `Processed at: ${status.processedAt || \"Unknown time\"} - Status: ${status.status || \"No status\"}`;\n\n  return {\n    type: type,  // Dynamically determine type\n    profileId: status.id || \"N/A\",  // Use `id` as profileId\n    message: statusMessage,  // Use dynamic message logic\n    status: status.status || \"Unknown\"  // Use the status field\n  };\n});\n\nconsole.log(\"Formatted Sync Status:\", formattedSyncStatus);\n\nreturn [\n  {\n    json: {\n      stats: {\n        syncedProfiles: successCount,  // Number of successful syncs\n        pendingSync: pendingCount,     // Number of pending syncs\n        failedSync: failedCount        // Number of failed syncs\n      },\n      syncStatus: formattedSyncStatus  // Sync status details in the required format\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        1160
+      ],
+      "id": "59f88bea-537c-4b23-9b57-e282a7f202af",
+      "name": "Prepare Response1"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -960,
+        320
+      ],
+      "id": "b9095ee2-2e3c-48cb-a2f2-ad216982b353",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## Merge Triggers Node\n\nThis node is a **Merge** node configured in `Append` mode with `2` inputs.\n\n- **Purpose**: It combines the data from two different trigger sources: the `ATS Webhook` and the `Schedule Trigger`.\n- **Mode**: `append`, which means it will add the items from the second input to the end of the items from the first input.\n- **Inputs**: It expects data from two preceding nodes, effectively allowing either a real-time webhook trigger or a scheduled trigger to initiate the data flow for the subsequent nodes.\n\n## Get Updated Candidates Node\n\nThis node is a **Postgres** node configured to `Select` data from the `candidates` table in the `public` schema.\n\n- **Purpose**: Retrieves candidate records from the PostgreSQL database. This node acts as the primary data source for the candidate details that need to be processed and potentially synchronized.\n- **Resource**: `database`, indicating it interacts with a database.\n- **Operation**: `select`, to fetch records.\n- **Table**: `candidates` table within the `public` schema.\n- **Return All**: `true`, ensuring all available records from the `candidates` table are retrieved.",
+        "height": 760,
+        "width": 540,
+        "color": 6
+      },
+      "name": "Merge Triggers Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -200
+      ],
+      "id": "generated-34409a25-6604-4efc-8ba7-428a0148561b"
+    },
+    {
+      "parameters": {
+        "content": "## Enhanced Status Mapping Node\n\nThis node is a **Code** node that executes custom JavaScript logic to process and transform candidate data.\n\n- **Purpose**: It performs several critical functions:\n    - **Duplicate Handling**: Identifies and skips duplicate candidate IDs to prevent redundant processing.\n    - **Field Validation**: Checks for missing required fields (e.g., `id`, `name`) and marks records with errors.\n    - **Status Mapping**: Translates ATS-specific statuses (e.g., \"offer accepted\", \"rejected\") into standardized HRMS statuses (e.g., \"Ready for Onboarding\", \"Disqualified\").\n    - **Action Determination**: Assigns an `action` (e.g., \"sync\", \"review\", \"error\") based on processing outcomes.\n    - **Metadata Addition**: Adds `hrmsStatus`, `action`, `originalStatus`, and `processedAt` fields to the candidate data.\n    - **Sync Statistics**: Gathers `successCount`, `pendingCount`, and `failedCount` for overall workflow monitoring.\n    - **Sync Status Log**: Creates detailed log entries for each candidate's sync status.\n\n- **Output**: Returns an array containing both overall sync statistics and the processed candidate records.\n\n\n## Code Node (for Gmail filtering)\n\nThis node is a **Code** node that filters items based on the presence of an email address.\n\n- **Purpose**: It acts as a pre-filter before sending emails, ensuring that only items with a valid `email` field are passed to the `Gmail` node. This prevents errors when attempting to send emails to non-existent addresses.\n- **Logic**: It filters the input `items` and returns only those where `item.json` exists and contains an `email` field.\n\n\n## Filter for Sync Node\n\nThis node is an **If** node that conditionally routes data based on the `action` field.\n\n- **Purpose**: It acts as a decision point, allowing only candidate records marked with an `action` of \"sync\" to proceed down the \"true\" branch.\n- **Condition**: Checks if `{{ $json.action }}` `equals` \"sync\".\n- **Branches**: \n    - **True Branch**: Records where `action` is \"sync\" are passed to the next node (Postgres1).\n    - **False Branch**: Records where `action` is not \"sync\" (e.g., \"skip\", \"error\", \"review\") are passed to the `Log Skipped Records` node. This ensures that only relevant data is sent for synchronization, while other cases are logged or handled separately.",
+        "height": 1100,
+        "width": 1020,
+        "color": 3
+      },
+      "name": "Enhanced Status Mapping Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        80,
+        -500
+      ],
+      "id": "generated-cef57592-8918-4975-bcc9-026f300ca69b"
+    },
+    {
+      "parameters": {
+        "content": "## Log Skipped Records Node\n\nThis node is a **Google Sheets** node configured to `Append or Update` data in a specific spreadsheet and sheet.\n\n- **Purpose**: It logs records that were skipped or flagged for review by the `Enhanced Status Mapping` node (i.e., those that did not pass the `Filter for Sync` condition). This provides an audit trail and allows manual inspection of problematic records.\n- **Authentication**: `oAuth2`, using a Google Sheets account credential.\n- **Resource**: `sheet`, interacting with a Google Sheet.\n- **Operation**: `appendOrUpdate`, to add new rows or update existing ones based on matching columns.\n- **Document ID**: `17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM` (n8n-work-book).\n- **Sheet Name**: `candidates-details-sync` (ID: 731820563).\n- **Columns**: Configured for `autoMapInputData`, meaning it attempts to automatically map input JSON fields to sheet columns. It also defines schema for various fields like `id`, `name`, `status`, `error`, `hrmsStatus`, etc.",
+        "height": 580,
+        "width": 940
+      },
+      "name": "Log Skipped Records Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        620
+      ],
+      "id": "generated-ac7919e1-02fd-4671-9d8e-ceeba3d61826"
+    },
+    {
+      "parameters": {
+        "content": "## Postgres1 Node\n\nThis node is a **Postgres** node configured to `Upsert` data into the `candidates` table.\n\n- **Purpose**: It synchronizes candidate data by either inserting new records or updating existing ones in the PostgreSQL database based on the `id` field. This is the primary synchronization action for records that pass the \"sync\" filter.\n- **Resource**: `database`, interacting with a database.\n- **Operation**: `upsert`, which performs an insert if a record does not exist, and an update if it does.\n- **Schema**: `public`.\n- **Table**: `candidates`.\n- **Columns**: \n    - `id`: Mapped from `={{ $('Get Updated Candidates').item.json.id }}` and used as the matching column for upserting.\n    - `name`: Mapped from `={{ $('Get Updated Candidates').item.json.name }}`.\n    - `status`: Mapped from `={{ $('Get Updated Candidates').item.json.status }}`.\n    - `updated_at`: Set to the current timestamp `={{ $now }}`.\n    - `notes`: Mapped from `={{ $('Get Updated Candidates').item.json.notes }}`.\n    - `email`: Mapped from `={{ $('Enhanced Status Mapping').item.json.email }}`.\n\n- **Matching Columns**: `id` is used to determine if a record already exists for updating.\n\n## Prepare Response Node (for Postgres branch)\n\nThis node is a **Code** node that processes and formats the output for the `Postgres1` branch.\n\n- **Purpose**: It consolidates and formats synchronization statistics and status details into a structured JSON object suitable for a final response or logging.\n- **Logic**: It retrieves `successCount`, `pendingCount`, `failedCount`, and `syncStatus` from the input. It then dynamically formats the `syncStatus` array: \n    - Determines `type` (e.g., \"error\", \"pending\") based on `hrmsStatus` or `status`.\n    - Sets `profileId` using `id`.\n    - Generates a `message` from `notes`, `message`, or a default string.\n    - Uses `status` for the final status.\n\n- **Output**: Returns a single JSON object containing `stats` (with `syncedProfiles`, `pendingSync`, `failedSync`) and `syncStatus` (the formatted array of status details).",
+        "height": 940,
+        "width": 1140
+      },
+      "position": [
+        1120,
+        -440
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "name": "Postgres1 Documentation",
+      "id": "generated-b56cd458-9e00-45d5-9881-d182f20dd002"
+    },
+    {
+      "parameters": {
+        "content": "## Prepare Response1 Node (for Gmail branch)\n\nThis node is a **Code** node that processes and formats the output for the `Gmail` branch.\n\n- **Purpose**: Similar to the other `Prepare Response` node, this one consolidates and formats synchronization statistics and status details into a structured JSON object. It is specifically placed after the `Gmail` node, suggesting it prepares a final response or log for the email notification path.\n- **Logic**: It retrieves `successCount`, `pendingCount`, `failedCount`, and `syncStatus` from the input. It then dynamically formats the `syncStatus` array: \n    - Determines `type` (e.g., \"error\", \"pending\") based on `hrmsStatus` or `status`.\n    - Sets `profileId` using `id`.\n    - Generates a `message` from `notes`, `message`, or a default string.\n    - Uses `status` for the final status.\n\n- **Output**: Returns a single JSON object containing `stats` (with `syncedProfiles`, `pendingSync`, `failedSync`) and `syncStatus` (the formatted array of status details).\n\n\n## Gmail Node\n\nThis node is a **Gmail** node configured to `Send` an email.\n\n- **Purpose**: It sends email notifications about candidate status updates. This is likely used for cases where a manual review or special action is required, or simply to inform relevant stakeholders.\n- **Authentication**: `oAuth2`, using a Gmail account credential.\n- **Resource**: `message`, indicating it handles email messages.\n- **Operation**: `send`, to send an email.\n- **Send To**: `={{ $json.email }}`, dynamically setting the recipient's email address from the incoming data.\n- **Subject**: `Candidate Status Update`.\n- **Email Type**: `html`, allowing for rich text formatting in the email body.\n- **Message**: `Candidate status is {{ $json.originalStatus }}`, dynamically inserting the original status of the candidate into the email body.",
+        "height": 840,
+        "width": 1560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1140,
+        520
+      ],
+      "name": "Prepare Response1 Documentation",
+      "id": "generated-a089ade4-288d-4cc8-8d0f-9e4d1519b906"
+    },
+    {
+      "parameters": {
+        "content": "## Schedule Trigger Node\n\nThis node is a **Schedule Trigger** node configured to run daily.\n\n- **Purpose**: It acts as a time-based trigger for the workflow, initiating the data synchronization process at a predefined interval (daily at midnight).\n- **Rule**: Set to `interval`, triggering every `1 day` at `0` hours and `0` minutes.\n- **Use Case**: This node provides a fallback or regularly scheduled mechanism to ensure candidate data is synchronized, complementing the real-time `ATS Webhook` trigger. It helps catch any updates that might have been missed by the webhook or to perform a full daily sync.\n\n\n## ATS Webhook Node\n\nThis node acts as an **incoming webhook trigger** for the workflow. It is configured to listen for `GET` requests at the path `/details-sync`.\n\n- **Purpose**: Initiates the workflow whenever an external system (e.g., an ATS) sends a GET request to this endpoint, signaling that candidate details need to be synchronized.\n- **Authentication**: Set to `none`, meaning it accepts requests without authentication.\n- **Response Mode**: `lastNode`, which means the response of the last node in the workflow will be returned.\n- **Response Data**: `firstEntryJson`, indicating that the first entry of the JSON data from the last node will be used as the response.",
+        "height": 820,
+        "width": 700,
+        "color": 3
+      },
+      "name": "Schedule Trigger Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1200,
+        -260
+      ],
+      "id": "generated-b57a2acb-6ac2-4d17-8692-5cc5898481ce"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "ATS Webhook": {
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Triggers": {
+      "main": [
+        [
+          {
+            "node": "Get Updated Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Updated Candidates": {
+      "main": [
+        [
+          {
+            "node": "Enhanced Status Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced Status Mapping": {
+      "main": [
+        [
+          {
+            "node": "Filter for Sync",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Skipped Records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter for Sync": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bc38a950-029b-4d41-acf5-dee3396a10db",
+  "meta": {
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "eB9tmzgS4lt5u0yo",
+  "tags": []
+}

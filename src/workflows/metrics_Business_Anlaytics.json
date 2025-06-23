@@ -1,0 +1,744 @@
+{
+  "name": "Analytics_Business_Insights_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bi-insights",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        -200
+      ],
+      "id": "6d8062fe-91f8-464a-bad0-41841adffc4c",
+      "name": "Webhook",
+      "webhookId": "e80986d2-fcc2-4ca8-b5a3-9f9cde6657d6"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a business analyst AI.\n\nGenerate a concise, professional quarterly summary report based on the provided data (March 1 – May 31, 2025). Focus on key business insights and trends.\n\nYour summary must include exactly these 5 insights:\n1. 🔼 Best-performing SKUs  \n2. 🔽 Falling SKUs or low stock  \n3. 🛍️ Marketing campaign performance  \n4. 📈 Website traffic & conversion trends  \n5. 📦 Inventory warnings or high return items\n\nEach bullet point should:\n- Start with the matching icon\n- Mention at least one key metric\n- Include a short insight or explanation\n- End with a clear action or forecast\n\n### Data:\nTop Selling Products:  \n\"product:{{ $json.topSellingProducts[0].product }},Units sold:{{ $json.topSellingProducts[0].unitsSold }},sku:{{ $json.topSellingProducts[0].sku }}\nproduct:{{ $json.topSellingProducts[1].product}} units sold:{{ $json.topSellingProducts[1].unitsSold }},sku:{{ $json.topSellingProducts[1].sku }}\nproduct:{{ $json.topSellingProducts[2].product }}, units sold:{{ $json.topSellingProducts[2].unitsSold }},sku:{{ $json.topSellingProducts[2].sku }}\nproduct:{{ $json.topSellingProducts[3].product }},units sold:{{ $json.topSellingProducts[3].unitsSold }},sku:{{ $json.topSellingProducts[3].sku }}\nproduct:{{ $json.topSellingProducts[4].product }}, units sold:{{ $json.topSellingProducts[4].unitsSold }},sku:{{ $json.topSellingProducts[4].sku }}\n\nLow Stock Warnings:  \nproduct:{{ $json.lowStockWarnings[0].product }},closing stock:{{ $json.lowStockWarnings[0].closingStock }} units,sku:{{ $json.lowStockWarnings[0].sku }}\nproduct:{{ $json.lowStockWarnings[1].product }},closing stock:{{$json.lowStockWarnings[1].closingStock }} units,sku:{{ $json.lowStockWarnings[1].sku }}\n\nMarketing Campaign Performance: \nTop CTR:{{ $json.topCTR.name }},spend:{{ $json.topCTR.spend }},impression:{{ $json.topCTR.impressions }},clicks:{{ $json.topCTR.clicks }},ROAS:{{ $json.topCTR.roas }},ctr:{{ $json.topCTR.ctr }}\nTop RAOS:{{ $json.topROAS.name }},spend:{{ $json.topROAS.spend }},impression:{{ $json.topROAS.impressions }},clicks:{{ $json.topROAS.clicks }},ctr:{{ $json.topROAS.ctr }},roas:{{ $json.topROAS.roas }}\n\nTotal spend:{{ $json.totalSpend }}\ntotal impression:{{ $json.totalImpressions }}\ntotal clicks:{{ $json.totalClicks }}\n\nWebsite Traffic & Funnel Data:\ntraffic insights:\nvisits:{{ $json.trafficInsights.visits }},bounce rate:{{ $json.trafficInsights.bounceRate }},conversion rate:{{ $json.trafficInsights.conversionRate }}\nFunnel drop offs:\nproduct view to cart{{ $json.trafficInsights.funnelDropOff.productViewToCart }}\ncart tto purhase:{{ $json.trafficInsights.funnelDropOff.cartToPurchase }}\ngrowth:\n session rate change:{{ $json.trafficInsights.growth.sessionChange }}\nbounce rate change:{{ $json.trafficInsights.growth.bounceRateChange }}\nconversion rate change:{{ $json.trafficInsights.growth.conversionRateChange }}\n\n📦 Inventory warnings or high returns:\nreturn product:{{ $json.highReturnProducts[0].product }},return amout:{{ $json.highReturnProducts[0].returnAmount }}\nreturn product:{{ $json.highReturnProducts[1].product }},Return amount:{{ $json.highReturnProducts[1].returnAmount }} \n\n\n\n### Output Format:\n📊 **Quarterly Business Summary (Mar–May 2025)**  \n- 🔼 ...  \n- 🔽 ...  \n- 🛍️ ...  \n- 📈 ...  \n- 📦 ...\n\nReturn only the summary. No intro, no closing, no JSON.\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2140,
+        -260
+      ],
+      "id": "5e1c2454-f2a7-4684-b3f7-0d389fc442ff",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2100,
+        -40
+      ],
+      "id": "bfc04a90-66d8-444d-ab1d-cd1352f9d227",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JjMmhLRCLv1lEaa6",
+          "name": "OpenRouter New"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nagsvadlamudi@gmail.com",
+        "subject": "quarterly business insights",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2540,
+        -260
+      ],
+      "id": "167ae1ec-904c-410c-bd73-5cd6b8cb79dc",
+      "name": "Gmail",
+      "webhookId": "e0fd9a08-6332-4d48-b07d-4071a66f31e7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2800,
+        -260
+      ],
+      "id": "fc4ec5d5-6f81-4968-b917-d68e99e1ca4e",
+      "name": "Gmail1",
+      "webhookId": "d0f033ea-f989-44f1-828c-825f4cccfac4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.text }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        3040,
+        -260
+      ],
+      "id": "ea5000dc-7c2a-466a-b158-ffda76826770",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "={{ $json.fileKey }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -420
+      ],
+      "id": "b734d3cb-3309-43da-9db5-ea0b0369d1f9",
+      "name": "Quaterly Orders pdf"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "={{ $json.fileKey }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -220
+      ],
+      "id": "a579dfa6-197d-45f2-be8b-b529937ab67e",
+      "name": "Quaterly Website traffic data"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "={{ $json.fileKey }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        540,
+        220
+      ],
+      "id": "c189a0c7-5789-42b2-9dfd-895383bb18fe",
+      "name": "Quarterly Customers database"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "={{ $json.fileKey }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        520,
+        -20
+      ],
+      "id": "9c3c0502-9b2c-46bd-bb22-b293d339dd3f",
+      "name": "Quarterly marketing data"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "={{ $json.fileKey }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        540,
+        -820
+      ],
+      "id": "08b445ac-8963-4556-9163-7dd720ff7084",
+      "name": "Quarterly Inventory data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const campaigns = items.map(item => {\n  return {\n    date: item.json[\"Date\"],\n    name: item.json[\"Campaign Name\"],\n    channel: item.json[\"Channel\"],\n    spend: parseFloat(item.json[\"Spend (₹)\"].replace(/,/g, '')),\n    impressions: parseInt(item.json[\"Impressions\"].replace(/,/g, '')),\n    clicks: parseInt(item.json[\"Clicks\"].replace(/,/g, '')),\n    ctr: parseFloat(item.json[\"CTR (%)\"]),\n    conversions: parseInt(item.json[\"Conversions\"]),\n    roas: parseFloat(item.json[\"ROAS\"])\n  };\n});\n\n// Filter out invalid rows\nconst validCampaigns = campaigns.filter(c =>\n  !isNaN(c.spend) &&\n  !isNaN(c.impressions) &&\n  !isNaN(c.clicks) &&\n  !isNaN(c.ctr) &&\n  !isNaN(c.conversions) &&\n  !isNaN(c.roas)\n);\n\n// If no valid data\nif (validCampaigns.length === 0) {\n  return [{ json: { error: \"No valid campaign data found.\" } }];\n}\n\n// Calculate top performers\nconst topCTR = validCampaigns.reduce((max, c) => (c.ctr > max.ctr ? c : max), validCampaigns[0]);\nconst topROAS = validCampaigns.reduce((max, c) => (c.roas > max.roas ? c : max), validCampaigns[0]);\n\n// Totals\nconst totalSpend = validCampaigns.reduce((sum, c) => sum + c.spend, 0);\nconst totalImpressions = validCampaigns.reduce((sum, c) => sum + c.impressions, 0);\nconst totalClicks = validCampaigns.reduce((sum, c) => sum + c.clicks, 0);\n\nreturn [\n  { json: { topCTR } },\n  { json: { topROAS } },\n  {\n    json: {\n      totalSpend,\n      totalImpressions,\n      totalClicks\n    }\n  },\n  { json: { campaigns: validCampaigns } }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        -20
+      ],
+      "id": "e5adcbf6-3143-4f8a-a6d8-be0df56eeb0b",
+      "name": "RFM,Top CTR and RAOS"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Step 1: Separate inventory and orders\nconst inventoryItems = items.filter(item => item.json.SKU);   // Inventory data\nconst orderItems = items.filter(item => !item.json.SKU);     // Orders data\n\n// Step 2: Top Selling Products (based on Units Sold in inventory)\nconst topSellingProducts = inventoryItems\n  .map(item => ({\n    product: item.json.Product,\n    sku: item.json.SKU,\n    unitsSold: Number(item.json['Units Sold'])\n  }))\n  .sort((a, b) => b.unitsSold - a.unitsSold);\n\n// Step 3: Low Stock Warnings (threshold: 40 units)\nconst lowStockWarnings = inventoryItems\n  .filter(item => Number(item.json['Closing Stock']) <= 40)\n  .map(item => ({\n    product: item.json.Product,\n    sku: item.json.SKU,\n    closingStock: Number(item.json['Closing Stock'])\n  }));\n\n// Step 4: High Return Products (from orders)\nconst productReturns = {};\n\nfor (const order of orderItems) {\n  const product = order.json.Product;\n  const returnAmt = Number(order.json['Return Amount'] || 0);\n\n  if (!productReturns[product]) {\n    productReturns[product] = 0;\n  }\n  productReturns[product] += returnAmt;\n}\n\nconst highReturnProducts = Object.entries(productReturns)\n  .filter(([_, value]) => value > 0)\n  .map(([product, returnAmount]) => ({\n    product,\n    returnAmount: parseFloat(returnAmount.toFixed(2))\n  }));\n\n// Final Output (without inventoryWarnings)\nreturn [\n  {\n    json: {\n      topSellingProducts,\n      lowStockWarnings,\n      highReturnProducts\n    }\n  }\n];\n\n\n\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        -660
+      ],
+      "id": "5994fa1d-565e-406b-8b39-c4ed799c4de3",
+      "name": "Top selling Products,Low stock warnings"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items.map(item => item.json);\n\nlet totalOrders = data.length;\nlet totalRevenue = 0;\nlet totalUnitsSold = 0;\nlet totalReturns = 0;\nlet totalCost = 0;\n\nconst productStats = {};\n\nfor (const order of data) {\n  const product = order[\"Product\"];\n  const qty = Number(order[\"Quantity\"]);\n  const unitPrice = Number(order[\"Unit Price\"]);\n  const totalPrice = Number(order[\"Total Price\"]);\n  const returnAmount = Number(order[\"Return Amount\"]);\n  const costPrice = Number(order[\"Cost Price\"]);\n\n  totalRevenue += totalPrice;\n  totalUnitsSold += qty;\n  totalReturns += returnAmount;\n  totalCost += qty * costPrice;\n\n  if (!productStats[product]) {\n    productStats[product] = {\n      type: \"productPerformance\",\n      product: product,\n      quantitySold: 0,\n      revenue: 0,\n      returns: 0,\n      margin: 0\n    };\n  }\n\n  productStats[product].quantitySold += qty;\n  productStats[product].revenue += totalPrice;\n  productStats[product].returns += returnAmount;\n  productStats[product].margin += (unitPrice - costPrice) * qty;\n}\n\n// Final margin after adjusting for returns\nconst totalMargin = totalRevenue - totalCost - totalReturns;\nconst aov = totalRevenue / totalOrders;\n\nconst summary = {\n  totalOrders,\n  totalRevenue: Number(totalRevenue.toFixed(2)),\n  totalUnitsSold,\n  totalReturns: Number(totalReturns.toFixed(2)),\n  totalMargin: Number(totalMargin.toFixed(2)),\n  aov: Math.round(aov)\n};\n\n// Adjust product margins for returns and finalize\nconst productPerformance = Object.values(productStats).map(product => {\n  if (product.returns > 0) {\n    product.margin -= product.returns;\n  }\n  product.margin = Number(product.margin.toFixed(2));\n  product.revenue = Number(product.revenue.toFixed(2));\n  product.returns = Number(product.returns.toFixed(2));\n  return product;\n});\n\nreturn [\n  {\n    json: summary\n  },\n  ...productPerformance.map(p => ({ json: p }))\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        820,
+        -440
+      ],
+      "id": "760a06e1-cdf3-4d86-8ac7-5edd1193b4a6",
+      "name": "total orders,Revenue,AOV,Sales,margins,returns"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        860,
+        -660
+      ],
+      "id": "ab4f7df3-963a-4e20-8cdc-94b1863bef68",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = {};\n\nfor (const item of $items()) {\n  Object.assign(result, item.json);\n}\n\nreturn [{ json: result }]"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        -260
+      ],
+      "id": "00542024-3a29-4d7e-bd15-e87f4fd2b7ac",
+      "name": "Code"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1420,
+        -500
+      ],
+      "id": "6444d914-c3c1-4958-8f4c-20cadaaefa9c",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Assumes input is an array of rows with fields like:\n// Date, Visitors, Page Views, Bounce Rate (%), Avg. Session Duration (sec), Product Views, Add to Cart, Purchases, Conversion Rate (%)\n\nconst data = items.map(item => item.json);\n\nconst toNumber = val => typeof val === 'string' ? parseFloat(val.replace(/,/g, '')) : val;\n\n// Aggregate totals\nlet totalVisitors = 0;\nlet totalProductViews = 0;\nlet totalAddToCart = 0;\nlet totalPurchases = 0;\nlet bounceRates = [];\nlet conversionRates = [];\n\n// Split for growth comparison: first 6 vs last 7\nconst firstPeriod = data.slice(0, 6);\nconst lastPeriod = data.slice(6);\n\nconst avg = arr => arr.reduce((sum, v) => sum + v, 0) / arr.length;\n\n// --- Main aggregation ---\nfor (const row of data) {\n  totalVisitors += toNumber(row[\"Visitors\"]);\n  totalProductViews += toNumber(row[\"Product Views\"]);\n  totalAddToCart += toNumber(row[\"Add to Cart\"]);\n  totalPurchases += toNumber(row[\"Purchases\"]);\n  bounceRates.push(toNumber(row[\"Bounce Rate (%)\"]));\n  conversionRates.push(toNumber(row[\"Conversion Rate (%)\"]));\n}\n\n// Funnel drop-offs\nconst productViewToCart = (totalAddToCart / totalProductViews) * 100;\nconst cartToPurchase = (totalPurchases / totalAddToCart) * 100;\n\n// Growth: visits\nconst firstAvgVisits = avg(firstPeriod.map(r => toNumber(r[\"Visitors\"])));\nconst lastAvgVisits = avg(lastPeriod.map(r => toNumber(r[\"Visitors\"])));\nconst sessionChange = ((lastAvgVisits - firstAvgVisits) / firstAvgVisits) * 100;\n\n// Growth: bounce rate\nconst firstAvgBounce = avg(firstPeriod.map(r => toNumber(r[\"Bounce Rate (%)\"])));\nconst lastAvgBounce = avg(lastPeriod.map(r => toNumber(r[\"Bounce Rate (%)\"])));\nconst bounceRateChange = ((lastAvgBounce - firstAvgBounce) / firstAvgBounce) * 100;\n\n// Growth: conversion rate\nconst firstAvgConv = avg(firstPeriod.map(r => toNumber(r[\"Conversion Rate (%)\"])));\nconst lastAvgConv = avg(lastPeriod.map(r => toNumber(r[\"Conversion Rate (%)\"])));\nconst conversionRateChange = ((lastAvgConv - firstAvgConv) / firstAvgConv) * 100;\n\n// Final output\nreturn [\n  {\n    json: {\n      trafficInsights: {\n        visits: totalVisitors,\n        bounceRate: `${avg(bounceRates).toFixed(1)}%`,\n        conversionRate: `${avg(conversionRates).toFixed(2)}%`,\n        funnelDropOff: {\n          productViewToCart: `${productViewToCart.toFixed(2)}%`,\n          cartToPurchase: `${cartToPurchase.toFixed(2)}%`\n        },\n        growth: {\n          sessionChange: `${sessionChange.toFixed(2)}%`,\n          bounceRateChange: `${bounceRateChange.toFixed(2)}%`,\n          conversionRateChange: `${conversionRateChange.toFixed(2)}%`\n        }\n      }\n    }\n  }\n];\n\n\n\n\n\n\n\n\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        820,
+        -220
+      ],
+      "id": "efb84315-a84f-4487-b2b3-4865648ddfd0",
+      "name": "funnel insights"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = items.map(item => item.json);\n\nconst highValue = [];\nconst loyal = [];\nconst risky = [];\n\ndata.forEach(cust => {\n  const name = cust['Customer Name'];\n  const email = cust['Email'];\n  const recency = Number(cust['Recency (days)']);\n  const totalOrders = Number(cust['Total Orders']);\n  const monetary = Number(String(cust['Monetary (₹)']).replace(/,/g, ''));\n\n  // Classify based on rules\n  if (monetary >= 8000) {\n    highValue.push({ name, email, monetary });\n  }\n\n  if (totalOrders >= 6) {\n    loyal.push({ name, email, totalOrders });\n  }\n\n  if (recency >= 60) {\n    risky.push({ name, email, recency });\n  }\n});\n\nreturn [{\n  json: {\n    totalCustomers: data.length,\n    highValueCustomers: highValue,\n    loyalCustomers: loyal,\n    riskyCustomers: risky\n  }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        800,
+        220
+      ],
+      "id": "92569cf8-147a-4393-9aac-45bde9cc6849",
+      "name": "customer performace"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1380,
+        -120
+      ],
+      "id": "8419a115-77d6-4b77-a911-defee9142f14",
+      "name": "Merge2"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1660,
+        -260
+      ],
+      "id": "38c9712a-058f-4f51-9fb5-cff7af277674",
+      "name": "Merge3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = [];\n\nfor (const item of items) {\n  for (const key in item.binary) {\n    const fileInfo = item.binary[key];\n    \n    result.push({\n      json: {\n        fileName: fileInfo.fileName,\n        mimeType: fileInfo.mimeType,\n        fileSize: fileInfo.fileSize,\n        fileKey: key\n      },\n      binary: {\n        [key]: fileInfo\n      }\n    });\n  }\n}\n\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        -200
+      ],
+      "id": "42eea455-14f8-4ae5-8624-99a995737ab6",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fileName }}",
+                    "rightValue": "inventory data",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "5c27b0d5-6b5c-4a21-8839-82bb828bc0cd"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4f492746-eed6-4270-afe0-badcdeda937b",
+                    "leftValue": "={{ $json.fileName }}",
+                    "rightValue": "orders ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "82ddd29d-4c37-43bc-882e-d44a0d6085fe",
+                    "leftValue": "={{ $json.fileName }}",
+                    "rightValue": "traffic ",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "52e7c102-b7a9-439d-9118-0f897b53b4e9",
+                    "leftValue": "={{ $json.fileName }}",
+                    "rightValue": "marketing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f6fd580b-d385-4c07-a892-514077720025",
+                    "leftValue": "={{ $json.fileName }}",
+                    "rightValue": "customers",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        160,
+        -240
+      ],
+      "id": "193c8a6e-ea93-4de0-b025-60b24352ea1b",
+      "name": "Switch"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quaterly Orders pdf": {
+      "main": [
+        [
+          {
+            "node": "total orders,Revenue,AOV,Sales,margins,returns",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Quaterly Website traffic data": {
+      "main": [
+        [
+          {
+            "node": "funnel insights",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quarterly Customers database": {
+      "main": [
+        [
+          {
+            "node": "customer performace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quarterly marketing data": {
+      "main": [
+        [
+          {
+            "node": "RFM,Top CTR and RAOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quarterly Inventory data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RFM,Top CTR and RAOS": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Top selling Products,Low stock warnings": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "total orders,Revenue,AOV,Sales,margins,returns": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Top selling Products,Low stock warnings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "funnel insights": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "customer performace": {
+      "main": [
+        [
+          {
+            "node": "Merge2",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge2": {
+      "main": [
+        [
+          {
+            "node": "Merge3",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge3": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Quarterly Inventory data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quaterly Orders pdf",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quaterly Website traffic data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quarterly marketing data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Quarterly Customers database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "93c4eaeb-8967-4354-a31e-b27dfc891105",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "0gClncEXCTbC4rUS",
+  "tags": []
+}

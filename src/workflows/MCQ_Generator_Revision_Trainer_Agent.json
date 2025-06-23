@@ -1,0 +1,1613 @@
+{
+  "name": "MCQ_Generator_Revision_Trainer_Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        1500,
+        540
+      ],
+      "id": "3d533f2d-1231-49fa-9596-cedf6c5c0d2f",
+      "name": "Embeddings Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "GaqPJGAMylDSxMG4",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Enter topic",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Enter topic"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        1160,
+        280
+      ],
+      "id": "6b54fdab-8cd2-47d8-a441-7577e505c3b5",
+      "name": "On form submission1",
+      "webhookId": "47b0ffec-2d63-4209-b8f5-44e7214a0d50",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        620,
+        360
+      ],
+      "id": "63cab6b3-fa79-4721-b660-9d83239a8409",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "-- SELECT * FROM topic_questions WHERE topic = '{{ $json.body.topic }}' ORDER BY random() LIMIT 1;\nSELECT tq.id,tq.topic,tq.question,tq.options FROM topic_questions tq WHERE topic = '{{ $json.body.topic }}';\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2520,
+        20
+      ],
+      "id": "d4027211-d373-4f9b-820a-b01230a3b59c",
+      "name": "Postgres1",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        1200
+      ],
+      "id": "0e8d2fbb-4839-4bad-abdd-2c172cfb268d",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "1E3ZL2vIpcClZdxZ",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        1460,
+        1420
+      ],
+      "id": "70a2fe97-b799-4d6f-88ea-9eef3e5a0eee",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "1E3ZL2vIpcClZdxZ",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "URL/HTML to PDF",
+        "convertType": "htmlToPDF",
+        "html": "={{ $json.html }}",
+        "advancedOptions": {
+          "name": "future_questions"
+        }
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        2540,
+        1360
+      ],
+      "id": "6bd46a94-7003-45cd-827e-c69d05779c4f",
+      "name": "PDFco Api1",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "89Y435REJteNHS59",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "shyam.qaid@gmail.com",
+        "subject": "Here is your MCQ's and future predicted questions  ",
+        "message": "predicted and MCQ's",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3220,
+        1040
+      ],
+      "id": "2ec98cfc-a8b7-4cfb-937a-8898afbf3b81",
+      "name": "Gmail",
+      "webhookId": "f6212612-2ff4-479f-8b49-ab947e197952",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "##### PDF Parsing & Embedding\n**Double click** to edit me. [          ",
+        "height": 760,
+        "width": 1060
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "998f7d21-39e6-40af-8cc9-4b7ecc0aa441",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "#####   MCQ Generation from Topic\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 780,
+        "width": 1020,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "a20a6049-2fe3-45ff-8dbc-baed1ff9abb2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "##### Revision Trainer Mode\n\n   webhook1 fetches 1 random question from stored data\n\n   webhook2  submit-answer and store data\n\n\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 940,
+        "width": 1200,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2200,
+        -160
+      ],
+      "typeVersion": 1,
+      "id": "c83c7da8-b5fb-46ba-9cb7-62eec8e2e60c",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items;\n\nconst htmlBlocks = rows.map(item => {\n  const q = item.json;\n  \n  // Clean options\n  let options = [];\n  if (typeof q.options === 'string') {\n    // Handle string format\n    options = q.options\n      .split(/\\n|,\\s*/) // split by line or comma\n      .map(opt => opt.replace(/^\\d+:/, '').trim()); // remove \"0:\", \"1:\" if present\n  } else if (Array.isArray(q.options)) {\n    options = q.options;\n  }\n\n  return `\n    <div style=\"margin-bottom: 20px;\">\n      <h3>Q${q.id}. ${q.question}</h3>\n      <ul>\n        ${options.map(o => `<li>${o}</li>`).join('')}\n      </ul>\n      <p><strong>Answer:</strong> ${q.answer}</p>\n      <p><strong>Explanation:</strong> ${q.explanation}</p>\n    </div>\n  `;\n});\n\nreturn [{\n  json: {\n    html: `<html><body><h2>MCQs on ${$input.first().json.topic}</h2>${htmlBlocks.join('')}</body></html>`\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        980
+      ],
+      "id": "eef620fa-5c5e-430b-a8ad-0eec61c2a4d2",
+      "name": "converting to HTML"
+    },
+    {
+      "parameters": {
+        "jsCode": "let input = $input.first().json.output;\n\n// Handle escaped newlines\ninput = input.replace(/\\\\n/g, '\\n');\n\n// Clean and prepare lines\nconst lines = input.split('\\n').map(line => line.trim()).filter(line => line && line !== '---');\n\nconst questions = [];\nlet currentTopic = 'Unknown Topic';\nlet current = null;\n\nfor (let line of lines) {\n  // Detect topic like 📘 Topic: ...\n  if (line.startsWith('📘 Topic:')) {\n    const match = line.match(/📘 Topic:\\s*(.+)/);\n    if (match) currentTopic = match[1].trim();\n    continue;\n  }\n\n  // Detect question like Q1. or Q2:\n  if (/^Q\\d+[.:]/.test(line)) {\n    if (current) questions.push(current); // Push previous question\n    current = {\n      topic: currentTopic,\n      question: line.replace(/^Q\\d+[.:]\\s*/, ''),\n      options: [],\n      answer: '',\n      explanation: ''\n    };\n    continue;\n  }\n\n  // Detect options A. to D.\n  if (/^[A-D]\\.\\s+/.test(line)) {\n    if (current) current.options.push(line);\n    continue;\n  }\n\n  // Detect selected answer\n  if (line.startsWith('✅ Your Answer:')) {\n    if (current) {\n      current.answer = line.replace('✅ Your Answer:', '').trim();\n    }\n    continue;\n  }\n\n  // Detect explanation\n  if (line.startsWith('✅ Correct!')) {\n    if (current) {\n      current.explanation = line.replace('✅ Correct!', '').trim();\n    }\n    continue;\n  }\n}\n\n// ⚠️ Push the final question after the loop\nif (current) {\n  questions.push(current);\n}\n\n// Return structured output\nreturn questions.map(q => ({\n  json: {\n    topic: q.topic,\n    question: q.question,\n    options: q.options,\n    answer: q.answer,\n    explanation: q.explanation\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        140
+      ],
+      "id": "9ad670ec-7852-4cc0-9465-4bfc907f9947",
+      "name": "Parses raw output into JSON"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "topic_questions",
+          "mode": "list",
+          "cachedResultName": "topic_questions"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "topic": "={{ $json.topic }}",
+            "question": "={{ $json.question }}",
+            "options": "={{ $json.options }}",
+            "answer": "={{ $json.answer }}",
+            "explanation": "={{ $json.explanation }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "topic",
+              "displayName": "topic",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "options",
+              "displayName": "options",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "answer",
+              "displayName": "answer",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "explanation",
+              "displayName": "explanation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1920,
+        140
+      ],
+      "id": "8417a07e-d3d4-4d74-a92e-955d58342d89",
+      "name": "Saves to topic_questions table",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "start-quiz",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2300,
+        20
+      ],
+      "id": "5b88f335-2d0c-452c-9c39-c0b098944434",
+      "name": "user request quiz",
+      "webhookId": "4dbba1a2-af5c-47bb-87bb-3ccc58593847"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "submit-answer",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2280,
+        260
+      ],
+      "id": "a6b5d438-6dc6-402a-b853-fbd800e7ad00",
+      "name": "capture user answer",
+      "webhookId": "79a76e70-9a7d-41c7-96cf-a805e8bd7448"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM topic_questions WHERE id = {{ $json.body.question_id }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2500,
+        260
+      ],
+      "id": "9139ebf6-f928-4704-bf45-9abf4cf99983",
+      "name": "Gets original question & answer",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const userAnswer = $('capture user answer').first().json.body.user_answer;\nconst userId = $('capture user answer').first().json.body.user_id;\nconst question = $input.first().json.question;\n \nconst isCorrect = userAnswer === $input.first().json.answer;\n \nreturn [\n  {\n    json: {\n      user_id: userId,\n      question_id: $input.first().json.id,\n      user_answer: userAnswer,\n      correct_answer: $input.first().json.answer,\n      is_correct: isCorrect,\n      explanation: $input.first().json.explanation\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2720,
+        260
+      ],
+      "id": "8cd6f5f7-c129-41f4-9709-7fe5e59c4b1d",
+      "name": "Compares user_answer vs correct_answer"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "quiz_attempts",
+          "mode": "list",
+          "cachedResultName": "quiz_attempts"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "is_correct": "={{ $json.is_correct }}",
+            "question_id": "={{ $json.question_id }}",
+            "user_answer": "={{ $json.user_answer }}",
+            "explanation": "={{ $json.explanation }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "user_id",
+              "displayName": "user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "question_id",
+              "displayName": "question_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "user_answer",
+              "displayName": "user_answer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "is_correct",
+              "displayName": "is_correct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "explanation",
+              "displayName": "explanation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2940,
+        260
+      ],
+      "id": "ec6f6623-88eb-449d-9d61-ad2185a62487",
+      "name": "Saves to quiz_attempts table",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "web-mcq",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        1000
+      ],
+      "id": "386b0079-904b-4060-a6e7-d07dd66929c9",
+      "name": "accepts topic to search",
+      "webhookId": "71eb4a9c-5b5c-4e07-930f-9f702d4cfdaf"
+    },
+    {
+      "parameters": {
+        "jsCode": "const topic = $input.first().json.body.topic;\n \nconst searchQuery = [\n  \"MCQs on\",\n  topic,\n  \"site:byjus.com\",\n  \"OR site:unacademy.com\",\n  \"OR site:quora.com\"\n].join(\" \");\n \nreturn [\n  {\n    json: {\n      query: searchQuery\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        120,
+        1000
+      ],
+      "id": "5e95b6b2-a7d0-4806-98ef-6786a8910dca",
+      "name": "Builds Google query"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $json.query }}"
+            },
+            {
+              "name": "api_key",
+              "value": "5963f66f3516c1988daf813dbe1ce7ca093b93a964b3f3037fcd128fab83387a"
+            },
+            {
+              "name": "engine",
+              "value": "google"
+            }
+          ]
+        },
+        "options": {
+          "response": {},
+          "timeout": 10000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        1000
+      ],
+      "id": "0c262820-5705-4f77-a549-b39dc22894a6",
+      "name": "Searches Google (via SerpAPI)"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "37dbbccf-3fe1-465e-9eea-81268a732bf6",
+              "leftValue": "={{ $json.search_metadata.total_time_taken }}",
+              "rightValue": 10000,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        520,
+        1000
+      ],
+      "id": "74a8624d-def3-433b-86c9-1f4995af977c",
+      "name": "Checks if search was successful"
+    },
+    {
+      "parameters": {
+        "jsCode": "const urls = items[0].json.organic_results.map(r => r.link).slice(0,3);\nreturn urls.map(link => ({ json: { url: link } }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        980
+      ],
+      "id": "1fe23156-fee0-4637-bc7a-b30ac1574797",
+      "name": "Extracts top 3 links"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.url }}",
+        "options": {
+          "systemMessage": "=You are a quiz generator AI integrated with a vector database (Pinecone).\n\n🔎 Use the {{ $json.url }} to search data from the web to generate MCQ's\n\nOnce you retrieve the best-matching content:\n\n🎯 Generate **5 multiple-choice questions (MCQs)** in the following format:\n\nEach question must include:\n- 📘 **Topic:** (Use a relevant tag like chapter or section title)\n- **Q1 to Q5** numbered format\n- 4 answer options labeled **A to D**\n- ✅ **Answer explanation** with correct option clearly indicated\n\n📌 Output Example:\n📘 Topic: Human Digestive System\n\nQ1. Which enzyme is secreted in the mouth to digest starch?  \nA. Pepsin  \nB. Amylase  \nC. Lipase  \nD. Maltase  \n\n✅ Your Answer: B  \n✅ Correct! Amylase (also known as ptyalin) begins starch digestion in the mouth.\nSource: Byjus or quora or unacademy\n\n(Repeat for Q2 to Q5)"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        980
+      ],
+      "id": "f295065e-dc32-4325-83a7-28ed784deaa9",
+      "name": "Scrapes webpage and generates 5 MCQs"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine all input items\nconst rawText = items.map(item =>  $input.first().json.output|| '').join('\\n');\nconst lines = rawText.split('\\n');\n\nconst results = [];\n\nlet question = '';\nlet options = [];\nlet answer = '';\nlet explanation = '';\nlet source = '';\n\nfor (let i = 0; i < lines.length; i++) {\n  const line = lines[i].trim();\n\n  // Match Question\n  const qMatch = line.match(/^Q\\d+\\.\\s*(.+)$/);\n  if (qMatch) {\n    // Push the previous question block if valid\n    if (question && options.length === 4 && answer) {\n      results.push({\n        json: {\n          scrapedQuestion: {\n            question,\n            options,\n            answer,\n            explanation,\n            source\n          }\n        }\n      });\n    }\n\n    // Reset for next\n    question = qMatch[1];\n    options = [];\n    answer = '';\n    explanation = '';\n    source = '';\n    continue;\n  }\n\n  // Match Options\n  const optMatch = line.match(/^([A-D])\\.\\s*(.+)$/);\n  if (optMatch) {\n    const label = optMatch[1];\n    const text = optMatch[2];\n    options.push(`${label}. ${text}`);\n    continue;\n  }\n\n  // Match Answer\n  const ansMatch = line.match(/^✅ Your Answer:\\s*([A-D])/);\n  if (ansMatch) {\n    answer = ansMatch[1];\n    continue;\n  }\n\n  // Match Explanation\n  const expMatch = line.match(/^✅ Correct!\\s*(.+)$/);\n  if (expMatch) {\n    explanation = expMatch[1];\n    continue;\n  }\n\n  // Match Source\n  const srcMatch = line.match(/^Source:\\s*(.+)$/);\n  if (srcMatch) {\n    source = srcMatch[1];\n    continue;\n  }\n}\n\n// Push last question if valid\nif (question && options.length === 4 && answer) {\n  results.push({\n    json: {\n      scrapedQuestion: {\n        question,\n        options,\n        answer,\n        explanation,\n        source\n      }\n    }\n  });\n}\n\n// Return top 5 MCQs\nreturn results.slice(0, 5);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        980
+      ],
+      "id": "5eb6d7df-0c0d-4991-bbdc-b8d104254331",
+      "name": "parser the output data"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "topic_questions",
+          "mode": "list",
+          "cachedResultName": "topic_questions"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "topic": "={{ $json.scrapedQuestion.source }}",
+            "question": "={{ $json.scrapedQuestion.question }}",
+            "options": "={{ $json.scrapedQuestion.options }}",
+            "explanation": "={{ $json.scrapedQuestion.explanation }}",
+            "answer": "={{ $json.scrapedQuestion.answer }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "topic",
+              "displayName": "topic",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "options",
+              "displayName": "options",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "answer",
+              "displayName": "answer",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "explanation",
+              "displayName": "explanation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1620,
+        980
+      ],
+      "id": "0ff3b6d9-ed82-4458-a8ce-96fc22841dd6",
+      "name": "Saves scraped questions",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.output || '';\nconst lines = rawText.split('\\n');\n\nconst results = [];\n\nlet question = '';\nlet options = [];\nlet tag = '';\n\nfor (let i = 0; i < lines.length; i++) {\n  const line = lines[i].trim();\n\n  // Match Question\n  const qMatch = line.match(/^Q\\d+\\.\\s*(.+)$/);\n  if (qMatch) {\n    // Push previous question\n    if (question && options.length === 4 && tag) {\n      results.push({\n        json: {\n          scrapedQuestion: {\n            question,\n            options,\n            tag\n          }\n        }\n      });\n    }\n\n    // Start new question\n    question = qMatch[1];\n    options = [];\n    tag = '';\n    continue;\n  }\n\n  // Match Option\n  const optMatch = line.match(/^([A-D])\\.\\s*(.+)$/);\n  if (optMatch) {\n    const label = optMatch[1];\n    const text = optMatch[2];\n    options.push(`${label}. ${text}`);\n    continue;\n  }\n\n  // Match Tag\n  const tagMatch = line.match(/^Tag:\\s*(.+)$/);\n  if (tagMatch) {\n    tag = tagMatch[1];\n  }\n}\n\n// Push last question if valid\nif (question && options.length === 4 && tag) {\n  results.push({\n    json: {\n      scrapedQuestion: {\n        question,\n        options,\n        tag\n      }\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        1200
+      ],
+      "id": "e2607152-83c5-4609-8bbc-33250fafec5a",
+      "name": "Parses into JSON"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "=Based on the following topic and trends, suggest 3 possible MCQs that could appear in upcoming exams.\nInclude options and tag each question as either Likely, High Probability, or Trending Topic.\n\nTopic:\\\\\\\\\\\\\\\n{{ $('accepts topic to search').item.json.body.topic }}\n\nFormat:\n- Question\n- Options A–D\n- Tag\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1400,
+        1200
+      ],
+      "id": "3c7197fc-4c18-4d3f-9cf1-c91436951a34",
+      "name": "Prompt LLM to suggest 3 future questions"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Check for valid input\nif (!Array.isArray(items) || items.length === 0) {\n  throw new Error(\"No input items found.\");\n}\n\n// Generate HTML from scrapedQuestion data\nconst htmlBlocks = items.map((item, index) => {\n  const q = item.scrapedQuestion || item.json.scrapedQuestion;\n\n  if (!q || !q.question || !q.options) {\n    return `<div><strong>Item ${index + 1} is missing data.</strong></div>`;\n  }\n\n  const question = q.question;\n  const options = q.options;\n  const tag = q.tag || \"Unspecified\";\n\n  return `\n    <div style=\"margin-bottom: 25px;\">\n      <h3>Q${index + 1}. ${question}</h3>\n      <ul>\n        ${options.map(opt => `<li>${opt}</li>`).join('')}\n      </ul>\n      <p><strong>Tag:</strong> ${tag}</p>\n    </div>\n  `;\n});\n\n// Wrap in full HTML\nconst fullHTML = `\n<html>\n  <head>\n    <style>\n      body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }\n      h2 { color: #333; }\n    </style>\n  </head>\n  <body>\n    <h2>Predicted MCQs – ${$('accepts topic to search').first().json.body.topic}</h2>\n    ${htmlBlocks.join('')}\n  </body>\n</html>\n`;\n\nreturn [{ json: { html: fullHTML } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2060,
+        1360
+      ],
+      "id": "420a9bdf-65c7-468c-800e-b892f15830f1",
+      "name": "Converts to clean HTML block"
+    },
+    {
+      "parameters": {
+        "html": "{{ $json.html }}"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2320,
+        1360
+      ],
+      "id": "96a1b533-2105-4c13-9907-7b3124a7a786",
+      "name": "Wraps HTML"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2780,
+        1360
+      ],
+      "id": "682ef70a-9977-47f2-a205-9a675bb05896",
+      "name": "download pdf"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2960,
+        1040
+      ],
+      "id": "744beb33-98d7-4fb3-86f0-2da4f71ee419",
+      "name": "Combines scraped + predicted PDFs"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2520,
+        980
+      ],
+      "id": "dee0ad70-db8a-4d18-8b1a-ca32b1a2dd0b",
+      "name": "Downloads PDF"
+    },
+    {
+      "parameters": {
+        "operation": "URL/HTML to PDF",
+        "convertType": "htmlToPDF",
+        "html": "={{ $json.html }}",
+        "advancedOptions": {
+          "name": "web_based_questions"
+        }
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        2280,
+        980
+      ],
+      "id": "747dd090-a8b4-49d1-bc0f-f69da6aea23d",
+      "name": "PDFco Api  (generate pdf)",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "89Y435REJteNHS59",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "html": "{{ $json.html }}"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2060,
+        980
+      ],
+      "id": "24508ea6-4ceb-4333-8531-8f20a832ac3e",
+      "name": "Final format conversion"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-file",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        40,
+        140
+      ],
+      "id": "6744bae9-59ab-4864-b818-efb159b09274",
+      "name": "Upload PDF content & topic",
+      "webhookId": "42ffcbd3-7809-467b-b219-3c18c0b6f485"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        440,
+        360
+      ],
+      "id": "37b1a95e-0d3c-4fac-8125-b820a22535eb",
+      "name": "Embeds text into vectors",
+      "credentials": {
+        "cohereApi": {
+          "id": "GaqPJGAMylDSxMG4",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chunkSize": 4000,
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        720,
+        580
+      ],
+      "id": "61a100de-8aa8-4f14-ba51-8a5eedfbac9f",
+      "name": "Splits text into ~4000 character chunks"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-mcq-embeddings",
+          "mode": "list",
+          "cachedResultName": "n8n-mcq-embeddings"
+        },
+        "embeddingBatchSize": 1000000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        400,
+        140
+      ],
+      "id": "d6f07c02-d506-420e-849f-5215c5f3ceb4",
+      "name": "Stores vectors in Pinecone index(VectorDB)",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RyPsQruxK0VMbisc",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "n8n_mcq_embeddings",
+        "toolDescription": "work with your data in pinecone vector store",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-mcq-embeddings",
+          "mode": "list",
+          "cachedResultName": "n8n-mcq-embeddings"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        1440,
+        400
+      ],
+      "id": "c1eddb54-87f4-4569-b6ff-0f86cb580509",
+      "name": "Retrieves matching content",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RyPsQruxK0VMbisc",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.topic}}",
+        "options": {
+          "systemMessage": "=You are a quiz generator AI integrated with a vector database (Pinecone).\n\n🔎 Use the Pinecone index named **n8n** to retrieve the most relevant content chunk based on the user’s query (e.g., \"Photosynthesis\", \"Harappan Civilization\", or \"From page 10–15\").\n\nOnce you retrieve the best-matching content:\n\n🎯 Generate **all multiple-choice questions (MCQs) releated to the topic** in the following format:\n\nEach question must include:\n- 📘 **Topic:** (Use a relevant tag like chapter or section title)\n- **Q1 to Q5** numbered format\n- 4 answer options labeled **A to D**\n- ✅ **Answer explanation** with correct option clearly indicated\n\n📌 Output Example:\n📘 Topic: Human Digestive System\n\nQ1. Which enzyme is secreted in the mouth to digest starch?  \nA. Pepsin  \nB. Amylase  \nC. Lipase  \nD. Maltase  \n\n✅ Your Answer: B  \n✅ Correct! Amylase (also known as ptyalin) begins starch digestion in the mouth.\n\n(Repeat for Q2 to Q5) i,e no duplicate questions are allowed\n\n⚠️ Do not invent information — only use content retrieved from Pinecone.\n\n⛏ Pinecone index name: `n8n-mcq-embeddings`  \nUser input/query: `{{ $json.body.topic }}`  \n\nBegin generating MCQs below:\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        140
+      ],
+      "id": "8b782e3a-c17b-421e-8d98-69832e9c1032",
+      "name": "Prompts AI: “Generate 5 MCQs from Pinecone content”"
+    },
+    {
+      "parameters": {
+        "content": "##### Scrape Past MCQs (Real World Data) & Suggest Likely Future Questions & Report Output (PDF + Email)                                          \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 780,
+        "width": 4200
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -440,
+        880
+      ],
+      "typeVersion": 1,
+      "id": "a2885efa-d4d2-413f-a96d-a69d8395d5c1",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        340
+      ],
+      "id": "2979bbe8-6e21-448f-bca1-4b79197d8ccf",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JjMmhLRCLv1lEaa6",
+          "name": "OpenRouter New"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        2740,
+        20
+      ],
+      "id": "91ac4c8a-378a-4be9-9907-5dc5261fc730",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        3160,
+        260
+      ],
+      "id": "48799716-7a4c-4cec-8e19-a5eb846546b9",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        2040,
+        1200
+      ],
+      "id": "9c4da727-886b-4b22-af64-825d475adb90",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "path": "topics",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2380,
+        540
+      ],
+      "id": "b86cfd33-8fd7-47cc-a516-0bcb00d6a321",
+      "name": "Webhook",
+      "webhookId": "d77d2f6d-38ff-4995-a045-7233aa369f13"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "topic_questions",
+          "mode": "list",
+          "cachedResultName": "topic_questions"
+        },
+        "returnAll": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        2600,
+        540
+      ],
+      "id": "515562f3-3c30-443c-9ade-bf8668294386",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all input items\nconst items = $input.all();\n\n// Use a Set to track unique topic names\nconst seenTopics = new Set();\n\n// Filter and map to unique topic objects\nconst uniqueTopics = items\n  .filter(item => {\n    const topic = item.json.topic;\n    if (!seenTopics.has(topic)) {\n      seenTopics.add(topic);\n      return true;\n    }\n    return false;\n  })\n  .map(item => ({\n    json: { topic: item.json.topic }\n  }));\n\n// Return only unique topics\nreturn uniqueTopics;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2820,
+        540
+      ],
+      "id": "163c8eef-14c1-4f97-b66c-c8d03c37ae58",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Embeddings Cohere": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Retrieves matching content",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "Prompts AI: “Generate 5 MCQs from Pinecone content”",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Stores vectors in Pinecone index(VectorDB)",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Scrapes webpage and generates 5 MCQs",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prompt LLM to suggest 3 future questions",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFco Api1": {
+      "main": [
+        [
+          {
+            "node": "download pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "converting to HTML": {
+      "main": [
+        [
+          {
+            "node": "Final format conversion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parses raw output into JSON": {
+      "main": [
+        [
+          {
+            "node": "Saves to topic_questions table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "user request quiz": {
+      "main": [
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "capture user answer": {
+      "main": [
+        [
+          {
+            "node": "Gets original question & answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gets original question & answer": {
+      "main": [
+        [
+          {
+            "node": "Compares user_answer vs correct_answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compares user_answer vs correct_answer": {
+      "main": [
+        [
+          {
+            "node": "Saves to quiz_attempts table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "accepts topic to search": {
+      "main": [
+        [
+          {
+            "node": "Builds Google query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Builds Google query": {
+      "main": [
+        [
+          {
+            "node": "Searches Google (via SerpAPI)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Searches Google (via SerpAPI)": {
+      "main": [
+        [
+          {
+            "node": "Checks if search was successful",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checks if search was successful": {
+      "main": [
+        [
+          {
+            "node": "Extracts top 3 links",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extracts top 3 links": {
+      "main": [
+        [
+          {
+            "node": "Scrapes webpage and generates 5 MCQs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrapes webpage and generates 5 MCQs": {
+      "main": [
+        [
+          {
+            "node": "parser the output data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prompt LLM to suggest 3 future questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parser the output data": {
+      "main": [
+        [
+          {
+            "node": "Saves scraped questions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saves scraped questions": {
+      "main": [
+        [
+          {
+            "node": "converting to HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parses into JSON": {
+      "main": [
+        [
+          {
+            "node": "Converts to clean HTML block",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt LLM to suggest 3 future questions": {
+      "main": [
+        [
+          {
+            "node": "Parses into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converts to clean HTML block": {
+      "main": [
+        [
+          {
+            "node": "Wraps HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wraps HTML": {
+      "main": [
+        [
+          {
+            "node": "PDFco Api1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "download pdf": {
+      "main": [
+        [
+          {
+            "node": "Combines scraped + predicted PDFs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combines scraped + predicted PDFs": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Downloads PDF": {
+      "main": [
+        [
+          {
+            "node": "Combines scraped + predicted PDFs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFco Api  (generate pdf)": {
+      "main": [
+        [
+          {
+            "node": "Downloads PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final format conversion": {
+      "main": [
+        [
+          {
+            "node": "PDFco Api  (generate pdf)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload PDF content & topic": {
+      "main": [
+        [
+          {
+            "node": "Stores vectors in Pinecone index(VectorDB)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prompts AI: “Generate 5 MCQs from Pinecone content”",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeds text into vectors": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Stores vectors in Pinecone index(VectorDB)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Splits text into ~4000 character chunks": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieves matching content": {
+      "ai_tool": [
+        [
+          {
+            "node": "Prompts AI: “Generate 5 MCQs from Pinecone content”",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompts AI: “Generate 5 MCQs from Pinecone content”": {
+      "main": [
+        [
+          {
+            "node": "Parses raw output into JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Prompts AI: “Generate 5 MCQs from Pinecone content”",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saves to quiz_attempts table": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saves to topic_questions table": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f738d589-e039-4ff1-b717-5ed8e1ef610b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "8zOm8IArp70D5iDv",
+  "tags": []
+}

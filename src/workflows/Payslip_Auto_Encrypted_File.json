@@ -1,0 +1,1053 @@
+{
+  "name": "Payslip_Auto_Encrypted_File",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "payroll-team@example.com",
+        "subject": "Urgent: Payslip Delivery Failures",
+        "emailType": "text",
+        "message": "=Dear Payroll Team,\n\nThe payslip delivery process has encountered issues. More than 5 failures occurred:\n\nTotal Processed: {{ $('Generate Final Report').item.json.summary.totalProcessed }}\nFailed: {{ $('Generate Final Report').item.json.summary.failed }}\nSuccessful: {{ $('Generate Final Report').item.json.summary.successful }}\nSkipped: {{ $('Generate Final Report').item.json.summary.skipped }}\n\nPlease investigate the failures listed in the attached report.\n\nBest regards,\nAutomation System",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        820,
+        60
+      ],
+      "id": "e3dae3bb-7aec-48e5-bba9-0c4157ec81d8",
+      "name": "Alert Payroll Team",
+      "webhookId": "15072acd-52b1-4653-af99-c56744d0bbe7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "new-failure-condition",
+              "leftValue": "={{ $('Generate Final Report').item.json.summary.failed }}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "greater"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        600,
+        80
+      ],
+      "id": "43a7f918-9ba9-4967-b501-affdfb0a6561",
+      "name": "If Failures > 5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();  // Get all input items\nconst results = {\n  successful: [],\n  failed: [],\n  skipped: []\n};\n\nconst stats = {\n  encryptedPayslips: 0,\n  pendingEncryption: 0,\n  totalPayslips: allItems.length\n};\n\nconst recentActivity = [];\n\nallItems.forEach(item => {\n  const data = item.json;\n\n  if (data.status === 'sent') {\n    // Successfully processed encrypted payslips\n    results.successful.push({\n      employeeName: data.name || 'Unknown',\n      email: data.email || 'Unknown',\n      status: 'ENCRYPTED',\n      encryptionDate: new Date().toISOString(),\n      fileSize: $('If Not Duplicate').first().json.fileSize || 0  // Include fileSize, default to 0 if not available\n    });\n\n    stats.encryptedPayslips++;\n\n    recentActivity.push({\n      id: data.id || 'Unknown ID',\n      employeeName: data.name || 'Unknown',\n      payslipMonth: data.payslip_month || 'Unknown',\n      status: 'ENCRYPTED',\n      encryptionDate: new Date().toISOString(),\n      fileSize: $('If Not Duplicate').first().json.fileSize || 0  // Include fileSize\n    });\n  } else if (data.status === 'failed') {\n    // Handling failed status\n    results.failed.push({\n      employeeName: data.name || 'Unknown',\n      status: 'FAILED',\n      processedAt: new Date().toISOString()\n    });\n    recentActivity.push({\n      id: data.id || 'Unknown ID',\n      employeeName: data.name || 'Unknown',\n      payslipMonth: data.payslip_month || 'Unknown',\n      status: 'FAILED',\n      encryptionDate: new Date().toISOString(),\n      fileSize: $('If Not Duplicate').first().json.fileSize || 0\n    });\n  } else if (data.status === 'SKIPPED') {\n    // Handling skipped items\n    results.skipped.push({\n      reason: 'Already processed',\n      employeeName: data.name || 'Unknown',\n      status: 'SKIPPED',\n      processedAt: new Date().toISOString()\n    });\n    recentActivity.push({\n      id: data.id || 'Unknown ID',\n      employeeName: data.name || 'Unknown',\n      payslipMonth: data.payslip_month || 'Unknown',\n      status: 'SKIPPED',\n      encryptionDate: new Date().toISOString(),\n      fileSize: $('If Not Duplicate').first().json.fileSize || 0\n    });\n  } else {\n    // Handle pending or unexpected cases\n    results.skipped.push({\n      reason: 'Unknown status',\n      employeeName: data.name || 'Unknown',\n      status: 'PENDING',\n      processedAt: new Date().toISOString()\n    });\n    recentActivity.push({\n      id: data.id || 'Unknown ID',\n      employeeName: data.name || 'Unknown',\n      payslipMonth: data.payslip_month || 'Unknown',\n      status: 'PENDING',\n      encryptionDate: new Date().toISOString(),\n      fileSize: $('Edit Fields').first().json.fileSize || 0\n    });\n    stats.pendingEncryption++;\n  }\n});\n\nconst summary = {\n  totalProcessed: allItems.length,\n  successful: results.successful.length,\n  failed: results.failed.length,\n  skipped: results.skipped.length,\n  timestamp: new Date().toISOString()\n};\n\n// Final output response in the required format\nreturn [{\n  json: {\n    success: true,\n    message: `Payslip processing completed. ${summary.successful} successful, ${summary.failed} failed, ${summary.skipped} skipped out of ${summary.totalProcessed} total.`,\n    stats: stats,\n    recentActivity: recentActivity\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        100
+      ],
+      "id": "3f798af4-7b46-4082-bd17-9673b8a57de7",
+      "name": "Generate Final Report"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8adc270d-2968-4ffe-8d42-115c8b5fea76",
+              "leftValue": "={{ $('List Drive Files').item.json.name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3040,
+        320
+      ],
+      "id": "032e3038-8052-4b71-9426-58c16839a32d",
+      "name": "If File Exists"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtDayOfMonth": 28,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3960,
+        540
+      ],
+      "id": "1cfcc3a1-4fd5-45a6-a661-96bf0a6a36bd",
+      "name": "Monthly Payday Trigger"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "payslip-upload",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryData": false
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -3880,
+        260
+      ],
+      "id": "fdc269c2-23a4-4b34-8e9f-e3fce34c73d9",
+      "name": "Webhook Upload",
+      "webhookId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sc76t7klYcByI0x2ym1wyeMSQH8oDGmO",
+          "mode": "list",
+          "cachedResultName": "n8n-docs",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sc76t7klYcByI0x2ym1wyeMSQH8oDGmO"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3580,
+        280
+      ],
+      "id": "9e9a800d-32c4-4ed4-9a4c-313fab805968",
+      "name": "Upload to Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iwYD7YqRk1Js8DQ7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1sc76t7klYcByI0x2ym1wyeMSQH8oDGmO",
+            "mode": "list",
+            "cachedResultName": "n8n-docs",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1sc76t7klYcByI0x2ym1wyeMSQH8oDGmO"
+          },
+          "whatToSearch": "files"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -3260,
+        340
+      ],
+      "id": "c747dcef-e8cb-45d3-8513-5986fb7786a8",
+      "name": "List Drive Files",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iwYD7YqRk1Js8DQ7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const filename = $input.first().json.name;\nif (!filename) throw new Error('No filename found');\nconst fileid = $input.first().json.id\nif (!fileid) throw new Error('No fileid found');\n\nconst parts = filename.split('_');\nconst ename = parts[0];\nconst month = parts[1]?.split('.')[0] || 'Unknown';\nlet fileSize = Math.floor(Number($('Upload to Drive').first().json.size) / 1024) || 0;\nfileSize += ' KB'\nreturn [{ \n  json: { \n    ename, \n    payslipMonth: month,\n    originalFilename: filename,\n    fileid,\n    fileSize \n  // Include fileSize from Google Drive\n  } \n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2700,
+        80
+      ],
+      "id": "5522fa73-ef21-4433-acc4-81b6fc8ebf29",
+      "name": "Extract Employee Name"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "26175b59-b73f-4296-af87-7b141d2b6fb2",
+              "name": "flowSignal",
+              "value": "continue",
+              "type": "string"
+            },
+            {
+              "id": "a69ccfc7-e07d-44eb-89f4-14eb66372142",
+              "name": "fileName",
+              "value": "={{ $json.originalFilename }}",
+              "type": "string"
+            },
+            {
+              "id": "1f968c3b-a6df-4bd8-959c-c75b3619790c",
+              "name": "fileId",
+              "value": "={{ $json.fileid }}",
+              "type": "string"
+            },
+            {
+              "id": "new-fileSize-assignment",
+              "name": "fileSize",
+              "value": "={{ $json.fileSize }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2340,
+        40
+      ],
+      "id": "46f075bc-4b8a-4a6d-a4e1-5103e61e9d52",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "pdfencrypt",
+          "mode": "list",
+          "cachedResultName": "pdfencrypt"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "name",
+              "value": "={{ $('Extract Employee Name').item.json.ename }}"
+            },
+            {
+              "column": "payslip_month",
+              "value": "={{ $('Extract Employee Name').item.json.payslipMonth }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -2340,
+        220
+      ],
+      "id": "1d83d671-24f6-43ae-b696-2edb28971360",
+      "name": "Check Duplicates",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -2060,
+        80
+      ],
+      "id": "8ea87478-ced7-4d89-a081-f31c5b1159cb",
+      "name": "Merge Data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "new-duplicate-condition",
+              "leftValue": "={{ $('Check Duplicates').all().length > 0 }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1820,
+        80
+      ],
+      "id": "83351bfe-d355-4fa7-9690-265fcc85c4da",
+      "name": "If Not Duplicate"
+    },
+    {
+      "parameters": {
+        "jsCode": "const employeeName = $('Extract Employee Name').first()?.json?.ename || 'Unknown';\n\nreturn [{ \n  json: {\n    message: 'Payslips already processed for this employee',\n    employeeName: employeeName,\n    status: 'SKIPPED',\n    reason: 'DUPLICATE',\n    timestamp: new Date().toISOString(),\n    fileSize: $('Extract Employee Name').first()?.json?.fileSize || 0\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1600,
+        400
+      ],
+      "id": "6529b08d-ebf9-4585-b415-4baf8e0401ef",
+      "name": "Handle Duplicate"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.fileId }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1520,
+        80
+      ],
+      "id": "00972c85-3a34-4d21-8d40-bda9d3f30247",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iwYD7YqRk1Js8DQ7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "Upload File to PDF.co",
+        "binaryData": true,
+        "name": "={{ $json.name }}"
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        60
+      ],
+      "id": "7422667c-57fb-4858-9839-39a1203d58bf",
+      "name": "Upload to PDFco",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "89Y435REJteNHS59",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "empdata1",
+          "mode": "list",
+          "cachedResultName": "empdata1"
+        },
+        "returnAll": true,
+        "where": {
+          "values": [
+            {
+              "column": "name",
+              "value": "={{ $('Extract Employee Name').item.json.ename }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -1380,
+        300
+      ],
+      "id": "366ba944-bf36-48d3-9003-b2c20557408c",
+      "name": "Get Employee Data",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "06525cb7-53f6-4e82-8a4a-5e1a4dcd43ac",
+              "leftValue": "={{ $('Extract Employee Name').item.json.ename }}",
+              "rightValue": "={{ $json.name }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1200,
+        300
+      ],
+      "id": "01f5f013-5f22-42eb-a984-6469f0b1a465",
+      "name": "If Employee Match"
+    },
+    {
+      "parameters": {
+        "operation": "PDF Security",
+        "url": "={{ $('Upload to PDFco').item.json.url }}",
+        "ownerPassword": "={{ $('Get Employee Data').item.json.dob }}",
+        "userPassword": "={{ $('Get Employee Data').item.json.dob }}",
+        "advancedOptionsAddSecurity": {
+          "encryptionAlgorithm": "AES_256bit",
+          "name": "={{ $('Get Employee Data').item.json.name }}_encrypted.pdf"
+        }
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        80
+      ],
+      "id": "77289ec2-75f1-4851-afa9-b80b5c22c336",
+      "name": "Encrypt PDF",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "89Y435REJteNHS59",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Encrypt PDF').item.json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -740,
+        80
+      ],
+      "id": "e7798580-3212-4a53-a5c8-651f47174f23",
+      "name": "Download Encrypted PDF"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get Employee Data').item.json.email }}",
+        "subject": "=Your Monthly Payslip - {{ new Date().toLocaleString('default', { month: 'long', year: 'numeric' }) }}",
+        "emailType": "text",
+        "message": "=Dear {{ $('Get Employee Data').item.json.name }},\n\nPlease find your monthly payslip attached.\n\nThe PDF is password-protected. Your password is your Date of Birth in the format YYYYMMDD (e.g., 19900101).\n\nBest regards,\nHR Team",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -500,
+        80
+      ],
+      "id": "2281433b-ea3b-4309-a032-452c5269cb9b",
+      "name": "Send Email",
+      "webhookId": "f0be5d0e-5ee9-4fc1-a0ef-3e959b788eb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "1f146306-d203-49ba-9828-01b19a08a19b",
+              "leftValue": "={{ $json.labelIds && $json.labelIds.includes('SENT') }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -280,
+        80
+      ],
+      "id": "595a0549-0b27-4300-beff-25f4b887fa26",
+      "name": "If Email Sent"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "pdfencrypt",
+          "mode": "list",
+          "cachedResultName": "pdfencrypt"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $('Get Employee Data').item.json.name }}",
+            "dob": "={{ $('Get Employee Data').item.json.dob }}",
+            "email": "={{ $('Get Employee Data').item.json.email }}",
+            "payslip_month": "=\"{{ $('Extract Employee Name').item.json.payslipMonth }}\","
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "dob",
+              "displayName": "dob",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "payslip_month",
+              "displayName": "payslip_month",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fe965649-2a3c-4ff4-93bd-5ab531116af7",
+      "name": "Record Success",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const errorMessage = $input.first().json.message || 'Processing failed';\nconst employeeName = $input.first().json.name || 'Unknown';\n\nreturn [{\n  json: {\n    error: errorMessage,\n    employeeName,\n    status: 'failed',\n    processedAt: new Date().toISOString(),\n    fileSize: $input.first().json.fileSize || 0\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        200
+      ],
+      "id": "6a95541e-bee8-417b-9e96-8c880a601931",
+      "name": "Handle Processing Error"
+    },
+    {
+      "parameters": {
+        "jsCode": "const getSafe = (nodeName) => {\n  try {\n    return $(nodeName).all();\n  } catch (e) {\n    return [];\n  }\n};\n\nconst successResults = getSafe('Record Success');\nconst errorResults = getSafe('Handle Processing Error');\nconst skippedResults = getSafe('Handle Duplicate');\n\nreturn [...successResults, ...errorResults, ...skippedResults];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        300
+      ],
+      "id": "9d58d714-21b5-4c7a-b1bc-0da6a73868ab",
+      "name": "Merge All Results"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        260
+      ],
+      "id": "af55560f-ab74-4191-b5f3-52275a8ee7fa",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If Failures > 5": {
+      "main": [
+        [
+          {
+            "node": "Alert Payroll Team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Final Report": {
+      "main": [
+        [
+          {
+            "node": "If Failures > 5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If File Exists": {
+      "main": [
+        [
+          {
+            "node": "Extract Employee Name",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "List Drive Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monthly Payday Trigger": {
+      "main": [
+        [
+          {
+            "node": "List Drive Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Upload": {
+      "main": [
+        [
+          {
+            "node": "Upload to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Drive": {
+      "main": [
+        [
+          {
+            "node": "List Drive Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Drive Files": {
+      "main": [
+        [
+          {
+            "node": "If File Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Employee Name": {
+      "main": [
+        [
+          {
+            "node": "Check Duplicates",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Data": {
+      "main": [
+        [
+          {
+            "node": "If Not Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Not Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Upload to PDFco",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to PDFco": {
+      "main": [
+        [
+          {
+            "node": "Get Employee Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Employee Data": {
+      "main": [
+        [
+          {
+            "node": "If Employee Match",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Employee Match": {
+      "main": [
+        [
+          {
+            "node": "Encrypt PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Processing Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Encrypt PDF": {
+      "main": [
+        [
+          {
+            "node": "Download Encrypted PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Encrypted PDF": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "If Email Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Email Sent": {
+      "main": [
+        [
+          {
+            "node": "Record Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Processing Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Success": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle Processing Error": {
+      "main": [
+        [
+          {
+            "node": "Merge All Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge All Results": {
+      "main": [
+        [
+          {
+            "node": "Generate Final Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c235c907-0b44-4f00-a471-0d57ba14999f",
+  "meta": {
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "x6YD8FkMLtX4L13p",
+  "tags": []
+}

@@ -1,0 +1,1611 @@
+{
+  "name": "Resume_to_Profile_Auto_Extractor",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "resume",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1300,
+        540
+      ],
+      "id": "7b4354d3-30ad-47aa-854c-dd48646295f5",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2036948005,
+          "mode": "list",
+          "cachedResultName": "Resume_to_Profile_Auto_Extractor",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=2036948005"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "number": "={{ $json.number }}",
+            "skills": "={{ $json.skills }}",
+            "projects": "={{ $json.projects }}",
+            "resume link": "={{ $json.webViewLink }}",
+            "experience": "={{ $json.Experience }}",
+            "education": "={{ $json.Education }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "number",
+              "displayName": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "projects",
+              "displayName": "projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "experience",
+              "displayName": "experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "education",
+              "displayName": "education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "resume link",
+              "displayName": "resume link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -100,
+        1000
+      ],
+      "id": "8d866d9e-5e8e-427d-bfa6-e58f61e1507e",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "resume",
+        "name": "=",
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1sc76t7klYcByI0x2ym1wyeMSQH8oDGmO",
+          "mode": "list",
+          "cachedResultName": "n8n-docs",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1sc76t7klYcByI0x2ym1wyeMSQH8oDGmO"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -920,
+        980
+      ],
+      "id": "ff9bb818-7ca2-4243-a4d5-949189aa3b7b",
+      "name": "Google Drive1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iwYD7YqRk1Js8DQ7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "af76f1bb-a1ed-4b4d-9e0b-cf15d18bd108",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "={{ $json.Email }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        1000
+      ],
+      "id": "d1929d24-5f7a-4b8f-ac3c-5c13e1198cbe",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1740,
+        840
+      ],
+      "id": "af953e9c-62ae-4379-b3cf-df254c19dc23",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9527bd54-f2a6-44c1-b754-0e387fdebac0",
+              "leftValue": "={{ $json.Name }}",
+              "rightValue": "[empty]/ERROR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "baf5b2dc-e9d1-4320-8aaf-d19275a4b4e7",
+              "leftValue": "={{ $json.Email }}",
+              "rightValue": "[empty]/ERROR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "a904150b-6a0c-4c6e-865b-0f4082224e2c",
+              "leftValue": "={{ $json.number }}",
+              "rightValue": "[empty]/ERROR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "b9fedc9a-c3f4-40f3-b2b2-0446ec646e31",
+              "leftValue": "={{ $json.skills }}",
+              "rightValue": "[empty]/ERROR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "71445d11-fa6e-4871-baf2-ce3a72781cff",
+              "leftValue": "={{ $json.projects }}",
+              "rightValue": "[empty]/ERROR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "2fc1179e-bb62-491f-8ff8-d61de34e7661",
+              "leftValue": "={{ $json.experience }}",
+              "rightValue": "[empty]/ERROR",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "5941aafa-c20e-4b49-a232-b5faa922c214",
+              "leftValue": "={{ $json['resume link'] }}",
+              "rightValue": "[empty]/ERROR",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        660,
+        980
+      ],
+      "id": "90a0eb47-33ad-49a8-8ea4-bd8c27b7bb82",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets2').item.json.Email }}",
+        "subject": "Resend the mail",
+        "emailType": "text",
+        "message": "=Hi   {{ $('Google Sheets2').item.json.Name }} ,\n\n\nPlease check your resume some details in your resume are missed.\n\nthanks&regards\nHiring team.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        980,
+        960
+      ],
+      "id": "e81ffca8-7185-429f-adab-678ae1bd056e",
+      "name": "Gmail",
+      "webhookId": "9d464ec7-57af-400b-bda6-222e211de329",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -980,
+        600
+      ],
+      "id": "6379e71e-fac1-4296-a8ce-de196f61ca24",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JjMmhLRCLv1lEaa6",
+          "name": "OpenRouter New"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract the following details from the resume text below: \n-Full name \n-Email address \n-phone number\n-All technical skills and tools mentioned (avoid limiting to just 5) \n-Key projects (summarized names or short titles, max 3)\n-experience\n\nRespond strictly in this JSON format:\n{ \n\"name\": \"Full Name\", \n\"email\": \"email@example.com\", \n\"number\" :\"\"\n\"skills\": \"Skill1\", \"Skill2\", \"Tool1\", ...,\n\"projects\": \"Project1 summary\", \"Project2 summary\", \"Project3 summary\"\n\"Experience\" : \"exp1\",\"exp2\",...\n\"Education\" : \"edu1\" , \"edu2\", ...\n}\n\nResume Text:{{ $json.text }}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -940,
+        420
+      ],
+      "id": "e6ce631e-3cb6-4f1a-9853-216f5567fe1a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        580
+      ],
+      "id": "6ebbc7a8-f1a8-4cfd-b3f0-9c845eda6ec3",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JsD4mdRWgaxxB7sy",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an helpful assistant and you have access to Pinecone VectorStore\n\nyour aim is to check whether the email is already present in the screening details table.Give me output as true or false strictly in json format:\n{\ncontain :\"true/false\"\n}\nthe email is: {{ $json.email }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        400
+      ],
+      "id": "c08d6bb4-1b55-4c24-8905-315e52a54e3f",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2036948005,
+          "mode": "list",
+          "cachedResultName": "Resume_to_Profile_Auto_Extractor",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=2036948005"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Email": "={{ $json.Email }}",
+            "number": "={{ $json.number }}",
+            "skills": "={{ $json.skills }}",
+            "projects": "={{ $json.projects }}",
+            "experience": "={{ $json.experience }}",
+            "resume link": "={{ $json['resume link'] }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "number",
+              "displayName": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "projects",
+              "displayName": "projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "experience",
+              "displayName": "experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "resume link",
+              "displayName": "resume link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        440,
+        980
+      ],
+      "id": "6052d92e-f02f-4ade-97b4-c2ae29ddf348",
+      "name": "Google Sheets2",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw output\nlet raw = $input.first().json.output;\n\n// Remove the Markdown code block (```json and ```)\nraw = raw.replace(/```json\\s*/, '').replace(/```$/, '').trim();\n\n// Parse it into an actual object\nconst data = JSON.parse(raw);\n\nreturn [data];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        440
+      ],
+      "id": "df261e34-e925-44ff-99f7-38d98f23e357",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        120,
+        760
+      ],
+      "id": "fa32286c-c810-4b84-952e-7f7e64d25ed5",
+      "name": "Embeddings Mistral Cloud",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "bVobyYPlUXWdqAcl",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw output\nlet raw = $input.first().json.output;\n\n// Remove the Markdown code block (```json and ```)\nraw = raw.replace(/```json\\s*/, '').replace(/```$/, '').trim();\n\n// Parse it into an actual object\nconst data = JSON.parse(raw);\n\nreturn [data];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        400
+      ],
+      "id": "c1febaba-7991-4ce4-879e-2dbee2f57039",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "candidate_info",
+          "mode": "list",
+          "cachedResultName": "candidate_info"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Code').item.json.email }}",
+            "skills": "={{ $('Code').item.json.skills }}",
+            "projects": "={{ $('Code').item.json.projects }}",
+            "education": "={{ $('Code').item.json.Education }}",
+            "work_experience": "={{ $('Code').item.json.Experience }}",
+            "phone": "={{ $('Code').item.json.number }}",
+            "name": "={{ $('Code').item.json.name }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "projects",
+              "displayName": "projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "education",
+              "displayName": "education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "work_experience",
+              "displayName": "work_experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "last_updated_at",
+              "displayName": "last_updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        940,
+        300
+      ],
+      "id": "40a4f2d7-c9b3-4ca0-99d7-50c8fe49436b",
+      "name": "Postgres",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -460,
+        1000
+      ],
+      "id": "4a3b89d7-af01-4a75-9619-5a85c43f167a",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "n8n_vector_store",
+        "toolDescription": "Resume Vector Store",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-resume-extractor-db",
+          "mode": "list",
+          "cachedResultName": "n8n-resume-extractor-db"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        100,
+        620
+      ],
+      "id": "cddd89dc-f934-485e-bdce-68c5a012e881",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RyPsQruxK0VMbisc",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f9f56fb6-5e98-40c3-8acd-d06571f6d309",
+              "leftValue": "={{ $json.contain }}",
+              "rightValue": "=true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        620,
+        400
+      ],
+      "id": "1752e5a8-dcc5-4dc9-b996-7e0fdf97b344",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        200
+      ],
+      "id": "ea780278-8570-4326-8f5c-31c04419a920",
+      "name": "Embeddings Mistral Cloud1",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "bVobyYPlUXWdqAcl",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-resume-extractor-db",
+          "mode": "list",
+          "cachedResultName": "n8n-resume-extractor-db"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d2ded6bf-b25e-4ef6-9d78-6809038122aa",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RyPsQruxK0VMbisc",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        100,
+        180
+      ],
+      "id": "324a56e4-925f-4154-88a8-4c64076f53f5",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "separator": "="
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        220,
+        300
+      ],
+      "id": "e3191721-fa87-4215-a965-be8f19ab506a",
+      "name": "Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-resume",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1760,
+        600
+      ],
+      "id": "297930ec-a3c6-465c-a842-47e034af040b",
+      "name": "Webhook",
+      "webhookId": "56e0f684-2841-426f-82a8-7b9742ba48e9"
+    },
+    {
+      "parameters": {
+        "jsCode": "let attachment = null;\nlet finalFileName = '';\n\n// Check the source and set the appropriate binary field and filename\nif ($json[\"source\"] === \"gmail\") {\n    // Gmail attachment (binary field: 'attachment_0')\n    attachment = items[0].binary['attachment_0'];\n    finalFileName = attachment.fileName || 'default_resume.pdf';  // fallback if not present\n    items[0].binary['resume'] = attachment;\n    delete items[0].binary['attachment_0'];\n} else if ($json[\"source\"] === \"webhook\") {\n    // Webhook attachment (binary field: 'resume')\n    attachment = items[0].binary['resume'];\n    // Try to get fileName from binary first, fallback to json\n    finalFileName = attachment.fileName || $json.fileName || 'default_resume.pdf';\n} else {\n    attachment = items[0].binary['attachment_0'] || items[0].binary['resume'];\n    finalFileName = attachment?.fileName || $json.fileName || 'default_resume.pdf';\n    items[0].binary['resume'] = attachment;\n    delete items[0].binary['attachment_0'];\n}\n\n// Set the correct file name in the binary\nattachment.fileName = finalFileName;\n\nreturn items;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1500,
+        720
+      ],
+      "id": "a8cecc38-4464-4210-997f-6d95ad368082",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "candidate_info",
+          "mode": "list",
+          "cachedResultName": "candidate_info"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Code').item.json.email }}",
+            "name": "={{ $('Code').item.json.name }}",
+            "skills": "={{ $('Code').item.json.skills }}",
+            "projects": "={{ $('Code').item.json.projects }}",
+            "education": "={{ $('Code').item.json.Education }}",
+            "work_experience": "={{ $('Code').item.json.Experience }}",
+            "phone": "={{ $('Code').item.json.number }}",
+            "last_updated_at": "={{ $now }}",
+            "status": "EXTRACTED"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "projects",
+              "displayName": "projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "education",
+              "displayName": "education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "work_experience",
+              "displayName": "work_experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "last_updated_at",
+              "displayName": "last_updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        960,
+        480
+      ],
+      "id": "8151c8e6-c005-45ba-b604-ea3adb6a7bd7",
+      "name": "Postgres1",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "candidate_info",
+          "mode": "list",
+          "cachedResultName": "candidate_info"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.Email }}",
+            "name": "={{ $json.Name }}",
+            "phone": "={{ $json.number }}",
+            "work_experience": "={{ $json.experience }}",
+            "education": "={{ $('Code').item.json.Education }}",
+            "projects": "={{ $('Code').item.json.projects }}",
+            "skills": "={{ $('Code').item.json.skills }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "projects",
+              "displayName": "projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "education",
+              "displayName": "education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "work_experience",
+              "displayName": "work_experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "last_updated_at",
+              "displayName": "last_updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        720,
+        1300
+      ],
+      "id": "c2af71ce-9e7f-4e34-98a7-8790508442b5",
+      "name": "Postgres2",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "candidate_info",
+          "mode": "list",
+          "cachedResultName": "candidate_info"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "='EXTRACTED'",
+            "email": "={{ $json.Email }}",
+            "last_updated_at": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "skills",
+              "displayName": "skills",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "projects",
+              "displayName": "projects",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "education",
+              "displayName": "education",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "work_experience",
+              "displayName": "work_experience",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "array",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "last_updated_at",
+              "displayName": "last_updated_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        1060,
+        1200
+      ],
+      "id": "ee1e5b18-9abe-4d30-bc05-3bd15b33c5a9",
+      "name": "Postgres Extracted1",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive1": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Postgres Extracted1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Postgres2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Mistral Cloud": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Postgres",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Postgres1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Mistral Cloud1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Drive1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3510f4e5-89d7-4068-b875-3c60de0fb97f",
+  "meta": {
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "l8u0wMeZMnOybT7Y",
+  "tags": []
+}

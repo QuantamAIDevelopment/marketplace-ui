@@ -1,0 +1,879 @@
+{
+  "name": "Product_Feedback_Summarizer_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1760,
+        -400
+      ],
+      "id": "211480e2-00cf-4a21-8105-0a05a62d99eb",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "product-feedback-trigger",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1860,
+        -60
+      ],
+      "id": "e08d2450-b658-4f8d-bfb2-29d3ae4447a1",
+      "name": "Webhook",
+      "webhookId": "ac30001c-b355-44a9-b2f7-5062b075ab67"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        740,
+        -580
+      ],
+      "id": "818654e9-fbf3-4a9d-866b-ed68801a72fb",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the structured array from webhook\nconst records = $input.first().json.body;\n\n// Ensure it's an array\nif (!Array.isArray(records)) {\n  return [{\n    json: {\n      error: true,\n      message: \"❌ Expected an array under 'body' field in webhook input\"\n    }\n  }];\n}\n\n// Format each record as its own output item\nreturn records.map((item, index) => ({\n  json: {\n    row_number: index + 1,\n    ...item\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1640,
+        -60
+      ],
+      "id": "9dd26f1a-431e-4ac8-a12f-43ed7492cb5d",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a feedback summarization assistant.\n\nHere is customer feedback for Product ID: {{ $json.product_id }}.\n\nFeedback entries: {{ $json.feedback_count }}.map(f => \"- \" + f[\"Cleaned Feedback\"]).join(\"\\n\") }}.\n\n\nSummarize this data into:\n1. Product ID\n2. Top praises (positive highlights)\n3. Top complaints/issues\n4. Common keywords (optional)\n5. Sentiment breakdown (e.g., % positive, neutral, negative)\n6.Timestamp(proper format).\n\nFormat the result strictly as JSON with keys when triggered with webhook or scheduled trigger also: \"summary\", \"praises\", \"complaints\", \"keywords\", \"sentimentBreakdown\".\n\"keywords\", \"sentimentBreakdown\", \"Product ID\", \"Timestamp\".\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        -220
+      ],
+      "id": "c3aa84d5-45cd-4606-bc4e-d3492ffc4782",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        0
+      ],
+      "id": "3211a261-e228-4012-936f-2849a45912d8",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "1E3ZL2vIpcClZdxZ",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1472688069,
+          "mode": "list",
+          "cachedResultName": "product-feedback-data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1472688069"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1400,
+        -400
+      ],
+      "id": "65056e43-1b1f-4ca2-a64d-1a0ffa513301",
+      "name": "Read Feedback Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1472688069,
+          "mode": "list",
+          "cachedResultName": "product-feedback-data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1472688069"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp (Date)": "={{ $json['Timestamp (Date)'] }}",
+            "Feedback": "={{ $json.Feedback }}",
+            "Rating": "={{ $json.Rating }}",
+            "Product Id": "={{ $json['Product ID'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Product Id",
+              "displayName": "Product Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp (Date)",
+              "displayName": "Timestamp (Date)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1420,
+        -60
+      ],
+      "id": "433b0882-b531-4808-b8e5-7df8d2b62682",
+      "name": "Read Feedback Sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1949516008,
+          "mode": "list",
+          "cachedResultName": "product-feedback-summary",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1949516008"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "log-timestamp": "={{ $json.timestamp }}",
+            "productid": "={{ $json.productid }}"
+          },
+          "matchingColumns": [
+            "productid"
+          ],
+          "schema": [
+            {
+              "id": "productid",
+              "displayName": "productid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "keywords",
+              "displayName": "keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "praises",
+              "displayName": "praises",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "complaints",
+              "displayName": "complaints",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "sentimentBreakdown",
+              "displayName": "sentimentBreakdown",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "log-timestamp",
+              "displayName": "log-timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        580,
+        320
+      ],
+      "id": "e5f4faf3-6425-4265-a6da-2b04b8e58a97",
+      "name": "Log Summary",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1949516008,
+          "mode": "list",
+          "cachedResultName": "product-feedback-summary",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1949516008"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "praises": "={{ $json.praises }}",
+            "complaints": "={{ $json.complaints }}",
+            "keywords": "={{ $json.keywords }}",
+            "productid": "={{ $json.productid }}",
+            "sentimentBreakdown": "={{ $json.sentimentBreakdown }}"
+          },
+          "matchingColumns": [
+            "productid"
+          ],
+          "schema": [
+            {
+              "id": "productid",
+              "displayName": "productid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "keywords",
+              "displayName": "keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "praises",
+              "displayName": "praises",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "complaints",
+              "displayName": "complaints",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "sentimentBreakdown",
+              "displayName": "sentimentBreakdown",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "log-timestamp",
+              "displayName": "log-timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        740,
+        80
+      ],
+      "id": "f1ef231e-cd53-4dd4-858b-ab9eae3bd0fb",
+      "name": "Summary to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e7de669c-c938-4a0c-a716-0cfa7d446731",
+              "name": "productid",
+              "value": "={{ $json.productid }}",
+              "type": "string"
+            },
+            {
+              "id": "74042a4c-cd3f-48e6-a6f5-84a5a23d2507",
+              "name": "praises",
+              "value": "={{ $json.praises }}",
+              "type": "string"
+            },
+            {
+              "id": "034a7d83-1768-4065-bb18-67f36bc17256",
+              "name": "complaints",
+              "value": "={{ $json.complaints }}",
+              "type": "string"
+            },
+            {
+              "id": "bcc047b9-c5bc-48e6-a4a0-9b6c636f6076",
+              "name": "sentimentBreakdown",
+              "value": "={{ $json.sentimentBreakdown }}",
+              "type": "string"
+            },
+            {
+              "id": "dbc516ff-5687-4b12-9700-27811133d279",
+              "name": "keywords",
+              "value": "={{ $json.keywords }}",
+              "type": "string"
+            },
+            {
+              "id": "9cde04b3-197b-4157-8df8-24ad9b8b2527",
+              "name": "timestamp",
+              "value": "={{ $json.timestamp }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        260,
+        -220
+      ],
+      "id": "16177216-3a1b-4eed-b93b-70554a6b9f5a",
+      "name": "Format Summary Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\n\nfor (const item of items) {\n  const rawText = item.json.output || item.json.message?.content || JSON.stringify(item.json);\n\n  // Step 1: Match all ```json blocks``` or extract inline object blocks\n  const blocks = [...rawText.matchAll(/```(?:json)?\\s*([\\s\\S]*?)\\s*```/g)];\n\n  if (blocks.length === 0) {\n    const inlineMatches = [...rawText.matchAll(/{[\\s\\S]*?}(?=\\s*(Here|Note|$))/g)];\n    for (const match of inlineMatches) {\n      blocks.push([null, match[0]]);\n    }\n  }\n\n  // Step 2: Parse and clean each block\n  for (const block of blocks) {\n    const jsonStr = block[1];\n    let parsed;\n\n    try {\n      parsed = JSON.parse(jsonStr);\n    } catch (e) {\n      results.push({\n        json: {\n          error: true,\n          message: \"❌ Failed to parse JSON block\",\n          preview: jsonStr.slice(0, 100)\n        }\n      });\n      continue;\n    }\n\n    const summary = parsed.summary || {};\n    const productid = summary[\"Product ID\"] || parsed[\"Product ID\"] || \"Unknown\";\n    const timestamp = summary[\"Timestamp\"] || parsed[\"Timestamp\"] || null;\n\n    const praises =\n      parsed.praises || summary.top_praises || summary.praises || [];\n    const complaints =\n      parsed.complaints || summary.top_complaints || summary.complaints || [];\n    const keywords =\n      parsed.keywords || summary.common_keywords || summary.keywords || [];\n\n    const sentimentRaw = parsed.sentimentBreakdown || summary.sentimentBreakdown || {};\n    const sentiment = {\n      positive: parseFloat(sentimentRaw.positive ?? sentimentRaw.Positive ?? 0),\n      neutral: parseFloat(sentimentRaw.neutral ?? sentimentRaw.Neutral ?? 0),\n      negative: parseFloat(sentimentRaw.negative ?? sentimentRaw.Negative ?? 0)\n    };\n\n    results.push({\n      json: {\n        productid,\n        timestamp,\n        praises: Array.isArray(praises) ? praises : [],\n        complaints: Array.isArray(complaints) ? complaints : [],\n        keywords: Array.isArray(keywords) ? keywords : [],\n        sentimentBreakdown: sentiment\n      }\n    });\n  }\n}\n\n// Final fallback return\nreturn results.length > 0\n  ? results\n  : [{\n      json: {\n        error: true,\n        message: \"❌ No valid JSON blocks found in the input.\"\n      }\n    }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -300,
+        -220
+      ],
+      "id": "05f89859-4324-47e0-817f-b606b1c638b6",
+      "name": "Parse AI Summary"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(item => {\n\n  const json = item.json;\n \n  return {\n\n    productid: json.productid,\n\n    summary: typeof json.summary === \"string\" ? JSON.parse(json.summary) : json.summary,\n\n    praises: Array.isArray(json.praises) ? json.praises : JSON.parse(json.praises || \"[]\"),\n\n    complaints: Array.isArray(json.complaints) ? json.complaints : JSON.parse(json.complaints || \"[]\"),\n\n   sentimentBreakdown:\nArray.isArray(json.sentimentBreakdown)?\n     json.sentiment : JSON.parse(json.sentimentBreakdown||\"[]\"),\n\n    keywords: Array.isArray(json.keywords) ? json.keywords : JSON.parse(json.keywords || \"[]\"),\n\n    timestamp: json.timestamp,\n\n    myNewField: json.myNewField\n\n  };\n\n});\n \nreturn [{\n\n  json: {\n\n    feedback_summary: rows\n\n  }\n\n}];\n\n "
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        600,
+        -220
+      ],
+      "id": "98231572-39cf-43ae-91ef-70b853d67121",
+      "name": "Build Feedback Array"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Step 1: Get input from previous node\nconst feedback_summary = $input.first().json.feedback_summary;\n\nif (!Array.isArray(feedback_summary)) {\n  throw new Error(\"Expected 'feedback_summary' to be an array.\");\n}\n\n// Step 2: Convert each entry into a table row\nconst rows = feedback_summary.map(entry => {\n  const sentiment = entry.sentimentBreakdown || {};\n  const positive = sentiment.positive ?? sentiment.Positive ?? 0;\n  const neutral = sentiment.neutral ?? sentiment.Neutral ?? 0;\n  const negative = sentiment.negative ?? sentiment.Negative ?? 0;\n\n  return `\n    <tr>\n      <td><strong>${entry.productid}</strong></td>\n      <td>${entry.timestamp}</td>\n      <td>\n        <ul>${(entry.praises || []).map(p => `<li>${p}</li>`).join(\"\")}</ul>\n      </td>\n      <td>\n        <ul>${(entry.complaints || []).map(c => `<li>${c}</li>`).join(\"\")}</ul>\n      </td>\n      <td>${(entry.keywords || []).join(\", \")}</td>\n      <td>\n        <ul>\n          <li>Positive: ${positive}%</li>\n          <li>Neutral: ${neutral}%</li>\n          <li>Negative: ${negative}%</li>\n        </ul>\n      </td>\n    </tr>\n  `;\n}).join(\"\\n\");\n\n// Step 3: Wrap rows in a full HTML page\nconst html = `\n<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Customer Feedback Summary</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      margin: 20px;\n    }\n    h2 {\n      text-align: center;\n      margin-bottom: 20px;\n    }\n    table {\n      width: 100%;\n      border-collapse: collapse;\n      margin-bottom: 30px;\n    }\n    th, td {\n      padding: 10px;\n      border: 1px solid #ccc;\n      vertical-align: top;\n    }\n    th {\n      background-color: #f0f0f0;\n    }\n    ul {\n      padding-left: 18px;\n      margin: 0;\n    }\n  </style>\n</head>\n<body>\n  <h2>Customer Feedback Summary</h2>\n  <table>\n    <thead>\n      <tr>\n        <th>Product ID</th>\n        <th>Timestamp</th>\n        <th>Praises</th>\n        <th>Complaints</th>\n        <th>Keywords</th>\n        <th>Sentiment</th>\n      </tr>\n    </thead>\n    <tbody>\n      ${rows}\n    </tbody>\n  </table>\n</body>\n</html>\n`;\n\n// Step 4: Return as HTML output\nreturn [{\n  json: {\n    html\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        840,
+        -220
+      ],
+      "id": "7a5a9b59-60e9-4ac4-be22-d09260990d2f",
+      "name": "Generate HTML Report"
+    },
+    {
+      "parameters": {
+        "sendTo": "kajulurilokesh2000@gmail.com",
+        "subject": "=Summarization Failed",
+        "message": "=Hi Team,  AI failed to generate a valid summary.  🔸 Product: 🔸 Node: OpenAI Summarization  Please investigate and rerun manually.  - Feedback Summarizer Agent",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        280,
+        220
+      ],
+      "id": "91bef7fc-262c-48ed-8016-58603f3e28f4",
+      "name": "Send Error Alert",
+      "webhookId": "b45d6614-514c-42cb-b373-d6df88319eea",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "lokeshmani1415@gmail.com",
+        "subject": "=feedback_summary",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1160,
+        -220
+      ],
+      "id": "1c5c17be-0ed1-4fcf-8b0b-4963841c95e6",
+      "name": "Send Summary Email",
+      "webhookId": "2354aefe-3645-4321-ae65-1c0324dbecde",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function clean(text) {\n  return text\n    .replace(/<[^>]*>/g, '')         // Remove HTML tags\n    .replace(/https?:\\/\\/\\S+/g, '')  // Remove links\n    .replace(/[^\\w\\s.,!?]/g, '')     // Remove emojis/special chars\n    .replace(/\\s+/g, ' ')            // Normalize spacing\n    .trim();\n}\n\nconst cleanedItems = items.map((item, index) => {\n  const feedback = item.json[\"Feedback\"] || \"\";\n  const cleanedFeedback = clean(feedback);\n\n  return {\n    json: {\n      ...item.json,\n      \"Cleaned Feedback\": cleanedFeedback\n    }\n  };\n});\n\nreturn cleanedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1100,
+        -220
+      ],
+      "id": "ca9f2161-09a8-4990-928f-397ab8065d8c",
+      "name": "Clean Feedback"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ✅ Filters – you can customize or pass from webhook (optional)\nconst daysBack = 30; // or 7 or 90\nconst minRating = 1; // e.g. only include reviews >= 1\nconst productFilter = []; // e.g. [\"ZX100\", \"ZX300\"]; empty means \"all\"\n\n// ✅ Date cutoff\nconst now = new Date();\nconst cutoff = new Date();\ncutoff.setDate(now.getDate() - daysBack);\n\n// ✅ Grouped output\nconst grouped = {};\n\nfor (const item of items) {\n  const row = item.json;\n\n  const productId = row[\"Product Id\"];\n  const rating = parseInt(row[\"Rating\"], 10) || 0;\n  const date = new Date(row[\"Timestamp (Date)\"]);\n\n  // Filter conditions\n  const include = (\n    (!productFilter.length || productFilter.includes(productId)) &&\n    date >= cutoff &&\n    rating >= minRating\n  );\n\n  if (!include) continue;\n\n  if (!grouped[productId]) grouped[productId] = [];\n\n  grouped[productId].push({\n    row_number: row.row_number,\n    \"Timestamp (Date)\": row[\"Timestamp (Date)\"],\n    \"Product ID\": productId,\n    \"Rating\": rating,\n    \"Feedback\": row[\"Feedback\"],\n    \"Cleaned Feedback\": row[\"Cleaned Feedback\"]\n  });\n}\n\n// ✅ Format output: 1 item per product group\nconst result = Object.entries(grouped).map(([product_id, entries]) => ({\n  json: {\n    product_id,\n    feedback_count: entries.length,\n    daysBack,\n    minRating,\n    entries\n  }\n}));\n\n// ✅ If no matches, return empty state\nif (result.length === 0) {\n  return [{\n    json: {\n      message: \"❌ No matching feedback found with given filters.\",\n      filters: { daysBack, minRating, productFilter }\n    }\n  }];\n}\n\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -880,
+        -220
+      ],
+      "id": "79483ed7-957a-4937-ad57-b807d0a185ab",
+      "name": "Filter & Group Feedback"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1a5a6394-86e7-48dd-8f05-8f817692adf6",
+              "leftValue": "={{ $json.isEmpty() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        60,
+        0
+      ],
+      "id": "42714176-27c7-48aa-9a3e-f657d6f4333c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -140,
+        20
+      ],
+      "id": "c21969f2-8096-4a10-8e0f-9d8164f1d0fe",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        20,
+        140
+      ],
+      "id": "0b75f069-4f39-4f0d-ab38-23ae2004d9f5"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Read Feedback Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Read Feedback Sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Feedback Sheet": {
+      "main": [
+        [
+          {
+            "node": "Clean Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Feedback Sheet1": {
+      "main": [
+        [
+          {
+            "node": "Clean Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Summary Fields": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Feedback Array",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Summary to Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Summary": {
+      "main": [
+        [
+          {
+            "node": "Format Summary Fields",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Feedback Array": {
+      "main": [
+        [
+          {
+            "node": "Generate HTML Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate HTML Report": {
+      "main": [
+        [
+          {
+            "node": "Send Summary Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Feedback": {
+      "main": [
+        [
+          {
+            "node": "Filter & Group Feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter & Group Feedback": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send Error Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "67ce8acb-142c-4b0b-b364-8ac80dbb15ff",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "jGwITfpn5JmfN5E8",
+  "tags": []
+}

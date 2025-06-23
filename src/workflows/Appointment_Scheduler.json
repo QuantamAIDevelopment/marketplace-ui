@@ -1,0 +1,500 @@
+{
+  "name": "Appointment_Scheduler",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "appointment",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1380,
+        20
+      ],
+      "id": "2d15dd20-4105-44db-bf93-c5b0ee13e433",
+      "name": "Webhook",
+      "webhookId": "68757087-7781-4c43-afcf-9b41dbeda7b7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User request: {{ $('Check Required Fields').item.json.body.request }}\n\nUser information:\n\nName: {{ $('Check Required Fields').item.json.body.name || 'Not provided' }}\n\nEmail: {{ $('Check Required Fields').item.json.email }}\n\nPhone: {{ $('Check Required Fields').item.json.body.phone }}\n\nDate: {{ $('Check Required Fields').item.json.date }}\n\nTime: {{ $('Check Required Fields').item.json.time }} IST\n",
+        "options": {
+          "systemMessage": "=You are a customer support AI Agent designed to handle various tasks efficiently. Your primary role is to check for available times for appointments, book appointments, grab contact information, and help retrieve information that is requested for the user. You have access to multiple tools to help you fulfill requests:\n\nAvailability: Use this tool for checking available times for appointment.\n\nAppointments:\n\nUse this tool to create the appointment.\n\nVector Store Tool: Use this tool to retrieve information about anything related to the Skool Community\n\nGoogle Sheets: Use this tool to store customer's contact information. \n\nWhen a task requires using one or more of these tools, make sure to identify which tool is most appropriate, pass along the relevant details, and execute the actions needed to complete the task. Your goal is to be proactive, precise, and organized in managing these resources to provide a smooth experience for the user.\n\nKeep responses concise, short, and relevant to the user's question.\n\nHere is the current time/date: {{ $now.format('DD')}}\n\nDO NOT PROVIDE ANY EXISTING MEETING DETAILS"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        -140
+      ],
+      "id": "b616546a-a47a-474a-8d61-ee758ac9eddc",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        60
+      ],
+      "id": "a94435f3-73c1-4aa4-8f66-92e053d129fc",
+      "name": "Answer questions with a vector store"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 11104948,
+          "mode": "list",
+          "cachedResultName": "appointement-scheduler",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=11104948"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -40,
+        100
+      ],
+      "id": "cba12e78-85d3-4a09-866a-bc5c9184545b",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        -40,
+        -140
+      ],
+      "id": "32e8d550-5d07-41a6-a58c-4834a7fa8c96",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        120
+      ],
+      "id": "40b6b315-13c2-41b3-b9ae-0e460a97607d",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JjMmhLRCLv1lEaa6",
+          "name": "OpenRouter New"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsMistralCloud",
+      "typeVersion": 1,
+      "position": [
+        120,
+        420
+      ],
+      "id": "df53c5f1-cbe9-4b49-8f2b-e70e65f4d7f6",
+      "name": "Embeddings Mistral Cloud",
+      "credentials": {
+        "mistralCloudApi": {
+          "id": "bVobyYPlUXWdqAcl",
+          "name": "Mistral Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "appointement-scheduler-index",
+          "mode": "list",
+          "cachedResultName": "appointement-scheduler-index"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        280
+      ],
+      "id": "14719eb5-791a-4db1-bee2-31403718da42",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RyPsQruxK0VMbisc",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        380,
+        180
+      ],
+      "id": "8f8dca3e-f159-4659-9627-17fda2f5e260",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JjMmhLRCLv1lEaa6",
+          "name": "OpenRouter New"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "name",
+              "value": "={{ $json.body.name || 'Not provided' }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.body.email || 'Not provided' }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json.body.phone || 'Not provided' }}"
+            },
+            {
+              "name": "date",
+              "value": "={{ $json.body.date || 'Not provided' }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $json.body.time || 'Not provided' }}"
+            },
+            {
+              "name": "request",
+              "value": "={{ $json.query.request || 'Not provided' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        20
+      ],
+      "id": "6eb20cfd-e664-45d6-a41f-8ad2e0d12995",
+      "name": "Validate Input"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.email }}",
+              "operation": "notEqual",
+              "value2": "Not provided"
+            },
+            {
+              "value1": "={{ $json.date }}",
+              "operation": "notEqual",
+              "value2": "Not provided"
+            },
+            {
+              "value1": "={{ $json.time }}",
+              "operation": "notEqual",
+              "value2": "Not provided"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -1020,
+        20
+      ],
+      "id": "e9d4601f-2b80-4945-a4ff-67910f884844",
+      "name": "Check Required Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        -720,
+        120
+      ],
+      "id": "213722a2-5e3e-445d-8125-a6e11680c398",
+      "name": "Error Response"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "9f547a1cc6c0e71f6ea7a6b664ba33b6663e63ab880733d634f86a0a6e7f8d5e@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "appointments"
+        },
+        "start": "={{ $('Code').item.json.start.dateTime }}",
+        "end": "={{ $('Code').item.json.end.dateTime }}",
+        "additionalFields": {
+          "description": "={{ $('Webhook').item.json.body.request }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -180,
+        100
+      ],
+      "id": "c6b0fa08-7aee-4a3f-8c42-076e7551115c",
+      "name": "Create Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "eFoIy4oVG0Lwyo57",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "9f547a1cc6c0e71f6ea7a6b664ba33b6663e63ab880733d634f86a0a6e7f8d5e@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "appointments"
+        },
+        "returnAll": true,
+        "timeMin": "={{ $('Code').item.json.end }}",
+        "timeMax": "={{ $('Code').item.json.start }}",
+        "options": {
+          "timeZone": "Asia/Kolkata"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -280,
+        100
+      ],
+      "id": "f4f2d0b7-06df-46c9-b8a3-5afabb224b50",
+      "name": "Get Event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "eFoIy4oVG0Lwyo57",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get input date and time\nconst date = $input.first().json.body.date; // e.g., '2025-06-15'\nconst time = $input.first().json.body.time; // e.g., '14:00'\n\n// Validate inputs\nif (!date || !time) {\n  return [{\n    json: {\n      error: 'Date or time is missing',\n      debug: { inputDate: date, inputTime: time }\n    }\n  }];\n}\n\ntry {\n  // Combine date and time into a string\n  const dateTimeString = `${date}T${time}:00.000+05:30`; // IST offset (+05:30)\n\n  // Create Date object in IST\n  const istDate = new Date(dateTimeString);\n  \n  // Validate Date object\n  if (isNaN(istDate.getTime())) {\n    throw new Error(`Invalid date/time format: ${dateTimeString}`);\n  }\n\n  // Format in Asia/Kolkata\n  const istDateTimeFormatter = new Intl.DateTimeFormat('en-US', {\n    timeZone: 'Asia/Kolkata',\n    year: 'numeric',\n    month: '2-digit',\n    day: '2-digit',\n    hour: '2-digit',\n    minute: '2-digit',\n    second: '2-digit',\n    hour12: false\n  });\n\n  const parts = istDateTimeFormatter.formatToParts(istDate);\n  const istDateTime = `${parts[4].value}-${parts[0].value}-${parts[2].value}T${parts[6].value}:${parts[8].value}:${parts[10].value}.000+05:30`;\n\n  // Add 1 hour for end time\n  const endDate = new Date(istDate.getTime() + 60 * 60 * 1000); // Add 1 hour in milliseconds\n  const endParts = istDateTimeFormatter.formatToParts(endDate);\n  const istEndDateTime = `${endParts[4].value}-${endParts[0].value}-${endParts[2].value}T${endParts[6].value}:${endParts[8].value}:${endParts[10].value}.000+05:30`;\n\n  // Return formatted data for calendar API\n  return [{\n    json: {\n      start: {\n        dateTime: istDateTime, // ISO format in Asia/Kolkata\n        timeZone: 'Asia/Kolkata'\n      },\n      end: {\n        dateTime: istEndDateTime, // ISO format in Asia/Kolkata\n        timeZone: 'Asia/Kolkata'\n      },\n      debug: {\n        inputDateTime: dateTimeString,\n        istStartDateTime: istDateTime,\n        istEndDateTime: istEndDateTime\n      }\n    }\n  }];\n} catch (error) {\n  return [{\n    json: {\n      error: error.message,\n      debug: { inputDate: date, inputTime: time }\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        -100
+      ],
+      "id": "b5f7dd3b-903e-4462-9b2e-29d286b03286",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Mistral Cloud": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Input": {
+      "main": [
+        [
+          {
+            "node": "Check Required Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Required Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5b893017-981e-4286-b32a-239e1f02f1d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "doymIqOzwYjPPjlV",
+  "tags": []
+}

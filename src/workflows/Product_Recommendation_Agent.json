@@ -1,0 +1,751 @@
+{
+  "name": "Product_Recommendation_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1020,
+        180
+      ],
+      "id": "4bb127bd-aee8-45ca-b4b5-736e10e73857",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "user_product_interactions",
+          "mode": "list",
+          "cachedResultName": "user_product_interactions"
+        },
+        "limit": 20,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -800,
+        180
+      ],
+      "id": "ab37a31d-4bdb-4da1-8621-f2be125adb23",
+      "name": "User_Product_interaction",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -580,
+        180
+      ],
+      "id": "2d70420a-877b-4818-b927-8c93dc65c8c3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8cc0c2b6-b1d1-4ebf-98be-52bbe150940a",
+              "leftValue": "={{ $json.interaction_type }}",
+              "rightValue": "view",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "e774aebf-ffc4-4b1e-9423-d931a1461b3b",
+              "leftValue": "={{ $json.interaction_type }}",
+              "rightValue": "purchase",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "24a11140-31bb-4515-868d-d1fad709a37e",
+              "leftValue": "={{ $json.interaction_type }}",
+              "rightValue": "click",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        200
+      ],
+      "id": "35c7068c-fa59-4d76-bd44-f965ab595326",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        80,
+        220
+      ],
+      "id": "343ed2cc-44b5-4e03-9f21-6b8f22c9efaf",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        200,
+        360
+      ],
+      "id": "5da4856f-13e5-4822-853a-5e9064f6bb2c",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        180
+      ],
+      "id": "d2b10631-a12b-47ba-84ed-37558142840b",
+      "name": "Embeddings Cohere",
+      "credentials": {
+        "cohereApi": {
+          "id": "GaqPJGAMylDSxMG4",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        900
+      ],
+      "id": "d5fcb0cc-77b1-4b71-8fb6-9067185e073a",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JjMmhLRCLv1lEaa6",
+          "name": "OpenRouter New"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+      "typeVersion": 1,
+      "position": [
+        120,
+        1100
+      ],
+      "id": "cebee37a-e5f9-4030-bbda-a06ff47f992f",
+      "name": "Embeddings Cohere1",
+      "credentials": {
+        "cohereApi": {
+          "id": "GaqPJGAMylDSxMG4",
+          "name": "CohereApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8fb13da5-98bf-42bc-b813-81e9bb3e14d1",
+              "leftValue": "={{ $json.stock }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "c216feda-b858-475e-aff4-a27f7b703f7a",
+              "leftValue": "={{ $json.price }}",
+              "rightValue": "={{ $('User Input').item.json.body.price }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        680
+      ],
+      "id": "13c9976a-f71f-4cb2-a303-49f3de019036",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-product-rcc",
+          "mode": "list",
+          "cachedResultName": "n8n-product-rcc"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "12448ae5-ebd1-4c80-9f16-55edf4b7b910",
+      "name": "User_Product Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RyPsQruxK0VMbisc",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.input }}",
+        "options": {
+          "systemMessage": "=You are an AI recommendation agent.\n \nYou will receive a user query input from the previous node as well as access to a User_Product vector store containing user_product_interaction embeddings and user_product_Interaction postgresql tool.\n \nYour task is to:\n \nUse the received user input as the query to perform semantic similarity search in User_Product vector store and user_product_Interaction postgresql tool.\n \nSearch the User_Product vector store and user_product_Interaction postgresql tool for the top 3 most semantically similar products.\n \nFrom these results, apply business filters:\n \nRecommend only products where in_stock = true.\n \nIf available, match the price to the user's price range if provided (low, mid, high).\n \nPrioritize products from categories that match user interest.\n \nFinally, return the top 3 recommended products and should be in valid JSON format.\n \nOutput must return the product name, description, price, stock, category, popularity, product link."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        680
+      ],
+      "id": "6f4f2c94-5992-4847-88bf-4e2145861ce6",
+      "name": "Product Recommendation Agent"
+    },
+    {
+      "parameters": {
+        "operation": "select",
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "user_product_interactions",
+          "mode": "list",
+          "cachedResultName": "user_product_interactions"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.6,
+      "position": [
+        20,
+        920
+      ],
+      "id": "481e05dc-3d22-4c23-91b0-f51584a1a581",
+      "name": "User_Product_Interaction",
+      "credentials": {
+        "postgres": {
+          "id": "ombHCedKDy5YY5fq",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.output;\n\n// Extract JSON block using RegEx (markdown code block)\nconst jsonMatch = rawText.match(/```json\\s*([\\s\\S]*?)\\s*```/);\n\nif (!jsonMatch) {\n  throw new Error(\"No JSON block found in the input.\");\n}\n\nconst jsonData = JSON.parse(jsonMatch[1]);\n\n// Support both array and wrapped object\nconst productArray = Array.isArray(jsonData)\n  ? jsonData\n  : jsonData.recommendations;\n\nif (!Array.isArray(productArray)) {\n  throw new Error(\"Expected an array of products either directly or under 'recommendations'.\");\n}\n\n// Map to required fields\nconst parsedProducts = productArray.map(product => ({\n  product_name: product.product_name ?? null,\n  description: product.description ?? null,\n  price: product.price ?? null,\n  stock: product.stock ?? null,\n  product_link: product.product_link ?? null\n}));\n\n// Return formatted for n8n\nreturn parsedProducts.map(item => ({ json: item }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        680
+      ],
+      "id": "2d28c4d6-b991-4cbf-a127-366eac4042bf",
+      "name": "Structured Parser"
+    },
+    {
+      "parameters": {
+        "sendTo": "yerrakarthik2202@gmail.com",
+        "subject": "Recommended Products",
+        "emailType": "text",
+        "message": "=🎧 Here are your recommended products which matches your intrests:\n\n1. {{ $json.product_name }}\n   Description: {{ $json.description }}\n   Price: ₹{{ $json.price }}\n   Link: {{ $json.product_link }}\n\n🛍️ Happy Shopping!\n— Powered by QAID’s Recommendation Agent\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        580
+      ],
+      "id": "5d57b248-2be7-4b46-970f-1cd923026980",
+      "name": "Recommended product Email",
+      "webhookId": "0ad326af-1b10-4569-b680-b82c42e5fde6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "yerrakarthik2202@gmail.com",
+        "subject": "Recommended products not in stock",
+        "emailType": "text",
+        "message": "=🎧 Here are your recommended products but not in stock or price is greater than user interest:\n\n1. {{ $json.product_name }}\n   Description: {{ $json.description }}\n   Price: ₹{{ $json.price }}\n   Link: {{ $json.product_link }}\n\n🛍️ Happy Shopping!\n— Powered by QAID’s Recommendation Agent\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        700,
+        780
+      ],
+      "id": "0b7c403e-f6a0-4de2-9dc7-3e42390b53d7",
+      "name": "Failed Product Email",
+      "webhookId": "52b741fc-2827-4ab2-ae75-9df5b7050eaf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 616686575,
+          "mode": "list",
+          "cachedResultName": "product-recc-logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=616686575"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "threadId",
+              "displayName": "threadId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "labelIds",
+              "displayName": "labelIds",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        920,
+        580
+      ],
+      "id": "12d733de-7efa-4af3-ab8d-595909a5a06b",
+      "name": "Logging",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "product",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        680
+      ],
+      "id": "889cf652-2ea7-4394-9a6f-105acaaf135b",
+      "name": "User Input",
+      "webhookId": "a2f8ae97-b401-40cb-91af-dd60c0aff4f4"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1360,
+        580
+      ],
+      "id": "863c2aad-724c-489e-876f-4f8a88758fa9",
+      "name": "Output"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "products",
+        "toolDescription": "Work with your data in pinecone vector store",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "n8n-product-rcc",
+          "mode": "list",
+          "cachedResultName": "n8n-product-rcc"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.2,
+      "position": [
+        140,
+        940
+      ],
+      "id": "6aa0d385-bd85-468f-abcb-56cfe4658940",
+      "name": "User_Product Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "RyPsQruxK0VMbisc",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Run this node before the webhook node\nconst recommendations = $('If1').all().map(item => {\n  return {\n    product_name: item.json.product_name,\n    description: item.json.description,\n    price: `${item.json.price}`,\n    product_url: item.json.product_link\n  };\n});\n\nreturn [{\n  json: {\n    message: \"🎧 Here are your recommended products which match your interests:\",\n    recommendations,\n    footer: \"🛍️ Happy Shopping!\\n— Powered by QAID’s Recommendation Agent\"\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        580
+      ],
+      "id": "ea0c5760-87a7-4cd4-a4ec-7a0e17a5e05b",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "User_Product_interaction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User_Product_interaction": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "User_Product_interaction",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "User_Product Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "User_Product Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere": {
+      "ai_embedding": [
+        [
+          {
+            "node": "User_Product Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Product Recommendation Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Cohere1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "User_Product Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Recommended product Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Failed Product Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product Recommendation Agent": {
+      "main": [
+        [
+          {
+            "node": "Structured Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User_Product_Interaction": {
+      "ai_tool": [
+        [
+          {
+            "node": "Product Recommendation Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Parser": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recommended product Email": {
+      "main": [
+        [
+          {
+            "node": "Logging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logging": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User Input": {
+      "main": [
+        [
+          {
+            "node": "Product Recommendation Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User_Product Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "Product Recommendation Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dfa8f797-0745-49d2-9735-ebea7e5b3e81",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "uEidS7rVCASyonju",
+  "tags": []
+}

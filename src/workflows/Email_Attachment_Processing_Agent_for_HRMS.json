@@ -1,0 +1,926 @@
+{
+  "name": "Email Attachment Processing Agent for HRMS",
+  "nodes": [
+    {
+      "parameters": {
+        "functionCode": "// Extract email metadata and attachments\nreturn $input.all().map(item => {\n  return {\n    json: {\n      messageId: item.json.messageId,\n      senderEmail: item.json.from?.value?.[0]?.address || '',\n      senderName: item.json.from?.value?.[0]?.name || '',\n      subject: item.json.subject || '',\n      body: item.json.text || item.json.html || '',\n      attachments: item.binary ? Object.keys(item.binary).map(key => ({\n        fileName: item.binary[key].fileName,\n        mimeType: item.binary[key].mimeType,\n        data: item.binary[key].data, // base64 content\n        property: key\n      })) : []\n    },\n    binary: item.binary || {}\n  };\n});\n"
+      },
+      "id": "d6a47242-275d-4d21-80d0-b462a4777174",
+      "name": "Parse Email Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "attachment-check",
+              "leftValue": "={{ $binary }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a01cde60-4c83-408c-a4cd-3e8488bec3e4",
+      "name": "Has Attachments?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        100,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Handle No Attachments - maintain response format\nconst item = $input.first();\nconst data = item.json;\n\nconst noAttachmentsResponse = {\n  stats: {\n    processedAttachments: 0,\n    processingAttachments: 0,\n    failedAttachments: 1\n  },\n  expected: [\n    \"Resume\",\n    \"ID Proof\",\n    \"Offer Letter\",\n    \"Appointment Letter\", \n    \"Certificates\"\n  ],\n  received_files: [],\n  missing: [\n    \"Resume\",\n    \"ID Proof\",\n    \"Offer Letter\",\n    \"Appointment Letter\",\n    \"Certificates\"\n  ],\n  processingStatus: [\n    {\n      id: \"no_attachments_error\",\n      fileName: \"N/A\",\n      fileType: \"N/A\",\n      fileSize: \"N/A\",\n      status: \"FAILED\",\n      startTime: new Date().toISOString(),\n      endTime: new Date().toISOString(),\n      error: \"No attachments found in email\"\n    }\n  ]\n};\n\n// Also prepare email notification data\nconst emailData = {\n  ...data,\n  response: noAttachmentsResponse,\n  processingStatus: 'NO_ATTACHMENTS'\n};\n\nreturn [{ json: emailData }];"
+      },
+      "id": "87af336f-063c-48ad-9e4f-1badeea7b4cb",
+      "name": "Handle No Attachments",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        280,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Log errors and failed processing\nconst item = $input.first();\nconst data = item.json;\n\nconst errorLog = {\n  timestamp: new Date().toISOString(),\n  action: 'ERROR_LOGGED',\n  error: data.processingStatus || 'UNKNOWN_ERROR',\n  candidateId: data.candidateId,\n  senderEmail: data.from,\n  messageId: data.messageId,\n  errorDetails: data.errorNotification || {},\n  processingNode: 'error-logger'\n};\n\nconsole.error('ERROR:', JSON.stringify(errorLog, null, 2));\n\nreturn [{ json: { ...data, errorLog: errorLog } }];"
+      },
+      "id": "84006627-cc8e-4382-987c-af66c0ae691c",
+      "name": "Log Error",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2360,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -500,
+        140
+      ],
+      "id": "84fed75e-9521-4a06-9648-e9020062adbd",
+      "name": "Gmail",
+      "webhookId": "a5bdd3b7-ee3f-4083-9688-5c2bad9c3fba",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        140
+      ],
+      "id": "7ae48728-e148-42ac-8d8d-e007f14efca0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "name": "={{ $binary.data.fileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1vBhfWihuasAS_LZzJH8Qsp-50fQoMAaU",
+          "mode": "list",
+          "cachedResultName": "n8n-drive-docs",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1vBhfWihuasAS_LZzJH8Qsp-50fQoMAaU"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        540,
+        240
+      ],
+      "id": "c6a87a13-c433-4908-b526-3d42b4c1b1bf",
+      "name": "Google Drive",
+      "executeOnce": false,
+      "retryOnFail": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "iwYD7YqRk1Js8DQ7",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const attachments = [];\n\nfor (const item of $input.all()) {\n  for (const key in item.binary) {\n    if (key.startsWith(\"file\")) {\n      attachments.push({\n        binary: {\n          data: item.binary[key]\n        },\n        json: {\n          filename: item.binary[key].fileName\n        }\n      });\n    }\n  }\n}\n\nreturn attachments;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        340,
+        240
+      ],
+      "id": "b13a2729-ca01-46a8-8492-fe8a8b362111",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const documentConfig = {\n  \"Resume\": {\n    keywords: [\"resume\", \"cv\", \"curriculum vitae\", \"biodata\"],\n    patterns: [/resume/i, /\\bcv\\b/i, /curriculum[_\\s]vitae/i]\n  },\n  \"ID Proof\": {\n    keywords: [\"id\", \"passport\", \"license\", \"aadhar\", \"pan\", \"voter\", \"identity\", \"driving\", \"national\"],\n    patterns: [/\\bid[_\\s]proof/i, /passport/i, /license/i, /aadhar/i, /pan[_\\s]card/i, /voter[_\\s]id/i]\n  },\n  \"Certificates\": {\n    keywords: [\"certificate\", \"diploma\", \"degree\", \"qualification\", \"certification\", \"academic\", \"educational\"],\n    patterns: [/certificate/i, /diploma/i, /degree/i, /qualification/i, /certification/i]\n  },\n  \"Appointment Letter\": {\n    keywords: [\"appointment\", \"appointing\", \"appointment_letter\", \"appointement\"],\n    patterns: [/appointment[_\\s]letter/i, /appointing[_\\s]letter/i, /letter[_\\s]of[_\\s]appointment/i]\n  },\n  \"Offer Letter\": {\n    keywords: [\"offer\", \"offer_letter\", \"job_offer\", \"employment_offer\"],\n    patterns: [/offer[_\\s]letter/i, /job[_\\s]offer/i, /employment[_\\s]offer/i, /letter[_\\s]of[_\\s]offer/i]\n  }\n};\n\nconst expectedTypes = [\"Resume\", \"ID Proof\", \"Offer Letter\", \"Appointment Letter\", \"Certificates\"];\nconst actualFilenames = $input.first().json.document_types || [];\n\nfunction categorizeDocument(filename) {\n  const cleanFilename = filename.toLowerCase()\n    .replace(/\\.pdf$/, '')\n    .replace(/\\.docx?$/, '')\n    .replace(/\\.txt$/, '')\n    .replace(/[_\\-\\.]/g, ' ')\n    .trim();\n  \n  for (const [category, config] of Object.entries(documentConfig)) {\n    for (const pattern of config.patterns) {\n      if (pattern.test(filename)) {\n        return category;\n      }\n    }\n  }\n  \n  let bestMatch = null;\n  let bestScore = 0;\n  \n  for (const [category, config] of Object.entries(documentConfig)) {\n    let score = 0;\n    for (const keyword of config.keywords) {\n      if (cleanFilename.includes(keyword.toLowerCase())) {\n        score += keyword.length;\n      }\n    }\n    if (score > bestScore) {\n      bestScore = score;\n      bestMatch = category;\n    }\n  }\n  \n  return bestScore > 2 ? bestMatch : null;\n}\n\nconst categorizedResults = {\n  categorized: {},\n  uncategorized: []\n};\n\nactualFilenames.forEach(filename => {\n  const category = categorizeDocument(filename);\n  if (category) {\n    if (!categorizedResults.categorized[category]) {\n      categorizedResults.categorized[category] = [];\n    }\n    categorizedResults.categorized[category].push(filename);\n  } else {\n    categorizedResults.uncategorized.push(filename);\n  }\n});\n\nconst categorizedTypes = Object.keys(categorizedResults.categorized);\nconst missingTypes = expectedTypes.filter(type => !categorizedTypes.includes(type));\n\n// Generate response in the desired format\nconst response = {\n  stats: {\n    processedAttachments: actualFilenames.length - categorizedResults.uncategorized.length,\n    processingAttachments: 0,\n    failedAttachments: categorizedResults.uncategorized.length\n  },\n  expected: expectedTypes,\n  received_files: actualFilenames,\n  missing: missingTypes,\n  processingStatus: actualFilenames.map((filename, index) => ({\n    id: `item_${index}`,\n    fileName: filename,\n    fileType: filename.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream',\n    fileSize: 'unknown',\n    status: categorizeDocument(filename) ? 'COMPLETED' : 'FAILED',\n    startTime: new Date().toISOString(),\n    endTime: new Date().toISOString(),\n    error: categorizeDocument(filename) ? null : 'Document type not recognized'\n  }))\n};\n\nreturn response;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        240
+      ],
+      "id": "a10d400e-4210-462c-afee-73027e723ef8",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Process items from input data\nconst documentTypes = [];\n\n// In n8n, input data is available as $input.all()\nconst inputItems = $input.all();\n\n// Iterate through each input item\nfor (const inputItem of inputItems) {\n  const item = inputItem.json;\n  \n  // Handle case where item has direct document_types array\n  if (item.document_types && Array.isArray(item.document_types)) {\n    documentTypes.push(...item.document_types);\n    continue;\n  }\n  \n  // Handle case where item has output field with JSON string\n  const output = item.output;\n  if (output) {\n    try {\n      // Clean up the output by removing code block markers like ```json ... ```\n      const cleaned = output\n        .trim()\n        .replace(/^```json\\s*/i, '')  // handles \"```json\" and any whitespace\n        .replace(/\\s*```$/, '')       // handles trailing \"```\"\n        .replace(/\\s+/g, ' ');        // Replace multiple whitespaces with a single space\n\n      // Debugging: Log the cleaned output\n      console.log(\"Cleaned Output:\", cleaned);\n      \n      // Parse the cleaned output string into JSON\n      const parsed = JSON.parse(cleaned);\n      \n      // Check for the \"docs\" field in the parsed object\n      if (parsed.docs && Array.isArray(parsed.docs)) {\n        documentTypes.push(...parsed.docs);\n      } else if (parsed.document_types && Array.isArray(parsed.document_types)) {\n        documentTypes.push(...parsed.document_types);\n      } else {\n        console.log(\"Parsed but no docs/document_types array found:\", parsed);\n      }\n    } catch (err) {\n      console.error(\"Error parsing output:\", output, err);\n    }\n  } else {\n    console.log(\"No output field or document_types field on item:\", item);\n  }\n}\n\n// Remove duplicates by converting to a Set and back to an array\nconst uniqueDocumentTypes = [...new Set(documentTypes)];\n\n// Debugging: Log the final array of unique document types\nconsole.log(\"Unique Document Types:\", uniqueDocumentTypes);\n\n// Return in n8n format\nreturn {\n  document_types: uniqueDocumentTypes\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        240
+      ],
+      "id": "d4a9bfae-24da-4503-8ddd-736d21271d26",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Edit Fields').item.json.id }}",
+        "emailType": "text",
+        "message": "=Dear {{ $('Google Sheets').item.json.Name }} \nThese documents are missing from the list.Please send an mail with the required documents {{ $('Google Sheets').item.json.missing }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2220,
+        300
+      ],
+      "id": "5e8e14b0-257c-4414-b529-c69ff2b9960a",
+      "name": "Gmail1",
+      "webhookId": "cad58fb8-d855-4b66-a049-d2cf1bfcae71",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7256994f-42e4-4ff9-9e61-469aa6d3ee25",
+              "name": "Name",
+              "value": "={{ $json.from.value[0].name }}",
+              "type": "string"
+            },
+            {
+              "id": "b4666902-2439-4ae1-82af-0883d1630204",
+              "name": "Subject",
+              "value": "={{ $json.subject }}",
+              "type": "string"
+            },
+            {
+              "id": "3706949f-b0af-481c-994a-f674ec819317",
+              "name": "SenderEmail",
+              "value": "={{ $json.from.value[0].address }}",
+              "type": "string"
+            },
+            {
+              "id": "159c9c32-cf2d-46b8-bb8f-754e78e6f33b",
+              "name": "messageId",
+              "value": "={{ $json.messageId }}",
+              "type": "string"
+            },
+            {
+              "id": "f873e8b2-040a-434f-9427-cbbf0b8c2fae",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        780,
+        0
+      ],
+      "id": "23b0e94b-dd24-4806-bddd-c4de137e67bb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "amount": 4
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c98f996b-dcd5-4947-ae49-9cc99b3edf58",
+      "name": "Wait",
+      "webhookId": "95291e85-8199-49bc-bc56-1d51fa618ad6"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1520,
+        260
+      ],
+      "id": "69318833-0c07-4f5c-a35b-ffe21bcac81e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $json.messageId }}",
+        "message": "=Dear  {{ $json.senderName }},  We received your email regarding {{ $json.subject }}. However, it appears that no attachments were included in your message.  Please ensure that the required documents (e.g., Resume, ID Proof, Certificates) are attached and resend the email to complete the process.  If you believe this is an error or require assistance, feel free to reach out to the HR support team.  Best regards,  HR,    QAID Company.  ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        500,
+        420
+      ],
+      "id": "adb73398-bd99-49ce-a692-a7707429d80c",
+      "name": "Gmail3",
+      "webhookId": "752bdade-bf6c-4a96-abde-7f673cb439d0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        740,
+        420
+      ],
+      "id": "e1f6b3bf-aaf5-40ce-b7c9-8a5e9444fc10",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "JjMmhLRCLv1lEaa6",
+          "name": "OpenRouter New"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a document processor. Extract PDF file names from the following Google Drive data and return only JSON format.\n\nGoogle Drive Data: {{ JSON.stringify($input.all()) }}\n\nInstructions:\n1. Find all files with .pdf extension or mimeType \"application/pdf\"\n2. Extract only the file names\n3. Return format: {\"docs\": [\"name1.pdf\", \"name2.pdf\"]}\n4. If no PDFs: {\"docs\": []}\n\nResponse (JSON only):",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        720,
+        240
+      ],
+      "id": "df0d0891-f4e8-49f5-8eaf-96aaec82271d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "mode": "list",
+          "cachedResultName": "n8n-work-book",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Email Attachment Processing Agent for HRMS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Sender Email": "={{ $json.SenderEmail }}",
+            "expected": "={{ $json.expected }}",
+            "received_files": "={{ $json.received_files }}",
+            "missing": "={{ $json.missing }}",
+            "available_categories": "={{ $json.available_categories }}"
+          },
+          "matchingColumns": [
+            "Sender Email"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sender Email",
+              "displayName": "Sender Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "expected",
+              "displayName": "expected",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "received_files",
+              "displayName": "received_files",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "missing",
+              "displayName": "missing",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "available_categories",
+              "displayName": "available_categories",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1740,
+        220
+      ],
+      "id": "493e68dc-ae6a-4d4a-9a39-c1253bb331ba",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "zEaLif2NVdOGF6k8",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-files",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        520
+      ],
+      "id": "5dfd825d-81ae-4073-a40d-3ef5711ac618",
+      "name": "Webhook",
+      "webhookId": "e5d7bd98-bbac-473f-a1f9-55338909e7fe"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst items = $input.all();\nconst result = {\n  stats: {\n    processedAttachments: 0,\n    processingAttachments: 0,\n    failedAttachments: 0\n  },\n  expected: [\n    \"Resume\",\n    \"ID Proof\", \n    \"Offer Letter\",\n    \"Appointment Letter\",\n    \"Certificates\"\n  ],\n  received_files: [],\n  missing: [],\n  processingStatus: []\n};\n\nlet itemIndex = 0;\nlet processedItems = [];\n\n// Process each item\nitems.forEach((item, itemIdx) => {\n  let attachments = [];\n  let finalFileName = '';\n  let processedItem = JSON.parse(JSON.stringify(item)); // Deep copy\n  \n  // Ensure binary exists before proceeding\n  const binaryData = item.binary;\n  if (!binaryData || typeof binaryData !== 'object') {\n    // No binary data found, add to failed attachments\n    result.stats.failedAttachments++;\n    result.processingStatus.push({\n      id: `item_${itemIndex}`,\n      fileName: 'N/A',\n      fileType: 'N/A',\n      fileSize: 'N/A',\n      status: 'FAILED',\n      startTime: new Date().toISOString(),\n      endTime: new Date().toISOString(),\n      error: 'No binary data found'\n    });\n    itemIndex++;\n    processedItems.push(processedItem);\n    return;\n  }\n\n  // YOUR EXISTING LOGIC - Dynamically process attachments\n  if (item.json[\"source\"] === \"gmail\") {\n    for (let i = 0; i < Object.keys(binaryData).length; i++) {\n      let fieldName = `attachment_${i}`;\n      if (binaryData[fieldName]) {\n        let attachment = binaryData[fieldName];\n        finalFileName = attachment.fileName || 'default_resume.pdf';\n        \n        // Rename binary field from 'attachment_x' to 'fileX'\n        processedItem.binary[`file${i + 1}`] = attachment;\n        delete processedItem.binary[fieldName];\n        \n        // ENHANCED LOGIC - Add to tracking\n        result.received_files.push(finalFileName);\n        result.processingStatus.push({\n          id: `item_${itemIndex}`,\n          fileName: finalFileName,\n          fileType: attachment.mimeType || 'application/octet-stream',\n          fileSize: attachment.fileSize ? attachment.fileSize.toString() : 'unknown',\n          status: 'PROCESSING',\n          startTime: new Date().toISOString(),\n          endTime: null,\n          error: null\n        });\n        result.stats.processingAttachments++;\n        itemIndex++;\n      }\n    }\n  } else if (item.json[\"source\"] === \"webhook\") {\n    // Process Webhook files (files0, files1, files2, etc.)\n    for (let i = 0; i < Object.keys(binaryData).length; i++) {\n      let fieldName = `files${i}`;\n      if (binaryData[fieldName]) {\n        let attachment = binaryData[fieldName];\n        finalFileName = attachment.fileName || 'default_resume.pdf';\n        \n        // Rename binary field from 'files_x' to 'fileX'\n        processedItem.binary[`file${i + 1}`] = attachment;\n        delete processedItem.binary[fieldName];\n        \n        // ENHANCED LOGIC - Add to tracking\n        result.received_files.push(finalFileName);\n        result.processingStatus.push({\n          id: `item_${itemIndex}`,\n          fileName: finalFileName,\n          fileType: attachment.mimeType || 'application/octet-stream',\n          fileSize: attachment.fileSize ? attachment.fileSize.toString() : 'unknown',\n          status: 'PROCESSING',\n          startTime: new Date().toISOString(),\n          endTime: null,\n          error: null\n        });\n        result.stats.processingAttachments++;\n        itemIndex++;\n      }\n    }\n  } else {\n    // YOUR EXISTING FALLBACK LOGIC\n    const binaryKeys = Object.keys(binaryData);\n    let fileCounter = 1;\n    binaryKeys.forEach((key) => {\n      if (key.startsWith('attachment_') || key.startsWith('files')) {\n        const attachment = binaryData[key];\n        finalFileName = attachment.fileName || 'default_resume.pdf';\n        \n        processedItem.binary[`file${fileCounter}`] = attachment;\n        delete processedItem.binary[key];\n        \n        // ENHANCED LOGIC - Add to tracking\n        result.received_files.push(finalFileName);\n        result.processingStatus.push({\n          id: `item_${itemIndex}`,\n          fileName: finalFileName,\n          fileType: attachment.mimeType || 'application/octet-stream',\n          fileSize: attachment.fileSize ? attachment.fileSize.toString() : 'unknown',\n          status: 'PROCESSING',\n          startTime: new Date().toISOString(),\n          endTime: null,\n          error: null\n        });\n        result.stats.processingAttachments++;\n        itemIndex++;\n        fileCounter++;\n      }\n    });\n  }\n  \n  processedItems.push(processedItem);\n});\n\n// ENHANCED LOGIC - Determine missing documents\nresult.missing = result.expected.filter(expectedDoc => {\n  return !result.received_files.some(receivedFile => {\n    const cleanFileName = receivedFile.toLowerCase().replace(/[_\\-\\.]/g, ' ');\n    const cleanExpected = expectedDoc.toLowerCase().replace(/[_\\-\\.]/g, ' ');\n    \n    // Check for keyword matches\n    if (expectedDoc === 'Resume') {\n      return cleanFileName.includes('resume') || cleanFileName.includes('cv');\n    }\n    if (expectedDoc === 'ID Proof') {\n      return cleanFileName.includes('id') || cleanFileName.includes('passport') || \n             cleanFileName.includes('aadhar') || cleanFileName.includes('pan');\n    }\n    if (expectedDoc === 'Offer Letter') {\n      return cleanFileName.includes('offer') && cleanFileName.includes('letter');\n    }\n    if (expectedDoc === 'Appointment Letter') {\n      return cleanFileName.includes('appointment') && cleanFileName.includes('letter');\n    }\n    if (expectedDoc === 'Certificates') {\n      return cleanFileName.includes('certificate') || cleanFileName.includes('diploma') || \n             cleanFileName.includes('degree') || cleanFileName.includes('certification');\n    }\n    \n    return cleanFileName.includes(cleanExpected);\n  });\n});\n\n// Return both the processed items (for downstream nodes) and the result data\nreturn processedItems.map(item => ({\n  ...item,\n  json: {\n    ...item.json,\n    ...result\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -160,
+        340
+      ],
+      "id": "f9d3bc88-fe40-4822-ae1f-e8730e71b2bd",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7256994f-42e4-4ff9-9e61-469aa6d3ee25",
+              "name": "Name",
+              "value": "={{ $json.body.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "b4666902-2439-4ae1-82af-0883d1630204",
+              "name": "Subject",
+              "value": "={{ $json.body.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "3706949f-b0af-481c-994a-f674ec819317",
+              "name": "SenderEmail",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "159c9c32-cf2d-46b8-bb8f-754e78e6f33b",
+              "name": "messageId",
+              "value": "={{ $json.body.messageId }}",
+              "type": "string"
+            },
+            {
+              "id": "f873e8b2-040a-434f-9427-cbbf0b8c2fae",
+              "name": "id",
+              "value": "={{ $json.body.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        600
+      ],
+      "id": "2d4f0ec0-87dc-4d58-bc9e-5d8a2db993d2",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e3256399-7d1d-4231-992e-ed2d8d4beec4",
+              "leftValue": "={{ $('Edit Fields1').item.json.id }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1960,
+        220
+      ],
+      "id": "131dec89-4cf3-4edc-988f-d5b61240029a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields1').item.json.SenderEmail }}",
+        "subject": "={{ $('Edit Fields1').item.json.Subject }}",
+        "emailType": "text",
+        "message": "=Dear {{ $('Google Sheets').item.json.Name }}  These documents are missing from the list.Please send an mail with the required documents {{ $('Google Sheets').item.json.missing }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2180,
+        120
+      ],
+      "id": "be3d5c0f-a636-4840-8f70-481fff0b25a9",
+      "name": "Gmail2",
+      "webhookId": "0e78363c-4be8-49e7-9c35-06bd764f59d4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Yzw60DakUdeHKqfQ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Input data from previous node\nconst inputData = $input.all();\n\n// Function to extract name from filename or email\nfunction extractName(files, email) {\n  // Try to extract name from filename first\n  for (const file of files) {\n    const fileName = file.replace(/\\.(pdf|doc|docx|jpg|png)$/i, '');\n    \n    // Look for patterns like \"FirstName_LastName\" or \"FirstName LastName\"\n    const nameMatch = fileName.match(/^([A-Za-z]+)[_\\s]+([A-Za-z]+)/);\n    if (nameMatch) {\n      return `${nameMatch[1]} ${nameMatch[2]}`;\n    }\n    \n    // Look for single name patterns\n    const singleNameMatch = fileName.match(/^([A-Za-z]{2,})/);\n    if (singleNameMatch && singleNameMatch[1].length > 2) {\n      return singleNameMatch[1];\n    }\n  }\n  \n  // Fallback to extracting from email\n  if (email) {\n    const emailName = email.split('@')[0];\n    const nameParts = emailName.split(/[._-]/);\n    if (nameParts.length >= 2) {\n      return nameParts.map(part => \n        part.charAt(0).toUpperCase() + part.slice(1).toLowerCase()\n      ).join(' ');\n    }\n    return emailName.charAt(0).toUpperCase() + emailName.slice(1).toLowerCase();\n  }\n  \n  return \"Unknown User\";\n}\n\n// Function to identify document type from filename\nfunction identifyDocumentType(fileName) {\n  const lowerFileName = fileName.toLowerCase();\n  \n  if (lowerFileName.includes('resume') || lowerFileName.includes('cv')) return 'Resume';\n  if (lowerFileName.includes('appointment') && lowerFileName.includes('letter')) return 'Appointment Letter';\n  if (lowerFileName.includes('offer') && lowerFileName.includes('letter')) return 'Offer Letter';\n  if (lowerFileName.includes('certificate') || lowerFileName.includes('cert')) return 'Certificates';\n  if (lowerFileName.includes('id') || lowerFileName.includes('proof') || lowerFileName.includes('identity')) return 'ID Proof';\n  if (lowerFileName.includes('passport')) return 'ID Proof';\n  if (lowerFileName.includes('license') || lowerFileName.includes('licence')) return 'ID Proof';\n  \n  return null;\n}\n\n// Function to generate message ID\nfunction generateMessageId(index, name) {\n  const prefix = name ? name.replace(/\\s+/g, '').substring(0, 3).toUpperCase() : 'API';\n  return `${prefix}_${String(index + 1).padStart(3, '0')}`;\n}\n\n// Function to extract subject\nfunction extractSubject(data) {\n  if (data.Subject) return data.Subject;\n  if (data.title) return data.title;\n  \n  // Default subject based on document types\n  const hasOnboarding = data.expected && data.expected.some(doc => \n    ['Resume', 'ID Proof', 'Appointment Letter', 'Offer Letter'].includes(doc)\n  );\n  \n  return hasOnboarding ? 'Onboarding Documents Submission' : 'Document Processing';\n}\n\n// Transform each input item\nconst transformedData = inputData.map((item, index) => {\n  const data = item.json;\n  \n  // Extract dynamic values\n  const extractedEmail = $('Merge').first().json.SenderEmail || `user${index + 1}@example.com`; // Use SenderEmail directly\n  const extractedName = extractName(data.received_files || [], extractedEmail);\n  const extractedSubject = extractSubject(data);\n  \n  // Calculate stats dynamically\n  const totalFiles = data.received_files ? data.received_files.length : 0;\n  const processingFiles = data.stats ? data.stats.processingAttachments : 0;\n  const failedFiles = data.stats ? data.stats.failedAttachments : 0;\n  const processedFiles = totalFiles - processingFiles;\n  \n  // Directly use the missing data from input JSON\n  const missing = data.missing || [];\n  \n  // Transform processing status dynamically\n  const transformedProcessingStatus = (data.processingStatus || []).map((statusItem, idx) => {\n    const isCompleted = data.received_files && data.received_files.includes(statusItem.fileName);\n    const currentTime = new Date().toISOString();\n    \n    return {\n      id: statusItem.id || `item_${idx}`,\n      fileName: statusItem.fileName,\n      fileType: statusItem.fileType || 'application/pdf',\n      fileSize: statusItem.fileSize === \"123456\" || statusItem.fileSize === \"789012\" ? \"unknown\" : (statusItem.fileSize || \"unknown\"),\n      status: isCompleted ? \"COMPLETED\" : (statusItem.status || \"PROCESSING\"),\n      startTime: statusItem.startTime || currentTime,\n      endTime: isCompleted ? currentTime : statusItem.endTime,\n      error: statusItem.error\n    };\n  });\n  \n  // Build the transformed object\n  return {\n    Name: extractedName,\n    Subject: extractedSubject,\n    SenderEmail: extractedEmail,\n    messageId: generateMessageId(index, extractedName),\n    id: data.id || \"\",\n    stats: {\n      processedAttachments: processedFiles,\n      processingAttachments: processingFiles,\n      failedAttachments: failedFiles\n    },\n    expected: data.expected || [],\n    received_files: data.received_files || [],\n    missing: missing,\n    processingStatus: transformedProcessingStatus\n  };\n});\n\n// Return the transformed data\nreturn transformedData;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        520
+      ],
+      "id": "27c66191-2316-476e-ab02-3e8ba3dab4b0",
+      "name": "Final Response"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1980,
+        680
+      ],
+      "id": "5a8ff114-68f7-4558-a05e-b1004283fc79",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Parse Email Data": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Attachments?": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle No Attachments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Handle No Attachments": {
+      "main": [
+        [
+          {
+            "node": "Gmail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Error": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Parse Email Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Final Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Has Attachments?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bd8ea6cd-7ff9-4f7d-9910-24c9b3e8f646",
+  "meta": {
+    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+  },
+  "id": "mBUZQajjvd4NMrZ6",
+  "tags": [
+    {
+      "createdAt": "2025-06-06T12:12:14.923Z",
+      "updatedAt": "2025-06-06T12:12:14.923Z",
+      "id": "5zzYKeYCiMezpsml",
+      "name": "HRMS Automation"
+    },
+    {
+      "createdAt": "2025-06-06T12:12:14.915Z",
+      "updatedAt": "2025-06-06T12:12:14.915Z",
+      "id": "Ztx2Vx5t2vXJGB7Q",
+      "name": "Document Management"
+    },
+    {
+      "createdAt": "2025-06-06T12:12:14.928Z",
+      "updatedAt": "2025-06-06T12:12:14.928Z",
+      "id": "ederssWZTBXAOxtY",
+      "name": "Email Processing"
+    }
+  ]
+}
