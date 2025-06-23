@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaRobot, FaArrowRight, FaUser } from 'react-icons/fa';
 import axios from 'axios';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import CoverScreen from '../components/CoverScreen';
+import AICustomerSupportWorkflowSVG from '../components/AICustomerSupportWorkflowSVG';
 
 // Workflow node icons
 const workflowNodes = [
@@ -12,6 +13,34 @@ const workflowNodes = [
   { id: 'ai', icon: '🤖', label: 'AI Agent' },
   { id: 'response', icon: '📤', label: 'Response' },
 ];
+
+const details = (
+  <div className="space-y-6">
+    <div>
+      <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+      <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+        <li>Customer Portals: Handle product queries via AI-powered live chat.</li>
+        <li>Internal Helpdesks: Route and resolve common employee questions automatically.</li>
+        <li>Knowledge Base Enhancer: Pulls dynamic answers from Google Sheets without coding.</li>
+        <li>E-learning Support: Assist learners using pre-filled knowledge queries.</li>
+        <li>Form-Free Support: Eliminate the need for ticket forms.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+      <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+        <li>Instant Conversations: Reacts when a message is received, no delay.</li>
+        <li>Google Sheets Query Integration: Easily configurable query-response model.</li>
+        <li>Memory Buffer Window: Context-aware replies across long sessions.</li>
+        <li>Zero Setup Training: Just fill in the sheet—no NLP training needed.</li>
+        <li>Low-Code, High-Flexibility: Plug-and-play into any website or dashboard.</li>
+      </ul>
+    </div>
+    <div className="mt-6 text-center">
+      <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Launch your AI customer agent in 5 minutes—turn support into satisfaction with no coding.</span>
+    </div>
+  </div>
+);
 
 const AICustomerSupportContent = () => {
   const [message, setMessage] = useState('');
@@ -200,40 +229,18 @@ const AICustomerSupportContent = () => {
 };
 
 const AICustomerSupport = () => {
-  return (
-    <PageRevealWrapper
+  const [showCover, setShowCover] = useState(true);
+
+  return showCover ? (
+    <CoverScreen
       heading="AI Chat-Driven Support Agent"
       description="This agent provides real-time, AI-powered responses to user queries using a simple chat interface. It intelligently queries Google Sheets based on user questions and replies with relevant, accurate, and human-like answers—perfect for customer support or FAQ automation. Ideal for SaaS businesses, product teams, or service portals that want instant responses without heavy manual tagging or chatbot programming."
-      details={
-        <div className="space-y-6">
-          <div>
-            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
-            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-              <li>Customer Portals: Handle product queries via AI-powered live chat.</li>
-              <li>Internal Helpdesks: Route and resolve common employee questions automatically.</li>
-              <li>Knowledge Base Enhancer: Pulls dynamic answers from Google Sheets without coding.</li>
-              <li>E-learning Support: Assist learners using pre-filled knowledge queries.</li>
-              <li>Form-Free Support: Eliminate the need for ticket forms.</li>
-            </ul>
-          </div>
-          <div>
-            <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
-            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-              <li>Instant Conversations: Reacts when a message is received, no delay.</li>
-              <li>Google Sheets Query Integration: Easily configurable query-response model.</li>
-              <li>Memory Buffer Window: Context-aware replies across long sessions.</li>
-              <li>Zero Setup Training: Just fill in the sheet—no NLP training needed.</li>
-              <li>Low-Code, High-Flexibility: Plug-and-play into any website or dashboard.</li>
-            </ul>
-          </div>
-          <div className="mt-6 text-center">
-            <span className="inline-block bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Launch your AI customer agent in 5 minutes—turn support into satisfaction with no coding.</span>
-          </div>
-        </div>
-      }
-    >
-      <AICustomerSupportContent />
-    </PageRevealWrapper>
+      details={details}
+      workflowSVG={AICustomerSupportWorkflowSVG}
+      onStart={() => setShowCover(false)}
+    />
+  ) : (
+    <AICustomerSupportContent />
   );
 };
 

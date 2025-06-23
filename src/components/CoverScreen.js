@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const CoverScreen = ({ onStart, heading, description, details }) => {
+const CoverScreen = ({ onStart, heading, description, details, workflowSVG: WorkflowSVG }) => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-start p-4 font-sans bg-gradient-to-br from-pink-100 via-white to-indigo-100">
       {/* Main Heading */}
@@ -16,13 +16,19 @@ const CoverScreen = ({ onStart, heading, description, details }) => {
         </p>
       </div>
 
-      {/* Centered Image */}
+      {/* Centered Image or SVG */}
       <div className="w-full flex justify-center mb-12">
-        <img
-          src={'https://plus.unsplash.com/premium_photo-1663040543283-a39c4554106b?q=80&w=2070&auto=format&fit=crop'}
-          alt="AI Assistant"
-          className="rounded-2xl shadow-xl w-full max-w-2xl object-cover border-4 border-white"
-        />
+        {WorkflowSVG ? (
+          <div className="w-full max-w-2xl rounded-2xl shadow-xl border-4 border-white bg-gradient-to-br from-[#232946] to-[#181c2f] flex items-center justify-center" style={{ minHeight: 260 }}>
+            <WorkflowSVG width={820} height={260} />
+          </div>
+        ) : (
+          <img
+            src={'https://plus.unsplash.com/premium_photo-1663040543283-a39c4554106b?q=80&w=2070&auto=format&fit=crop'}
+            alt="AI Assistant"
+            className="rounded-2xl shadow-xl w-full max-w-2xl object-cover border-4 border-white"
+          />
+        )}
       </div>
 
       {/* Details Section for rich content */}
