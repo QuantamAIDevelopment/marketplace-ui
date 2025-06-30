@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaSmile } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -144,6 +144,12 @@ const workflowData = [
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
+  },
+  {
+    title: 'Sentiment Agent AI Workflow',
+    icon: FaSmile,
+    path: '/sentiment-agent',
+    summary: 'Analyze customer feedback, extract sentiment, tags, urgency, and generate actionable reports.'
   }
 ];
 
@@ -204,4 +210,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
