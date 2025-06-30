@@ -1,0 +1,576 @@
+{
+  "name": "LeavePredict AI — Absenteeism & Leave Pattern Prediction Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cff82532-0ee9-432e-bcab-d9e153cb6bba",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "demo",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        280
+      ],
+      "id": "9472749e-a3c0-4606-b7c6-f6cce33dfe91",
+      "name": "Webhook",
+      "webhookId": "991d4070-05d1-4a8a-a76d-3026a57129d9"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const leaveDateStr = item.json[\"Leave_Date\"];\n  const leaveDate = new Date(leaveDateStr);\n  const day = leaveDate.toLocaleDateString(\"en-US\", { weekday: \"long\" });\n\n  const nearWeekend = (day === \"Monday\" || day === \"Friday\") ? 1 : 0;\n\n  // List of known public holidays (customize as needed)\n  const festiveDates = [\"2025-06-02\", \"2025-06-05\"];\n  const isFestive = festiveDates.includes(leaveDateStr) ? 1 : 0;\n\n  return {\n    json: {\n      ...item.json,\n      DayOfWeek: day,\n      NearWeekend: nearWeekend,\n      FestiveFlag: isFestive,\n      LoginMissed: Number(item.json[\"Login_Missed\"] || 0),\n      EngagementScore: Number(item.json[\"Engagement_Score\"] || 0),\n      Duration: Number(item.json[\"Duration\"] || 1)\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        480,
+        120
+      ],
+      "id": "9d3f9afe-3995-4a25-8885-a7b4f594778a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const grouped = {};\nfor (const item of items) {\n  const empId = item.json[\"Employee_ID\"];\n  if (!grouped[empId]) grouped[empId] = [];\n  grouped[empId].push(item.json);\n}\n\nreturn Object.entries(grouped).map(([empId, records]) => ({\n  json: {\n    \"Employee_ID\": empId,\n    records\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        120
+      ],
+      "id": "36bfa96d-b76d-41f2-9829-a9b470dbb278",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const records = item.json.records;\n  const recent = records[records.length - 1];\n\n  const leaveDates = records.map(r => r[\"Leave_Date\"]).join(\", \");\n  const weekendCount = records.filter(r => r.NearWeekend === 1).length;\n  const festiveCount = records.filter(r => r.FestiveFlag === 1).length;\n  const loginMissed = records.reduce((sum, r) => sum + r.LoginMissed, 0);\n  const avgEngagement = records.reduce((sum, r) => sum + r.EngagementScore, 0) / records.length;\n\n  return {\n    json: {\n      \"Employee_ID\": recent[\"Employee_ID\"],\n      Name: recent.Name,\n      Department: recent.Department,\n      LeaveDates: leaveDates,\n      WeekendLeaves: weekendCount,\n      FestiveLeaves: festiveCount,\n      LoginMissed: loginMissed,\n      AvgEngagement: avgEngagement.toFixed(1),\n      TotalLeaves: records.length\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        920,
+        120
+      ],
+      "id": "f6300a2d-c7e2-4f4f-89b4-980741000c96",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an HR analytics AI. Based on the employee's leave and behavioral history, classify absenteeism risk as Low, Medium, or High. Also provide a short explanation and a suggested HR action.\n\nHere is the data:\n- Emoloyee ID : {{ $json['Employee_ID'] }}\n- Name: {{ $json.Name }}\n- Department: {{ $json.Department }}\n- Total Leaves: {{ $json.TotalLeaves }}\n- Weekend Leaves: {{ $json.WeekendLeaves }}\n- Festive Leaves: {{ $json.FestiveLeaves }}\n- Missed Logins: {{ $json.LoginMissed }}\n- Average Engagement Score: {{ $json.AvgEngagement }}\n- Leave Dates: {{ $json.LeaveDates }}\n\nRespond format:\n{\n  \"Employee_ID\": \"...\",\n  \"Department\": \"...\",\n  \"RiskLevel\": \"...\",\n  \"AbsenteeismProbability\": \"...%\",\n  \"Explanation\": \"...\",\n  \"SuggestedAction\": \"...\"\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        120
+      ],
+      "id": "f29902b6-562c-4d15-af52-c3d109f60471",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const raw = item.json.output || \"\"; // ✅ use current item, not first input\n\n  let parsed;\n\n  try {\n    // Clean escape characters (e.g., \\n, \\\")\n    const cleaned = raw.replace(/\\\\n/g, \"\").replace(/\\\\\"/g, '\"');\n\n    // Extract the JSON portion if there's surrounding text\n    const match = cleaned.match(/\\{[\\s\\S]*?\\}/);\n    parsed = match ? JSON.parse(match[0]) : null;\n  } catch (err) {\n    parsed = null;\n  }\n\n  if (!parsed) {\n    return {\n      json: {\n        ...item.json,\n        RiskLevel: \"Unknown\",\n        AbsenteeismProbability: \"N/A\",\n        Explanation: \"AI output could not be parsed.\",\n        SuggestedAction: \"Manual review required\",\n        Employee_ID: item.json.Employee_ID || \"Unknown\",\n        Department: item.json.Department || \"Unknown\"\n      }\n    };\n  }\n\n  // ✅ Use parsed fields (from agent output)\n  return {\n    json: {\n      Employee_ID: parsed.Employee_ID,\n      Department: parsed.Department,\n      RiskLevel: parsed.RiskLevel,\n      AbsenteeismProbability: parsed.AbsenteeismProbability,\n      Explanation: parsed.Explanation,\n      SuggestedAction: parsed.SuggestedAction\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        120
+      ],
+      "id": "0afdcbde-6f35-4ab8-819c-c29347e8926a",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        300
+      ],
+      "id": "3a7712b4-f7c3-4e22-82bd-5c72b5b6eaa9",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "onErmblxeyXMvBd1",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(item => `\n  <tr>\n    <td>${item.json.Employee_ID}</td>\n    <td>${item.json.Department}</td>\n    <td>${item.json.RiskLevel}</td>\n    <td>${item.json.AbsenteeismProbability}</td>\n    <td>${item.json.Explanation}</td>\n    <td>${item.json.SuggestedAction}</td>\n  </tr>`).join('');\n\nconst html = `\n  <h3>Absenteeism Forecast – ${new Date().toLocaleDateString()}</h3>\n  <table border=\"1\" cellpadding=\"5\" cellspacing=\"0\">\n    <tr><th>ID</th><th>Department</th><th>Risk</th><th>Probability</th><th>Explanation</th><th>Action</th></tr>\n    ${rows}\n  </table>\n`;\n\nreturn [{ json: { html } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        120
+      ],
+      "id": "7d91d3e3-4ee9-457b-8c18-d6a402dc2d88",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        240,
+        280
+      ],
+      "id": "8a4f502f-c228-473e-abb2-106aff16b5ac",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JNQJixbjPRCTcpDPVU_fkU1QzDs30qo_241eAZFRkTs",
+          "mode": "list",
+          "cachedResultName": "Leave Predict AI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JNQJixbjPRCTcpDPVU_fkU1QzDs30qo_241eAZFRkTs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 141118659,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JNQJixbjPRCTcpDPVU_fkU1QzDs30qo_241eAZFRkTs/edit#gid=141118659"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        260,
+        0
+      ],
+      "id": "0e7ed9b3-d88f-43ec-b1f5-1d4bf28f64a0",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rh0enSY0NMPaldET",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const employees = $input.all().map(item => item.json);\n\nconst filteredEmployees = employees.filter(emp =>\n  emp.RiskLevel === \"Medium\" || emp.RiskLevel === \"High\"\n);\n\nreturn filteredEmployees.map(emp => ({ json: emp }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1800,
+        120
+      ],
+      "id": "36b14ebb-3549-4a57-852a-df489b9c9dfc",
+      "name": "Code5"
+    },
+    {
+      "parameters": {
+        "sendTo": "dineshkumarmachavarapu55@gmail.com",
+        "subject": "Leave Prediction Report",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2280,
+        120
+      ],
+      "id": "59b26660-2260-4ae3-8c69-83541f5ef31a",
+      "name": "Send a message",
+      "webhookId": "56c84d2d-7a20-4a79-80b9-8b1cada1d8ce",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nsqPTvRCzlqqthql",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filter for employees that still need manual review\nconst flagged = items.filter(item =>\n  !item.json.RiskLevel || item.json.RiskLevel === 'Unknown' ||\n  !item.json.SuggestedAction || item.json.SuggestedAction === 'Manual review required' || item.json.SuggestedAction === 'LeavePredict AI could not analyze records'\n);\n\n// If nothing is flagged, return an empty array (workflow branch ends here)\nif (flagged.length === 0) {\n  return [];\n}\n\n// Otherwise return each flagged employee as its own item\nreturn flagged.map(emp => ({\n  json: {\n    Employee_ID:     emp.json.Employee_ID  || 'Unknown',\n    Name:            emp.json.Name         || 'Unknown',\n    Department:      emp.json.Department   || 'Unknown',\n    RiskLevel:       emp.json.RiskLevel    || 'Unknown',\n    SuggestedAction: emp.json.SuggestedAction || 'Manual review required',\n    Alert_Message:   `⚠️ LeavePredict AI could not analyze records for ${emp.json.Employee_ID}. Manual review required.`\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1820,
+        400
+      ],
+      "id": "2791b02f-19a1-4454-9f97-0a005cc6b9db",
+      "name": "Code7"
+    },
+    {
+      "parameters": {
+        "jsCode": "const flagged = items.filter(item =>\n  !item.json.RiskLevel || item.json.RiskLevel === 'Unknown' ||\n  !item.json.SuggestedAction || item.json.SuggestedAction === 'Manual review required'\n);\n\nif (flagged.length === 0) {\n  return [{\n    json: {\n      html_table: \"<p>✅ No flagged employees. All predictions are complete.</p>\"\n    }\n  }];\n}\n\n// Build HTML table\nlet html = `\n  <h3>⚠️ Incomplete Leave Predictions - Manual Review Needed</h3>\n  <table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse: collapse; font-family: Arial, sans-serif;\">\n    <thead style=\"background-color: #f2f2f2;\">\n      <tr>\n        <th>Employee ID</th>\n        <th>Name</th>\n        <th>Department</th>\n        <th>Risk Level</th>\n        <th>Suggested Action</th>\n      </tr>\n    </thead>\n    <tbody>\n`;\n\nfor (const emp of flagged) {\n  html += `\n    <tr>\n      <td>${emp.json.Employee_ID || 'Unknown'}</td>\n      <td>${emp.json.Name || 'Unknown'}</td>\n      <td>${emp.json.Department || 'Unknown'}</td>\n      <td>${emp.json.RiskLevel || 'Unknown'}</td>\n      <td>${emp.json.SuggestedAction || 'Manual review required'}</td>\n    </tr>\n  `;\n}\n\nhtml += `\n    </tbody>\n  </table>\n`;\n\nreturn [{\n  json: {\n    html_table: html\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2040,
+        400
+      ],
+      "id": "19c64ecd-4364-4e37-8ec0-c5a17f9aa7f6",
+      "name": "Code8"
+    },
+    {
+      "parameters": {
+        "sendTo": "dineshkumarmachavarapu55@gmail.com",
+        "subject": "Logs Report",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2280,
+        400
+      ],
+      "id": "15370310-cc3a-49ef-8114-e280e5f97d76",
+      "name": "Send a message1",
+      "webhookId": "90920c66-9146-4d51-ada5-d9b910a47223",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nsqPTvRCzlqqthql",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1JNQJixbjPRCTcpDPVU_fkU1QzDs30qo_241eAZFRkTs",
+          "mode": "list",
+          "cachedResultName": "Leave Predict AI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JNQJixbjPRCTcpDPVU_fkU1QzDs30qo_241eAZFRkTs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 563307493,
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JNQJixbjPRCTcpDPVU_fkU1QzDs30qo_241eAZFRkTs/edit#gid=563307493"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Employee_ID",
+              "displayName": "Employee_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Risk_Level",
+              "displayName": "Risk_Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Suggested_action",
+              "displayName": "Suggested_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Alert_Message",
+              "displayName": "Alert_Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2060,
+        640
+      ],
+      "id": "1ca7606f-1eeb-405f-8a30-44cca52728d1",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rh0enSY0NMPaldET",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2060,
+        -100
+      ],
+      "id": "3c47d98a-d286-4312-a3a3-39cb03629243",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Code5",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code5": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code7": {
+      "main": [
+        [
+          {
+            "node": "Code8",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code8": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cc555cdb-e587-467d-87f9-277b8d8abd13",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4a468ace7106e74b87616f60bb720b775992731bbd06a752a74274345b8edb5c"
+  },
+  "id": "B43FwDCjy5ngrI2K",
+  "tags": []
+}
