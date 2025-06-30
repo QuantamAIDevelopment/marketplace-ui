@@ -14,6 +14,7 @@ import PolicyChangeNotification from './workflows/PolicyChangeNotification';
 import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
 import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
+import EventMindAI from './workflows/EventMindAI';
 
 const workflows = [
   {
@@ -83,6 +84,12 @@ const workflows = [
     icon: FaBoxOpen,
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
+  },
+  {
+    title: 'EventMind AI – Event Planner',
+    icon: FaCalendarAlt,
+    path: '/eventmind-ai',
+    description: 'AI-powered event planning: get instant suggestions for themes, venues, activities, and logistics.',
   },
 ];
 

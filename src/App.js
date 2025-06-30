@@ -21,6 +21,7 @@ import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import EventMindAIPage from './pages/EventMindAIPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -53,6 +54,7 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/eventmind-ai" element={<EventMindAIPage />} />
             </Routes>
           </main>
         </div>

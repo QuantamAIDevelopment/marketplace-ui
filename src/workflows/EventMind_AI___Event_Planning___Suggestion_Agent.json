@@ -1,0 +1,854 @@
+{
+  "name": "EventMind AI – Event Planning & Suggestion Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2664becc-3a58-4902-a534-14030f4e9e64",
+              "leftValue": "={{ $json.body.event_type }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "074a8fb6-79ca-4a89-910d-1ff439d5bae9",
+              "leftValue": "={{ $json.body.event_date }}",
+              "rightValue": "",
+              "operator": {
+                "type": "dateTime",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "7b7fcb7b-9cdd-483b-a94e-fb4d92223726",
+              "leftValue": "={{ $json.body.team_size }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "cf53bce1-6ae1-4993-a245-69b5c278c179",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1180,
+        60
+      ],
+      "id": "8333ed44-bf0a-400e-926d-3594c86d6162",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "SOMIFBwWjVdKOtsa",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        1820,
+        200
+      ],
+      "id": "4b55e7a6-d209-42f8-bede-f802f2dc7af9",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2e3738cb-2cec-4d5d-ad07-f0b26dd727cf",
+              "leftValue": "={{ $json.daysUntilReminder }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2100,
+        220
+      ],
+      "id": "25f2aa50-c1b9-46c5-bf83-669417ebd526",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "557238aa-ef88-425c-a46f-978426d6c161",
+              "leftValue": "={{ $('Event Suggestions').item.json.choices[0].message.content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "4b5a4ec3-e6e1-4572-a0f2-db42d48d01d2",
+              "leftValue": "={{ $('Event input').item.json.body.event_date }}",
+              "rightValue": "",
+              "operator": {
+                "type": "dateTime",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "56e644a1-9653-4ba7-ae76-af43ceb9788f",
+              "leftValue": "={{ $('Event input').item.json.body.team_size }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1740,
+        -40
+      ],
+      "id": "94a1e59f-78f6-4008-81ee-edf10a375030",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Plan",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f30c8dcf-4985-4d1c-b05c-4182324c5fea",
+      "name": "Event input",
+      "webhookId": "3614256c-8eb4-4edf-be57-f8b012d9174b"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gpt-4o-mini\",\n  \"temperature\": 0.7,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are an AI event planning assistant.\\n\\nSuggest a fun theme, a suitable venue, and 3 engaging activities (including at least one team-building activity and a food-related item) for the following event:\\n\\nEvent Type: {{$json[\"body\"][\"event_type\"]}}\\nLocation: {{$json[\"body\"][\"location\"]}}\\nDate: {{$json[\"body\"][\"event_date\"]}}\\nTeam Size: {{$json[\"body\"][\"team_size\"]}}\\nBudget: ₹{{$json[\"body\"][\"budget\"]}}\\n\\nUse a casual tone.\\n\\nRespond only in the following JSON format:\\n\\n{\\n  \\\"theme\\\": \\\"string\\\",\\n  \\\"venue\\\": \\\"string\\\",\\n  \\\"activities\\\": \\\"string (3 activities in one string, comma-separated or numbered)\\\"\\n}\"\n    }\n  ]\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        -120
+      ],
+      "id": "7ec31a13-5b71-4824-b289-1199d5587131",
+      "name": "Event Suggestions"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9e220091-6bb6-41cc-bb66-d971dbc874e8",
+              "name": "event_date",
+              "value": "={{ $('If').item.json.body.event_date }}",
+              "type": "string"
+            },
+            {
+              "id": "e9be3831-9b88-42c6-915f-6f5fde0eebd5",
+              "name": "team_size",
+              "value": "={{ $('If').item.json.body.team_size }}",
+              "type": "string"
+            },
+            {
+              "id": "65e83572-57fb-478c-9485-8cd8cba97c60",
+              "name": "budget",
+              "value": "={{ $('If').item.json.body.budget }}",
+              "type": "string"
+            },
+            {
+              "id": "41e550c1-cc7f-4ed7-9489-3dcd8751570e",
+              "name": "event_type",
+              "value": "={{ $('If').item.json.body.event_type }}",
+              "type": "string"
+            },
+            {
+              "id": "37656957-8a87-4a85-ba64-ba29bda55e4a",
+              "name": "location",
+              "value": "={{ $('If').item.json.body.location }}",
+              "type": "string"
+            },
+            {
+              "id": "2ed8545d-2eec-4785-81d3-b8022930babe",
+              "name": "preferences",
+              "value": "={{ $('If').item.json.body.preferences }}",
+              "type": "string"
+            },
+            {
+              "id": "eb49df2e-a0e3-4153-bdfe-a17d1d69a3aa",
+              "name": "theme",
+              "value": "={{ $json.theme }}",
+              "type": "string"
+            },
+            {
+              "id": "9164e96b-c111-4555-a6f3-c6f6468ee926",
+              "name": "venue",
+              "value": "={{ $json.venue }}",
+              "type": "string"
+            },
+            {
+              "id": "c2815e9f-3ec3-472a-8d15-621b02954796",
+              "name": "activities",
+              "value": "={{ $json.activities }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        800,
+        -120
+      ],
+      "id": "90d2b02a-0f64-405e-a7f9-a6a7f55e5d7c",
+      "name": "Event Details"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI event planning assistant. Use the structured input below to write a friendly and well-formatted summary of the planned team event. Your goal is to present it in a concise Slack or email-friendly format.\n\n🎯 Format Guidelines:\n- Start with: 🎉 Suggested Plan: {{ $json.event_type }} – {{ $json.preferences }}\n- Date, attendees, location should appear on one line.\n- Show a theme and venue if available from preferences or inferred from activities.\n- List activity titles only (no descriptions).\n- From the checklist, show top 3 items as: ✅ Task (by Deadline)\n- Show the final estimated budget from the budget object.\n- End with: _Generated by QAID’s EventMind AI_\n\n---\n\n### Structured Input:\n\n- Event Type: {{ $json.event_type }}\n- Event Date: {{ $json.event_date }}\n- Location: {{ $json.location }}\n- Preferences: {{ $json.preferences }}  \n- Attendees: {{ $json.attendees }}\n\n- Activities:\n{{ $json.activities }}\n\n- Checklist:\n{{ $json.checklist }}\n\n- Budget:\n{{ $json.budget.estimated_total }}\n\n---\n\n🎉 Suggested Plan: {{ $json.event_type }} – {{ $json.preferences }}\n📅 Date: {{ $json.event_date }} | 👥 Attendees: {{ $json.attendees }} | 📍 {{ $json.location }}\n\n🔹 Theme: {{ $json.theme }}  \n🔹 Venue: {{ $json.venue }}  \n🔹 Activities:\n{{ $json.activities }}\n📝 Logistics:\n{{ $json.checklist }}\n\n💰 Budget: ₹{{ $json.budget.estimated_total }}\n\n_Generated by QAID’s EventMind AI_\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        -140
+      ],
+      "id": "231a4b95-7aaa-4e52-a52c-781b7578ce3b",
+      "name": "Event Plan Agent"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "checklist",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1220,
+        200
+      ],
+      "id": "f48c2a83-9283-41a7-9221-661ece99a0cf",
+      "name": "Checklist splitter"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.checklist;\n\n// Step 1: Split lines\nconst lines = rawText.split('\\n');\n\n// Step 2: Parse each line\nconst tasks = lines.map(line => {\n  const match = line.match(/📌 (.+?) - by (\\d{4}-\\d{2}-\\d{2}) \\((.+?)\\)/);\n  if (!match) return null;\n\n  return {\n    task: match[1],\n    deadline: match[2],\n    assignee: match[3]\n  };\n}).filter(Boolean); // Remove nulls from lines that didn't match\n\n// Step 3: Return result (for n8n or elsewhere)\nreturn tasks.map(task => ({ json: task }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1420,
+        200
+      ],
+      "id": "ca739248-3b46-44e0-8fe2-1b8069284785",
+      "name": "Checklist Assignee"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.choices[0].message.content;\n\n// Step 1: Extract JSON block using regex\nconst jsonMatch = rawText.match(/\\{[\\s\\S]*\\}/);\n\nif (!jsonMatch) {\n  throw new Error(\"No JSON object found in the response.\");\n}\n\nlet eventData;\n\ntry {\n  // Step 2: Parse the matched JSON string\n  eventData = JSON.parse(jsonMatch[0]);\n\n  // Step 3: Prepare activities array\n  const activitiesArray = eventData.activities\n    ? eventData.activities.split(',').map(a => a.trim())\n    : [];\n\n  // Step 4: Return as n8n output\n  return [\n    {\n      json: {\n        theme: eventData.theme,\n        venue: eventData.venue,\n        activities: activitiesArray\n      }\n    }\n  ];\n\n} catch (error) {\n  throw new Error(\"Failed to parse JSON: \" + error.message);\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        620,
+        60
+      ],
+      "id": "784792f7-a6d7-44ef-a1a0-9742d5783c8b",
+      "name": "Suggestions"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract input directly from JSON\nconst input = $input.first().json;\n\nconst event_date = input.event_date;\nconst team_size = parseInt(input.team_size, 10);\nconst budget_limit = parseInt(input.budget, 10);\nconst event_type = input.event_type;\nconst location = input.location;\nconst preferences = input.preferences;\nconst theme = input.theme;\nconst venue = input.venue;\nconst activities = input.activities;\n\n// Validate and parse date\nconst [year, month, day] = event_date.split(\"-\").map(Number);\nconst parsedDate = new Date(year, month - 1, day);\nif (isNaN(parsedDate.getTime())) {\n  throw new Error(\"Invalid event_date format. Use YYYY-MM-DD.\");\n}\n\n// Generate checklist with dynamic deadlines\nfunction subtractDays(date, days) {\n  const copy = new Date(date);\n  copy.setDate(copy.getDate() - days);\n  return copy.toISOString().split(\"T\")[0];\n}\n\nconst checklistArray = [\n  { task: \"Book venue\", deadline: subtractDays(parsedDate, 10), assignee: \"HR Team\" },\n  { task: \"Arrange transportation\", deadline: subtractDays(parsedDate, 7), assignee: \"Admin\" },\n  { task: \"Order food (as per preferences)\", deadline: subtractDays(parsedDate, 5), assignee: \"HR Team\" },\n  { task: \"Prepare team-building materials\", deadline: subtractDays(parsedDate, 3), assignee: \"Admin\" },\n  { task: \"Send invites to team\", deadline: subtractDays(parsedDate, 12), assignee: \"HR Team\" }\n];\n\n// Convert checklist array to single string\nconst checklist = checklistArray.map(item =>\n  `📌 ${item.task} - by ${item.deadline} (${item.assignee})`\n).join('\\n');\n\n// Estimate budget\nconst venueCost = team_size <= 20 ? 5000 : 8000;\nconst transportCost = team_size * 200;\nconst foodAndActivitiesCost = team_size * 350;\nconst subtotal = venueCost + transportCost + foodAndActivitiesCost;\nconst decorationsAndBuffer = Math.max(2000, Math.round(subtotal * 0.10));\nconst estimated_total = subtotal + decorationsAndBuffer;\nconst note = estimated_total > budget_limit\n  ? `⚠️ Estimated budget ₹${estimated_total} exceeds provided budget of ₹${budget_limit}.`\n  : \"✅ Estimated budget is within the provided limit.\";\n\nconst budget = {\n  venue_cost: venueCost,\n  transport_cost: transportCost,\n  food_and_activities: foodAndActivitiesCost,\n  decorations_and_buffer: decorationsAndBuffer,\n  estimated_total,\n  budget_limit,\n  note\n};\n\n// Final Output\nreturn [{\n  json: {\n    event_type,\n    event_date,\n    location,\n    preferences,\n    attendees: team_size,\n    theme,\n    venue,\n    checklist,  // now a string\n    budget,\n    activities\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        980,
+        60
+      ],
+      "id": "d52e06d0-bfaf-4174-9741-5ef1c085c754",
+      "name": "Event Details Parser"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const deadline = new Date(item.json.deadline);\n  deadline.setDate(deadline.getDate() - 2); // Subtract 2 days for reminder\n\n  const reminderDate = deadline;\n\n  // Get current date (normalized to midnight)\n  const currentDate = new Date();\n  currentDate.setHours(0, 0, 0, 0);\n\n  // Normalize reminder date too\n  reminderDate.setHours(0, 0, 0, 0);\n\n  // Calculate the difference in days\n  const diffMs = reminderDate - currentDate;\n  const daysUntilReminder = Math.round(diffMs / (1000 * 60 * 60 * 24));\n\n  return {\n    json: {\n      ...item.json,\n      reminderDate: reminderDate.toISOString(),\n      daysUntilReminder\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1620,
+        200
+      ],
+      "id": "161389d7-9224-41da-97ae-93d20ffe4df7",
+      "name": "Deadline Remainder"
+    },
+    {
+      "parameters": {
+        "sendTo": "yerrakarthik2202@gmail.com",
+        "subject": "=\"⏰ Reminder: Upcoming Task - {{ $json.task }}\"",
+        "emailType": "text",
+        "message": "=⏰ Reminder: {{ $json.task }} is due on {{ $json.deadline }}.  Please make sure it's taken care of in time for the upcoming event. 🎉  — Automated Reminder System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2320,
+        120
+      ],
+      "id": "b3abc479-f05f-4840-b486-3bbcaa3e6d7e",
+      "name": "Task Remainder Email",
+      "webhookId": "c4ce7003-a332-4f0f-b662-fc6a5e992c76",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sn4OBqvbGIoQg3TE",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "yerrakarthik2202@gmail.com",
+        "subject": "=📋 Full Event Plan for {{ $('Event Details').item.json.event_type }} – {{ $('Event Details').item.json.event_date }}",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1540,
+        -40
+      ],
+      "id": "80f9ef90-4388-4930-b96a-33654eb877be",
+      "name": "Event Plan Email",
+      "webhookId": "df081ec5-2ac5-409d-8b02-febc93993e9e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sn4OBqvbGIoQg3TE",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "yerrakarthik2202@gmail.com",
+        "subject": "❌ Event Planning Failed – Missing Input",
+        "emailType": "text",
+        "message": "=The event plan could not be generated due to missing or invalid input.\n\nPlease ensure the following are correctly filled:\n- Event Date\n- Team Size\n- AI Generated Content\n\nOnce updated, you may re-trigger the planning process.\n\n— QAID EventMind AI\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1960,
+        0
+      ],
+      "id": "42cd9c88-e258-4ba2-a70a-bdda37add682",
+      "name": "Event Plan Fail Email",
+      "webhookId": "62d07dcb-d4ef-49a8-9618-6789cc8d4c5b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Sn4OBqvbGIoQg3TE",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output;\n\n// --- Extract Event Details ---\nconst dateMatch = raw.match(/📅 Date:\\s*(\\d{4}-\\d{2}-\\d{2})/);\nconst locationMatch = raw.match(/📍 ([^\\n]+)/);\nconst attendeesMatch = raw.match(/👥 Attendees:\\s*(\\d+)/);\nconst preferencesMatch = raw.match(/Suggested Plan:\\s*Team Outing\\s*–\\s*(\\[.*?\\])/);\n\n// --- Extract Suggestions ---\nconst themeMatch = raw.match(/🔹 Theme:\\s*(.+)/);\nconst venueMatch = raw.match(/🔹 Venue:\\s*(.+)/);\n\n// --- Extract Activities (more flexible handling) ---\nlet activities = [];\nconst activitySectionMatch = raw.match(/🔹 Activities:\\s*\\n([\\s\\S]+?)\\n(?:📝|💰|_Generated|$)/);\n\nif (activitySectionMatch) {\n  const activityBlock = activitySectionMatch[1].trim();\n\n  try {\n    // Try parsing as JSON array if possible\n    if (activityBlock.startsWith(\"[\") && activityBlock.endsWith(\"]\")) {\n      activities = JSON.parse(activityBlock.replace(/'/g, '\"'));\n    } else {\n      // Otherwise treat as line-based list\n      activities = activityBlock\n        .split(/\\n|,/)\n        .map(line => line.replace(/^[-•\\s\"]+|[\"\\s]+$/g, '').trim())\n        .filter(line => line.length > 0);\n    }\n  } catch (e) {\n    activities = [];\n  }\n}\n\n// --- Extract Checklist ---\nconst checklistRegex = /✅ (.+?) - by (\\d{4}-\\d{2}-\\d{2}) \\((.+?)\\)/g;\nconst checklist = [];\nlet match;\nwhile ((match = checklistRegex.exec(raw)) !== null) {\n  checklist.push({\n    task: match[1].trim(),\n    deadline: match[2],\n    assignee: match[3]\n  });\n}\n\n// --- Extract Budget ---\nconst budgetMatch = raw.match(/💰 Budget:\\s*₹(\\d+)/);\n\n// --- Get current timestamp ---\nconst timestamp = new Date().toISOString();\n\n// --- Final output ---\nreturn [{\n  json: {\n    timestamp,\n    event_details: {\n      event_type: \"Team Outing\",\n      date: dateMatch?.[1] || 'Not found',\n      location: locationMatch?.[1] || 'Not found',\n      preferences: preferencesMatch ? JSON.parse(preferencesMatch[1].replace(/'/g, '\"')) : [],\n      attendees: parseInt(attendeesMatch?.[1] || 0)\n    },\n    suggestions: {\n      theme: themeMatch?.[1].trim() || 'Not found',\n      venue: venueMatch?.[1].trim() || 'Not found',\n      activities\n    },\n    checklist,\n    budget: {\n      total: budgetMatch ? `₹${budgetMatch[1]}` : 'Not found'\n    },\n    status: \"Pending\"\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1560,
+        -360
+      ],
+      "id": "75d1cc87-f71a-4172-903f-a305b28c18f3",
+      "name": "Log Details Parser"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1VYvqjIP34f6QNjTbW4xEEBxdOngWN-36iz6y7uvTqy0",
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VYvqjIP34f6QNjTbW4xEEBxdOngWN-36iz6y7uvTqy0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VYvqjIP34f6QNjTbW4xEEBxdOngWN-36iz6y7uvTqy0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Timestamp": "={{ $json.timestamp }}",
+            "Event Type": "={{ $json.event_details.event_type }}",
+            "Date": "={{ $json.event_details.date }}",
+            "Location": "={{ $json.event_details.location }}",
+            "Preferences": "={{ $json.event_details.preferences }}",
+            "Attendees": "={{ $json.event_details.attendees }}",
+            "Theme": "={{ $json.suggestions.theme }}",
+            "Venue": "={{ $json.suggestions.venue }}",
+            "Activities": "={{ $json.suggestions.activities }}",
+            "Checklist": "={{ $json.checklist }}",
+            "Budget": "={{ $json.budget.total }}",
+            "Status": "={{ $json.status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Event Type",
+              "displayName": "Event Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "displayName": "Location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Preferences",
+              "displayName": "Preferences",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Attendees",
+              "displayName": "Attendees",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Theme",
+              "displayName": "Theme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Venue",
+              "displayName": "Venue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Activities",
+              "displayName": "Activities",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Checklist",
+              "displayName": "Checklist",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1780,
+        -360
+      ],
+      "id": "282824bb-33ea-4c17-a763-3200da3bdbb9",
+      "name": "Logs",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "S17pjazoD1KAwTW9",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Event Plan Agent').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1720,
+        -200
+      ],
+      "id": "f8675f12-c532-447f-a811-8a7323c29c3c",
+      "name": "Event Plan Response"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Event Suggestions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Event Plan Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Deadline Remainder",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Task Remainder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Event Plan Fail Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event input": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Suggestions": {
+      "main": [
+        [
+          {
+            "node": "Suggestions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Details": {
+      "main": [
+        [
+          {
+            "node": "Event Details Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Plan Agent": {
+      "main": [
+        [
+          {
+            "node": "Event Plan Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Details Parser",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Event Plan Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checklist splitter": {
+      "main": [
+        [
+          {
+            "node": "Checklist Assignee",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Checklist Assignee": {
+      "main": [
+        [
+          {
+            "node": "Deadline Remainder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Suggestions": {
+      "main": [
+        [
+          {
+            "node": "Event Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Details Parser": {
+      "main": [
+        [
+          {
+            "node": "Event Plan Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Checklist splitter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deadline Remainder": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Plan Email": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Details Parser": {
+      "main": [
+        [
+          {
+            "node": "Logs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2c138efc-2751-4f84-bf73-d7747980d071",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "229c619801a303bd3e7f8437f8c2fe640a66a18d8bd42bc71344156ec68d42c1"
+  },
+  "id": "UbW8FLHpk72hli33",
+  "tags": []
+}

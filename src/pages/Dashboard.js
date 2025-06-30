@@ -144,6 +144,12 @@ const workflowData = [
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
+  },
+  {
+    title: 'EventMind AI – Event Planner',
+    icon: FaCalendarAlt,
+    path: '/eventmind-ai',
+    summary: 'AI-powered event planning: get instant suggestions for themes, venues, activities, and logistics.'
   }
 ];
 
