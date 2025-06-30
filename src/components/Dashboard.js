@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaChartLine } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
@@ -16,6 +16,12 @@ import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
 
 const workflows = [
+  {
+    title: 'Inventory Predict AI',
+    icon: FaChartLine,
+    path: '/inventory-predict-ai',
+    description: 'Forecast inventory, detect stock risks, and get AI-powered suggestions.',
+  },
   {
     title: 'AI Customer Support',
     icon: FaRobot,

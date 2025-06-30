@@ -1,0 +1,889 @@
+{
+  "name": "InventoryPredict AI – Intelligent Inventory Forecasting Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -740,
+        180
+      ],
+      "id": "a1fb726e-c0ff-4499-b47d-ecbdd5c09128",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE",
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -480,
+        -160
+      ],
+      "id": "7244e68a-5d7b-461f-b0a4-87e86fdf2284",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "itM6CBy5chDJgjXl",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Inventory Forecast Assistant.\n\nYour task is to analyze the inventory and forecast data for each product and generate a clear, human-readable summary.\n\nUse the following fields for each product:\n\n- SKU  \n- Product Name  \n- Sales History (Last 30 Days)  \n- Forecasted Demand (30 Days)  \n- Inventory On Hand  \n- Reorder Quantity  \n- Lead Time (Days)  \n- Expected Stock-out Date  \n- Stockout Risk  \n- Overstock Risk  \n- Suggestion / Action  \n\n📝 Format your output like this:\n\n📦 Inventory Forecast Summary\n\nSKU: [SKU] — [Product Name]  \n🔹 Predicted Sales: [Forecasted Demand] units  \n🔹 Current Stock: [Inventory On Hand] units  \n🔹 Reorder Quantity: [Reorder Quantity] units  \n🔹 Lead Time: [Lead Time (Days)] days → Order before [Expected Stock-out Date minus Lead Time]  \n🔻 Stockout Risk: HIGH (projected on [Expected Stock-out Date])  \n🔹 Overstock Risk: Inventory [Inventory On Hand] vs Demand [Forecasted Demand]  \n🔸 Suggested Action: [Suggestion / Action]\n\nSkip irrelevant lines. If Reorder Quantity is 0, do not mention it. Only mention stockout or overstock risks when they are marked \"Yes\".\n\nHere is the product data:\n\n\n {{ $json.SKU }}\nbased on this generate output:\n{{ $('On form submission').item.json.product }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        -160
+      ],
+      "id": "bc17e400-88a3-416d-bc4e-7505a8a23f5d",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "a01d7241-1540-41d9-82ef-257270f42691",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "M7r9yFoEWQlI5o9T",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "Alert the Stock",
+        "emailType": "text",
+        "message": "={{ $json.output }}{{ $('Google Sheets').item.json.SKU }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        -160
+      ],
+      "id": "fdf38fab-e0c5-4c78-a4c4-845a467fbcf9",
+      "name": "Gmail",
+      "webhookId": "79f6c917-6e89-412b-9d18-8a15fcf77d95",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uvOERL9FFyayqc32",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Agent",
+        "formDescription": "Intelligent Inventory Forecasting Agent",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "product"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -740,
+        -160
+      ],
+      "id": "0fdecf95-8736-4c2c-9cdc-2bf45c1df989",
+      "name": "On form submission",
+      "webhookId": "7d28c18a-1739-4bd9-b921-164f18ea9576"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE",
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -500,
+        180
+      ],
+      "id": "35ce566a-fbf6-4f0d-a6db-ad34a0e39dd9",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "itM6CBy5chDJgjXl",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Inventory Forecast Assistant.\n\nYour task is to analyze the inventory and forecast data for each product and generate a clear, human-readable summary.\n\nUse the following fields for each product:\n\n- SKU  \n- Product Name  \n- Sales History (Last 30 Days)  \n- Forecasted Demand (30 Days)  \n- Inventory On Hand  \n- Reorder Quantity  \n- Lead Time (Days)  \n- Expected Stock-out Date  \n- Stockout Risk  \n- Overstock Risk  \n- Suggestion / Action  \n\n📝 Format your output like this:\n\n📦 Inventory Forecast Summary\n\nSKU: [SKU] — [Product Name]  \n🔹 Predicted Sales: [Forecasted Demand] units  \n🔹 Current Stock: [Inventory On Hand] units  \n🔹 Reorder Quantity: [Reorder Quantity] units  \n🔹 Lead Time: [Lead Time (Days)] days → Order before [Expected Stock-out Date minus Lead Time]  \n🔻 Stockout Risk: HIGH (projected on [Expected Stock-out Date])  \n🔹 Overstock Risk: Inventory [Inventory On Hand] vs Demand [Forecasted Demand]  \n🔸 Suggested Action: [Suggestion / Action]\n\nSkip irrelevant lines. If Reorder Quantity is 0, do not mention it. Only mention stockout or overstock risks when they are marked \"Yes\".\n\nHere is the product data:\n{{ $json.SKU }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        20,
+        160
+      ],
+      "id": "fed5ffc2-39e0-42fd-8c61-08b843bfb02c",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        0,
+        400
+      ],
+      "id": "54dbc38c-fd99-4d48-8d5a-c122b4ea527f",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "M7r9yFoEWQlI5o9T",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "Alert",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        360,
+        160
+      ],
+      "id": "207199cf-442b-4b65-959c-e31cb9f0460d",
+      "name": "Gmail1",
+      "webhookId": "c38d98e6-b030-428e-aa4e-4e16e2108b71",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uvOERL9FFyayqc32",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ecbc862-2879-4a40-b126-e7400e52bc39",
+              "leftValue": "={{ $json['Sales History (Last 30 Days)'] }}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        180
+      ],
+      "id": "ca12fd11-40db-4f5a-aef9-1f819c3ea314",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "6df2dcad-bf89-4b74-b51c-7ad2de6aed74",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -760,
+        -500
+      ],
+      "id": "2ba56b4c-c5bd-47e4-8be0-4c937747905a",
+      "name": "Webhook",
+      "webhookId": "6df2dcad-bf89-4b74-b51c-7ad2de6aed74"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Inventory Forecast Assistant.\n\nYour task is to analyze the inventory and forecast data for each product and generate a clear, human-readable summary.\n\nUse the following fields for each product:\n\n- SKU  \n- Product Name  \n- Sales History (Last 30 Days)  \n- Forecasted Demand (30 Days)  \n- Inventory On Hand  \n- Reorder Quantity  \n- Lead Time (Days)  \n- Expected Stock-out Date  \n- Stockout Risk  \n- Overstock Risk  \n- Suggestion / Action  \n\n📝 Format your output like this:\n\n📦 Inventory Forecast Summary\n\nSKU: [SKU] — [Product Name]  \n🔹 Predicted Sales: [Forecasted Demand] units  \n🔹 Current Stock: [Inventory On Hand] units  \n🔹 Reorder Quantity: [Reorder Quantity] units  \n🔹 Lead Time: [Lead Time (Days)] days → Order before [Expected Stock-out Date minus Lead Time]  \n🔻 Stockout Risk: HIGH (projected on [Expected Stock-out Date])  \n🔹 Overstock Risk: Inventory [Inventory On Hand] vs Demand [Forecasted Demand]  \n🔸 Suggested Action: [Suggestion / Action]\n\nSkip irrelevant lines. If Reorder Quantity is 0, do not mention it. Only mention stockout or overstock risks when they are marked \"Yes\".\n\nHere is the product data:\n{{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        -500
+      ],
+      "id": "09493696-b978-4475-a14a-0687a693fa69",
+      "name": "AI Agent2",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -280,
+        -320
+      ],
+      "id": "47409840-93f2-45c2-81db-5186303ca146",
+      "name": "Groq Chat Model2",
+      "credentials": {
+        "groqApi": {
+          "id": "M7r9yFoEWQlI5o9T",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "Alert",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        60,
+        -500
+      ],
+      "id": "fae34fe0-41c9-448c-8887-91fb2eb2f96b",
+      "name": "Gmail2",
+      "webhookId": "a39f92d8-df07-4514-b9b1-acba0600d41d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "uvOERL9FFyayqc32",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        -420
+      ],
+      "id": "29f61188-178a-4d16-b0db-0d24e88dd9af",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE",
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        940,
+        -420
+      ],
+      "id": "0e8ebb35-902e-4feb-ab6d-4d8523e987b1",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "itM6CBy5chDJgjXl",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function addDays(startDate, days) {\n  const date = new Date(startDate);\n  date.setDate(date.getDate() + days);\n  return date.toISOString().split('T')[0];\n}\n\nconst today = new Date();\nconst daysToProject = 30;\nconst dailyConsumption = 10; // Replace with actual dynamic value\nlet currentStock = 300; // Replace with actual inventory from input\n\nconst labels = [];\nconst values = [];\n\nfor (let i = 0; i < daysToProject; i++) {\n  labels.push(addDays(today, i));\n  values.push(Math.max(0, currentStock));\n  currentStock -= dailyConsumption;\n}\n\nreturn [{\n  json: {\n    labels,\n    values\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        -420
+      ],
+      "id": "71116139-a546-43d1-aec2-cddfde65e6c4",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://quickchart.io/chart",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chart\": {\n    \"type\": \"line\",\n    \"data\": {\n      \"labels\": {{ JSON.stringify($json.labels) }},\n      \"datasets\": [\n        {\n          \"label\": \"Inventory Projection\",\n          \"data\": {{ JSON.stringify($json.values) }},\n          \"borderColor\": \"rgba(75, 192, 192, 1)\",\n          \"fill\": false\n        }\n      ]\n    },\n    \"options\": {\n      \"title\": {\n        \"display\": true,\n        \"text\": \"Projected Inventory Over Time\"\n      }\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1360,
+        -420
+      ],
+      "id": "fec564c1-4a49-4c47-a85d-6302be2b0380",
+      "name": "HTTP Request",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "inventory",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        -500
+      ],
+      "id": "ed348b83-b4f4-49e1-b9b8-f84861a67888",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE",
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 900071259,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit#gid=900071259"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SKU": "={{ $('Google Sheets').item.json.SKU }}",
+            "Predicted Sales": "={{ $('Google Sheets').item.json['Sales History (Last 30 Days)'] }}",
+            "Current Stock": "={{ $('Google Sheets').item.json['Current Stock'] }}",
+            "Lead Time": "={{ $('Google Sheets').item.json['Lead Time (Days)'] }}",
+            "Stockout Risk": "={{ $('Google Sheets').item.json['Stockout Risk'] }}",
+            "Suggested Action": "={{ $('Google Sheets').item.json['Suggestion / Action'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Predicted Sales",
+              "displayName": "Predicted Sales",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Time",
+              "displayName": "Lead Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stockout Risk",
+              "displayName": "Stockout Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggested Action",
+              "displayName": "Suggested Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        460,
+        -160
+      ],
+      "id": "a2ecb617-1d41-420c-addc-7a9b544242f6",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "itM6CBy5chDJgjXl",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('AI Agent2').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        300,
+        -500
+      ],
+      "id": "3ae632d6-618b-40de-bf86-49fd642d9872",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE",
+          "mode": "list",
+          "cachedResultName": "inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 900071259,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FvgjeVdK8geb_vUGEPodhrCd8NCiiPgqDXL0TcRR5gE/edit#gid=900071259"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SKU": "={{ $('Google Sheets1').item.json.SKU }}",
+            "Predicted Sales": "={{ $('Google Sheets1').item.json['Sales History (Last 30 Days)'] }}",
+            "Current Stock": "={{ $('Google Sheets1').item.json['Current Stock'] }}",
+            "Lead Time": "={{ $('Google Sheets1').item.json['Lead Time (Days)'] }}",
+            "Stockout Risk": "={{ $('Google Sheets1').item.json['Stockout Risk'] }}",
+            "Suggested Action": "={{ $('Google Sheets1').item.json['Suggestion / Action'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Predicted Sales",
+              "displayName": "Predicted Sales",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Time",
+              "displayName": "Lead Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stockout Risk",
+              "displayName": "Stockout Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggested Action",
+              "displayName": "Suggested Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        560,
+        160
+      ],
+      "id": "79f7027b-7c9a-41a0-aa8d-551ab30a526b",
+      "name": "Google Sheets4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "itM6CBy5chDJgjXl",
+          "name": "Google Sheets account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1f4c6ee5-16c5-429d-9d3e-d3b84c27ff26",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "98ba3a0cbe4353cc8c08c286a75d3e4d61ad85718e0dd245051e7defe076ef97"
+  },
+  "id": "UeTK0YV2XbpsbyOY",
+  "tags": []
+}

@@ -34,28 +34,7 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
       {/* Details Section for rich content */}
       {details && (
         <div className="w-full max-w-4xl mx-auto px-4 md:px-0 mb-12">
-          <div className="space-y-12">
-            {/* Enhance section headings and key words in details */}
-            {React.Children.map(details.props.children, (section, idx) => {
-              if (!section) return null;
-              // Enhance section headings and key words
-              return React.cloneElement(section, {
-                className: (section.props.className || '') + ' mb-8',
-                children: React.Children.map(section.props.children, (child, i) => {
-                  if (React.isValidElement(child) && child.type === 'h2') {
-                    // Color key words in headings
-                    let text = child.props.children;
-                    if (typeof text === 'string') {
-                      text = text.replace(/(AI|Use Cases|Stands Out|Features|Components Used)/g, match => `<span class=\"text-indigo-600 font-extrabold\">${match}</span>`);
-                      return <h2 className="text-2xl md:text-3xl font-bold mb-4" dangerouslySetInnerHTML={{__html: text}} />;
-                    }
-                    return <h2 className="text-2xl md:text-3xl font-bold mb-4">{text}</h2>;
-                  }
-                  return child;
-                })
-              });
-            })}
-          </div>
+          {details}
         </div>
       )}
 

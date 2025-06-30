@@ -32,6 +32,12 @@ const workflowData = [
     summary: 'Chat with AI for customer support queries.'
   },
   {
+    title: 'Inventory Predict AI',
+    icon: FaChartLine,
+    path: '/inventory-predict-ai',
+    summary: 'Forecast inventory, detect stock risks, and get AI-powered suggestions.'
+  },
+  {
     title: 'Leaves Classifier',
     icon: FaCalendarAlt,
     path: '/workflows/leaves-classifier',
