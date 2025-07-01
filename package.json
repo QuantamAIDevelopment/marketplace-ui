@@ -15,7 +15,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.9.0",
     "chart.js": "^4.4.9",
-    "framer-motion": "^11.18.2",
+    "framer-motion": "^10.16.4",
     "gsap": "^3.13.0",
     "mermaid": "^11.7.0",
     "react": "^18.2.0",
