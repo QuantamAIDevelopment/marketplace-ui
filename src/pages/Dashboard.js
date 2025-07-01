@@ -144,6 +144,12 @@ const workflowData = [
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
+  },
+  {
+    title: 'SmartInvoice AI',
+    icon: FaFileInvoiceDollar,
+    path: '/smart-invoice-ai',
+    summary: 'Upload and validate invoices with AI. Get instant feedback and Google Sheets integration.'
   }
 ];
 
@@ -204,4 +210,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
