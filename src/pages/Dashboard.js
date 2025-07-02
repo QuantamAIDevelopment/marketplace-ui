@@ -110,6 +110,12 @@ const workflowData = [
     summary: 'Upload a sales CSV to get KPIs, error detection, and suggestions.'
   },
   {
+    title: 'SalesForecast AI – Predictive Planning',
+    icon: FaChartLine,
+    path: '/workflows/sales-forecast-ai',
+    summary: 'Upload CRM pipeline and historical data for predictive sales forecasting, risk, and deal insights.'
+  },
+  {
     title: 'Metrics Business Analytics',
     icon: FaChartBar,
     path: '/workflows/metrics-business-analytics',

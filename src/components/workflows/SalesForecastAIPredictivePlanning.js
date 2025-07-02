@@ -1,0 +1,31 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+import { FaChartLine } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+
+const SalesForecastAIPredictivePlanning = ({ compact = false }) => {
+  const navigate = useNavigate();
+  return (
+    <div className={compact ? "space-y-4 w-full overflow-hidden" : "space-y-8 w-full"}>
+      <div className={compact ? "flex items-center space-x-2 mb-1" : "flex items-center space-x-4 mb-2"}>
+        <div className={compact ? "bg-indigo-500 p-2 rounded-lg shadow" : "bg-indigo-500 p-3 rounded-lg shadow-lg"}>
+          <FaChartLine className={compact ? "w-5 h-5 text-white" : "w-6 h-6 text-white"} />
+        </div>
+        <h3 className={compact ? "text-lg font-display text-anthropic-dark font-bold" : "text-2xl font-display text-anthropic-dark font-bold"}>SalesForecast AI – Predictive Planning</h3>
+      </div>
+      <p className={compact ? "text-xs text-gray-600" : "text-sm text-gray-700"}>
+        Upload your CRM pipeline and historical sales data to get AI-powered sales forecasts, risk analysis, and top deal insights.
+      </p>
+      <motion.button
+        whileHover={{ scale: 1.05, boxShadow: '0 8px 32px 0 #6366f133' }}
+        whileTap={{ scale: 0.97 }}
+        onClick={() => navigate('/workflows/sales-forecast-ai')}
+        className={compact ? "w-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white py-2 rounded-lg font-bold text-base shadow hover:from-indigo-600 hover:to-blue-600 transition-colors" : "w-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-indigo-600 hover:to-blue-600 transition-colors"}
+      >
+        View Details
+      </motion.button>
+    </div>
+  );
+};
+
+export default SalesForecastAIPredictivePlanning; 
