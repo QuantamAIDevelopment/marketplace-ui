@@ -24,7 +24,7 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
           </div>
         ) : (
           <img
-            src={'https://plus.unsplash.com/premium_photo-1663040543283-a39c4554106b?q=80&w=2070&auto=format&fit=crop'}
+            src={'/logo192.png'}
             alt="AI Assistant"
             className="rounded-2xl shadow-xl w-full max-w-2xl object-cover border-4 border-white"
           />
