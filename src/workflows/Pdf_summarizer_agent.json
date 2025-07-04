@@ -1,5 +1,5 @@
 {
-  "name": "PDF Summarizer Assistant",
+  "name": "Pdf summarizer agent",
   "nodes": [
     {
       "parameters": {
@@ -14,10 +14,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -480,
-        140
+        -640,
+        200
       ],
-      "id": "d5bb4ddd-88d4-4506-b10e-b6f0e3a65f3c",
+      "id": "274ee26f-18bd-4106-8685-d0588604a632",
       "name": "Webhook",
       "webhookId": "eee26170-bc34-4dd8-b2ee-7ed3c21285eb"
     },
@@ -76,10 +76,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -260,
-        140
+        -420,
+        200
       ],
-      "id": "e9822e04-2fee-4455-a0d6-cdd30b7bc2bc",
+      "id": "5ad83759-f02c-46aa-9e62-b1beb6be36e7",
       "name": "check file type"
     },
     {
@@ -89,10 +89,10 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.1,
       "position": [
-        720,
-        140
+        560,
+        200
       ],
-      "id": "69acf56b-b9b7-44aa-b014-d9ad5de18db9",
+      "id": "cafb2833-3533-4bcb-ba0a-67460d4ccf2a",
       "name": "When chat message received",
       "webhookId": "a6121e6a-dfb2-4e92-af35-aaff97d9fa50"
     },
@@ -111,10 +111,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.6,
       "position": [
-        920,
-        -60
+        760,
+        0
       ],
-      "id": "b52b887d-2a50-441a-8275-56921230d1be",
+      "id": "fe5bf767-0e01-4154-9cbb-fbe1662415fd",
       "name": "Basic LLM Chain"
     },
     {
@@ -124,15 +124,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        1080,
-        300
+        920,
+        360
       ],
-      "id": "2c646dc0-7326-4238-b3d5-56f01f0e02f4",
+      "id": "049c8c6e-34da-414b-bf67-f7040e29b434",
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "sEUcjBymB5Quq3zY",
-          "name": "Groq account"
+          "id": "DaEBbZrOMqT6eTif",
+          "name": "Groq account 2"
         }
       }
     },
@@ -143,10 +143,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -40,
-        40
+        -200,
+        100
       ],
-      "id": "7c778de7-fb7c-4fe8-8b2f-c9df5b40f7c2",
+      "id": "ef561b78-2454-4621-b72d-f3ff28760a97",
       "name": "Code"
     },
     {
@@ -159,10 +159,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.2,
       "position": [
-        1300,
-        -60
+        1140,
+        0
       ],
-      "id": "416792a7-635f-4740-9e21-19fb1537f583",
+      "id": "69f8ade9-e4b0-4a4c-b27d-4f64b991469b",
       "name": "Respond to Webhook"
     },
     {
@@ -178,16 +178,16 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        1500,
-        -60
+        1340,
+        0
       ],
-      "id": "3fa70c7f-ae67-4419-af56-003355e8aa40",
+      "id": "a2bf1ab0-a913-4d2a-b706-12a59ef205eb",
       "name": "Gmail",
       "webhookId": "41a1df2a-5866-494d-8f89-b247ff026a2a",
       "credentials": {
         "gmailOAuth2": {
-          "id": "yQEgzuRyzjXIoFM1",
-          "name": "Gmail account 2"
+          "id": "O42n8ENmp0MszO0V",
+          "name": "Gmail account"
         }
       }
     },
@@ -217,15 +217,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        160,
-        -60
+        0,
+        0
       ],
-      "id": "a77b784d-6538-4b6f-a2d7-ddf3a794daaf",
+      "id": "d91d74dc-86fb-48cc-83c4-40aef9fe4f11",
       "name": "HTTP Request",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "OvR9HISNBOPwDyw6",
-          "name": "Mistral AI"
+          "id": "8UhPELpC4j2NWPZa",
+          "name": "mistrail ai"
         }
       }
     },
@@ -248,15 +248,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        380,
-        -60
+        220,
+        0
       ],
-      "id": "62793df4-0d93-4a7f-a0d2-e1a44925430d",
+      "id": "2b18737f-1e7c-408a-9de9-dc506283fb7b",
       "name": "signed url",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "OvR9HISNBOPwDyw6",
-          "name": "Mistral AI"
+          "id": "8UhPELpC4j2NWPZa",
+          "name": "mistrail ai"
         }
       }
     },
@@ -274,15 +274,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        580,
-        -60
+        420,
+        0
       ],
-      "id": "87b00e9b-c99f-4369-89f1-3b0c0ca304eb",
+      "id": "38653fc3-678b-4a82-b049-99077e4c910b",
       "name": "ocr results",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "OvR9HISNBOPwDyw6",
-          "name": "Mistral AI"
+          "id": "8UhPELpC4j2NWPZa",
+          "name": "mistrail ai"
         }
       }
     }
@@ -308,8 +308,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
+        ]
       ]
     },
     "Groq Chat Model": {
@@ -367,11 +366,6 @@
         ]
       ]
     },
-    "Gmail": {
-      "main": [
-        []
-      ]
-    },
     "HTTP Request": {
       "main": [
         [
@@ -410,11 +404,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "61aaa864-aaaf-4eb1-8cdf-d322f2d93de3",
+  "versionId": "a4a2ad97-50c5-4a35-8594-20aebc6732f6",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "5bd368e942320c16690e1a71cfa468777455c92b450be774f87882024307b470"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "inoIx1IiIk1SDvoT",
+  "id": "8L4wYJjKT2e0irb8",
   "tags": []
 }

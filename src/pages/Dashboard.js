@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaFilePdf } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -144,7 +144,13 @@ const workflowData = [
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
-  }
+  },
+  {
+    title: 'PDF Summarizer Agent',
+    icon: FaFilePdf,
+    path: '/pdf-summarizer',
+    summary: 'Upload a PDF and get an executive summary, key points, entities, and topics extracted by Evenmind AI.'
+  },
 ];
 
 const Dashboard = () => {
@@ -204,4 +210,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
