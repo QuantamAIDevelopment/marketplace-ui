@@ -84,6 +84,12 @@ const workflows = [
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
   },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/workflows/sentiment-agent',
+    description: 'Analyze sentiment from text using AI.',
+  },
 ];
 
 const WorkflowCard = ({ title, icon: Icon, description, onClick, isButton, buttonText }) => (
@@ -139,4 +145,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
