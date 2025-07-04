@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaSmile } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaEnvelopeOpenText } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -146,10 +146,16 @@ const workflowData = [
     summary: 'Generate quizzes and train with our AI agent.'
   },
   {
-    title: 'Sentiment Agent AI Workflow',
-    icon: FaSmile,
-    path: '/sentiment-agent',
-    summary: 'Analyze customer feedback, extract sentiment, tags, urgency, and generate actionable reports.'
+    title: 'Gmail Categorization',
+    icon: FaEnvelopeOpenText,
+    path: '/gmail-categorization',
+    summary: 'Automatically categorize and label your emails using AI and Google Sheets integration.'
+  },
+  {
+    title: 'Resume Analyzer',
+    icon: FaFileAlt,
+    path: '/resume-analyzer',
+    summary: 'AI-powered resume screening, scoring, and skill extraction.'
   }
 ];
 

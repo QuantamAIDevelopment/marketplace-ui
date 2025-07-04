@@ -1,18 +1,19 @@
 {
-  "name": "Leaves-Classifier",
+  "name": "LeavesClassifier",
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "leaves-classifier",
-        "responseMode": "lastNode",
+        "responseMode": "responseNode",
         "options": {}
       },
-      "id": "ae101a6d-380f-4ee1-a15f-923da2fbd60c",
+      "id": "f6ebfd02-eba0-45e3-9391-9026bdd97406",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "position": [
-        -440,
-        0
+        -620,
+        980
       ],
       "typeVersion": 1,
       "webhookId": "e1a9cab2-cceb-40ab-809f-99e875b3103e"
@@ -22,27 +23,23 @@
         "operation": "getAll",
         "calendar": {
           "__rl": true,
-          "value": "89665f5d46a86439ef11c18072955f89fbd9617f964a09d81eed03dce56f2f34@group.calendar.google.com",
+          "value": "707da048a6c4934c804713d054d431ebd698f7ffa1a572913d22cba7c61a5cf6@group.calendar.google.com",
           "mode": "list",
           "cachedResultName": "Leaves"
         },
-        "returnAll": true,
-        "options": {
-          "timeMin": "={{ $json.body.startDate }}",
-          "timeMax": "={{ $json.body.endDate }}"
-        }
+        "options": {}
       },
-      "id": "5d7b3e12-4a77-4ca0-ae39-6e230e83089f",
+      "id": "b310230e-0f0d-4595-bf9c-5c4d23d17824",
       "name": "Get Calendar Events",
       "type": "n8n-nodes-base.googleCalendar",
       "position": [
-        -220,
-        0
+        -400,
+        980
       ],
       "typeVersion": 1,
       "credentials": {
         "googleCalendarOAuth2Api": {
-          "id": "eFoIy4oVG0Lwyo57",
+          "id": "hoBXlEkCqra0V1dX",
           "name": "Google Calendar account"
         }
       }
@@ -75,10 +72,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        20,
-        0
+        -160,
+        980
       ],
-      "id": "ca340dbc-99c3-450b-8bab-9c618b08336e",
+      "id": "c088ea96-7324-4fc9-8b71-f1a35ffc618f",
       "name": "Filter Confirmed Events"
     },
     {
@@ -101,141 +98,35 @@
       "type": "@n8n/n8n-nodes-langchain.textClassifier",
       "typeVersion": 1,
       "position": [
-        400,
-        -40
+        220,
+        940
       ],
-      "id": "d57979ce-9408-44fa-9ac8-2d446c6b5396",
+      "id": "3cf05185-eefd-499a-b138-458d52cc2234",
       "name": "Classify Events"
     },
     {
-      "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
-            {
-              "name": "Name",
-              "value": "={{ $json.creator.email }}"
-            },
-            {
-              "name": "Days",
-              "value": "={{ \n  Math.round(\n    (new Date($json[\"end\"][\"dateTime\"]).getTime() - new Date($json[\"start\"][\"dateTime\"]).getTime()) / (1000 * 3600 * 24)\n  ) \n}}\n"
-            },
-            {
-              "name": "Type",
-              "value": "Casual Leave"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "d0684fcc-3788-4a84-b19c-701f7fa0c71b",
-      "name": "Filter Holiday Days",
-      "type": "n8n-nodes-base.set",
-      "position": [
-        920,
-        60
-      ],
-      "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
-            {
-              "name": "Name",
-              "value": "={{ $json.creator.email }}"
-            },
-            {
-              "name": "Days",
-              "value": "={{ \n  Math.round(\n    (new Date($json[\"end\"][\"dateTime\"]).getTime() - new Date($json[\"start\"][\"dateTime\"]).getTime()) / (1000 * 3600 * 24)\n  ) \n}}\n"
-            },
-            {
-              "name": "Type",
-              "value": "Sick Leave"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "dbd18368-390c-46bd-baa3-f941a5108b0e",
-      "name": "Filter Illness Days",
-      "type": "n8n-nodes-base.set",
-      "position": [
-        920,
-        -160
-      ],
-      "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "jsCode": "let items = $input.all();\nlet names = items.map(e => e.json.Name);\nlet unique_names = [...new Set(names)];\n\nlet results = [];\n\nfor (let name of unique_names) {\n  let matching_items = items.filter(e => e.json.Name === name);\n  \n  let totalDays = matching_items.reduce((sum, entry) => {\n    return sum + parseInt(entry.json.Days.trim());\n  }, 0);\n\n  // Use first matching item as base for Type\n  let type = matching_items[0].json.Type;\n\n  results.push({\n    json: {\n      Name: name,\n      Days: totalDays,\n      Type: type\n    }\n  });\n}\n\nreturn results;\n"
-      },
-      "id": "11696d67-9f69-46aa-acb2-b7e4ddb41368",
-      "name": "Combine Holiday Counts",
-      "type": "n8n-nodes-base.code",
-      "position": [
-        1500,
-        60
-      ],
-      "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "jsCode": "let items = $input.all();\nlet names = items.map(e => e.json.Name);\nlet unique_names = [...new Set(names)];\n\nlet results = [];\n\nfor (let name of unique_names) {\n  let matching_items = items.filter(e => e.json.Name === name);\n  \n  let totalDays = matching_items.reduce((sum, entry) => {\n    return sum + parseInt(entry.json.Days.trim());\n  }, 0);\n\n  // Use first matching item as base for Type\n  let type = matching_items[0].json.Type;\n\n  results.push({\n    json: {\n      Name: name,\n      Days: totalDays,\n      Type: type\n    }\n  });\n}\n\nreturn results;\n"
-      },
-      "id": "80549fc9-8526-4808-ba0a-ae72d1b7e091",
-      "name": "Combine Illness Counts",
-      "type": "n8n-nodes-base.code",
-      "position": [
-        1500,
-        -140
-      ],
-      "typeVersion": 1
-    },
-    {
       "parameters": {},
-      "id": "2cd5dae1-d641-48ff-8ed9-a13d6851467a",
+      "id": "800ab682-21e4-4b44-b24d-96624a501a6e",
       "name": "Merge Data",
       "type": "n8n-nodes-base.merge",
       "position": [
-        1700,
-        -20
+        1520,
+        960
       ],
       "typeVersion": 1
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst stats = {\n  casualLeaves: 0,\n  sickLeaves: 0,\n  totalEmployees: 50, // This should be fetched from your employee database\n  activeRequests: 0\n};\n\nconst recentActivity = [];\n\nfor (const item of items) {\n  if (item.json.Type === 'Casual Leave') {\n    stats.casualLeaves += parseInt($('Combine Holiday Counts').first().json.Days.toString());\n  } else if (item.json.Type === 'Sick Leave') {\n    stats.sickLeaves += parseInt($('Combine Illness Counts').first().json.Days.toString());\n  }\n\n  recentActivity.push({\n    id: item.json.id || Math.random().toString(36).substr(2, 9),\n    employeeName: item.json.Name,\n    leaveType: item.json.Type.toUpperCase(),\n    status: 'APPROVED',\n    startDate: $('Classify Events').first().json.start.dateTime,\n    endDate: $('Classify Events').first().json.end.dateTime,\n    timestamp: new Date().toISOString()\n  });\n}\n\nreturn [{\n  json: {\n    stats,\n    recentActivity\n  }\n}];"
+        "jsCode": "const items = $input.all();\nconst stats = {\n  casualLeaves: 0,\n  sickLeaves: 0,\n  totalEmployees: 50, // Replace with dynamic count if available\n  activeRequests: 0\n};\n\nconst recentActivity = [];\n\nfor (const item of items) {\n  const type = item.json.Type;\n  const days = parseInt(item.json.Days || 0);\n  const status = item.json.Status || 'APPROVED';\n\n  // Count leaves\n  if (type === 'Casual Leave') {\n    stats.casualLeaves += days;\n  } else if (type === 'Sick Leave') {\n    stats.sickLeaves += days;\n  }\n\n  // Track active requests\n  if (status === 'PENDING' || status === 'APPROVED') {\n    stats.activeRequests += 1;\n  }\n\n  // Add to recent activity\n  recentActivity.push({\n    id: item.json.id || Math.random().toString(36).substr(2, 9),\n    employeeName: item.json.Name,\n    leaveType: type?.toUpperCase() || 'UNKNOWN',\n    status: status,\n    startDate: item.json.startDate ,\n    endDate: item.json.endDate ,\n    timestamp: new Date().toISOString()\n  });\n}\n\nreturn [{\n  json: {\n    stats,\n    recentActivity\n  }\n}];\n"
       },
-      "id": "ccc04fb2-f600-445d-a0ee-2911d59c35d3",
+      "id": "49351324-7c5b-4554-a56f-474ae6bf417d",
       "name": "Format Response",
       "type": "n8n-nodes-base.code",
       "position": [
-        2100,
-        140
+        1920,
+        1120
       ],
       "typeVersion": 1
-    },
-    {
-      "parameters": {
-        "model": "llama-3.3-70b-versatile",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
-      "typeVersion": 1,
-      "position": [
-        540,
-        100
-      ],
-      "id": "eb5d9cd9-da02-49db-82f1-bd59ebadb78c",
-      "name": "Groq Chat Model",
-      "credentials": {
-        "groqApi": {
-          "id": "1E3ZL2vIpcClZdxZ",
-          "name": "Groq account"
-        }
-      }
     },
     {
       "parameters": {
@@ -246,10 +137,11 @@
       "type": "n8n-nodes-base.stickyNote",
       "name": "Workflow Documentation",
       "position": [
-        160,
-        -980
+        0,
+        0
       ],
-      "id": "generated-95638196-849f-4ce5-8157-02a03c372fe5"
+      "id": "72ebd0fa-41a0-4594-b061-b21bbb26de12",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -261,10 +153,11 @@
       "name": "Initial Data Flow",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -500,
-        -340
+        -680,
+        640
       ],
-      "id": "generated-e496497e-a881-4eb9-9de4-0ad451438a9e"
+      "id": "755369bd-aed2-4e02-a4b7-88aef632e1b2",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -275,11 +168,12 @@
       },
       "name": "Event Classification (AI)",
       "position": [
-        280,
-        -360
+        100,
+        620
       ],
       "type": "n8n-nodes-base.stickyNote",
-      "id": "generated-e98f82d4-1cba-4651-8c42-a624980408ea"
+      "id": "658acc23-9b8c-4e4c-a353-3d784386acca",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -291,10 +185,11 @@
       "type": "n8n-nodes-base.stickyNote",
       "name": "Leave Type Data Preparation",
       "position": [
-        800,
-        -420
+        620,
+        560
       ],
-      "id": "generated-aa8e955f-26df-4ea5-bb7c-c3d953cd14ad"
+      "id": "c67ab933-29b7-46c3-91c7-eb6ce9d3f655",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -304,12 +199,13 @@
         "color": 6
       },
       "position": [
-        1320,
-        -420
+        1140,
+        560
       ],
       "name": "Data Aggregation & Merging",
       "type": "n8n-nodes-base.stickyNote",
-      "id": "generated-647ad100-d89f-4cf3-8201-98f361acc6b3"
+      "id": "50f8ad12-1250-465a-a190-4b0b683bb3fb",
+      "typeVersion": 1
     },
     {
       "parameters": {
@@ -319,12 +215,134 @@
         "color": 7
       },
       "position": [
-        1960,
-        -200
+        1780,
+        780
       ],
       "name": "Final Response Formatting",
       "type": "n8n-nodes-base.stickyNote",
-      "id": "generated-332582b2-8952-4113-b65d-53a98f018d0a"
+      "id": "fac3d7b2-93b3-48b6-91e0-e84ce2a19736",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "Name",
+              "value": "={{ $json.description }}"
+            },
+            {
+              "name": "Days",
+              "value": "={{    Math.round(     (new Date($json.end.date).getTime() - new Date($json.start.date).getTime()) / (1000 * 3600 * 24)   )  }}"
+            },
+            {
+              "name": "Type",
+              "value": "Casual Leave"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "525946f2-6cf5-4462-bac3-4f38cbf363c7",
+      "name": "Filter Holiday Days1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        740,
+        1040
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "Name",
+              "value": "={{ $json.description }}"
+            },
+            {
+              "name": "Days",
+              "value": "={{    Math.round(     (new Date($json.end.date).getTime() - new Date($json.start.date).getTime()) / (1000 * 3600 * 24)   )  }}"
+            },
+            {
+              "name": "Type",
+              "value": "Sick Leave"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "aea41042-544b-4ea6-a2ee-7073381027df",
+      "name": "Filter Illness Days1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        740,
+        820
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "let items = $input.all();\nlet names = items.map(e => e.json.Name);\nlet unique_names = [...new Set(names)];\n\nlet results = [];\n\nfor (let name of unique_names) {\n  let matching_items = items.filter(e => e.json.Name === name);\n  \n  let totalDays = matching_items.reduce((sum, entry) => {\n    return sum + parseInt(entry.json.Days);\n  }, 0);\n\n  // Use first matching item as base for Type\n  let type = matching_items[0].json.Type;\n\n  results.push({\n    json: {\n      Name: name,\n      Days: totalDays,\n      Type: type\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "id": "2c244681-c2e9-4752-b70d-e9001b4ffa1a",
+      "name": "Combine Holiday Counts1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1320,
+        1040
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "let items = $input.all();\nlet names = items.map(e => e.json.Name);\nlet unique_names = [...new Set(names)];\n\nlet results = [];\n\nfor (let name of unique_names) {\n  let matching_items = items.filter(e => e.json.Name === name);\n  \n  let totalDays = matching_items.reduce((sum, entry) => {\n    return sum + parseInt(entry.json.Days)\n  }, 0);\n\n  // Use first matching item as base for Type\n  let type = matching_items[0].json.Type;\n\n  results.push({\n    json: {\n      Name: name,\n      Days: totalDays,\n      Type: type\n    }\n  });\n}\n\nreturn results;\n"
+      },
+      "id": "efa057df-c6a2-4ab8-8fd9-01630e844139",
+      "name": "Combine Illness Counts1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1320,
+        840
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        220,
+        1120
+      ],
+      "id": "41b61b4a-2fc4-4578-a4f5-f267f5ff9042",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "guIZYkPOUz899bc4",
+          "name": "Groq account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.recentActivity }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        2320,
+        1120
+      ],
+      "id": "6a407463-9dd4-4113-9eba-e42873a50458",
+      "name": "Respond to Webhook"
     }
   ],
   "pinData": {},
@@ -366,58 +384,14 @@
       "main": [
         [
           {
-            "node": "Filter Illness Days",
+            "node": "Filter Illness Days1",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Filter Holiday Days",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filter Holiday Days": {
-      "main": [
-        [
-          {
-            "node": "Combine Holiday Counts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filter Illness Days": {
-      "main": [
-        [
-          {
-            "node": "Combine Illness Counts",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Combine Holiday Counts": {
-      "main": [
-        [
-          {
-            "node": "Merge Data",
-            "type": "main",
-            "index": 1
-          }
-        ]
-      ]
-    },
-    "Combine Illness Counts": {
-      "main": [
-        [
-          {
-            "node": "Merge Data",
+            "node": "Filter Holiday Days1",
             "type": "main",
             "index": 0
           }
@@ -435,7 +409,62 @@
         ]
       ]
     },
-    "Groq Chat Model": {
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Holiday Days1": {
+      "main": [
+        [
+          {
+            "node": "Combine Holiday Counts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Illness Days1": {
+      "main": [
+        [
+          {
+            "node": "Combine Illness Counts1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Holiday Counts1": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Combine Illness Counts1": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
       "ai_languageModel": [
         [
           {
@@ -451,10 +480,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "f28a2e87-9158-4718-a4dc-b211a24751ba",
+  "versionId": "8b4facbc-5d04-44b5-9bdb-8fb7142c160c",
   "meta": {
-    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "4Kn8ugJpqtGHVcmR",
+  "id": "97CCyJH5o1TFrK4x",
   "tags": []
 }
