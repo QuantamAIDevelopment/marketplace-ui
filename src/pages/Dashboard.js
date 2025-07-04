@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserShield } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -138,6 +138,12 @@ const workflowData = [
     icon: FaCalendarAlt,
     path: '/appointment-scheduler',
     summary: 'Book and manage appointments with ease.'
+  },
+  {
+    title: 'AI Background Verification Agent',
+    icon: FaUserShield,
+    path: '/background-verification-agent',
+    summary: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.'
   },
   {
     title: 'MCQ Generator & Trainer',
