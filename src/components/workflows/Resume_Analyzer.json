@@ -1,0 +1,281 @@
+{
+  "name": "Resume_Analyzer",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        900,
+        320
+      ],
+      "id": "3880d2a4-e6ab-4cfd-b282-e25c2565f726",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "resume",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        240,
+        180
+      ],
+      "id": "bd530663-6dca-400b-a1c5-4160f31e2325",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ResumeAnalyzer",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        160
+      ],
+      "id": "fbf325d5-c6c8-4360-bc0b-0f373ebe9b27",
+      "name": "Webhook",
+      "webhookId": "e0afab6e-a183-4302-a252-68c887b954a8"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=We have completed the AI-based resume screening.\n\nCandidate Name:{{ $json.output.name }}\nScore:{{ $json.output.score }}/100\nskills :{{ $json.output.skills }}\n\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1420,
+        320
+      ],
+      "id": "5aeb41e1-f733-45f7-872c-2238d56fe370",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract the following details from the resume text below: \n-Full name \n-Email address \n-All technical skills and tools mentioned (avoid limiting to just 5) \n-Key projects (summarized names or short titles, max 3)\n\nRespond strictly in this JSON format:\n{ \n\"name\": \"Full Name\", \n\"email\": \"email@example.com\", \n\"skills\": [\"Skill1\", \"Skill2\", \"Tool1\", ...],\n\"projects\": [\"Project1 summary\", \"Project2 summary\", \"Project3 summary\"]\n}\n\nResume Text:{{ $json.text }}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        460,
+        180
+      ],
+      "id": "22a20d82-d8b0-46c1-b352-227592c8e302",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        480,
+        340
+      ],
+      "id": "c8662c96-35c1-4ac6-a51b-2f775ab76fff",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "KwBIsMIVn4DfpHPT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \n\"name\": \"Full Name\", \n\"email\": \"email@example.com\", \n\"skills\": [\"Skill1\", \"Skill2\", \"Tool1\"],\n\"projects\": [\"Project1 summary\", \"Project2 summary\", \"Project3 summary\"]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        620,
+        340
+      ],
+      "id": "a3c59deb-9782-44b8-8095-ccb4ec4040fb",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Rate the following candidate based on {{ $('Webhook').item.json.body.JD }} how well they match a  profile.\n \nResume Info:\n \nName :{{ $json.output.name }}\n \nEmail:{{ $json.output.email }}\n \nSkills:{{ $json.output.skills }}\n \nProjects: {{ $json.output.projects }}\n \nRespond strictly in this JSON format:\n{\n\"score\": \"X\",\n if score >70\n\"Status\": \"Shortlisted/Rejected\",\n \n\"Summary\": \"Short reason here\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        500,
+        520
+      ],
+      "id": "bab66fe2-f701-4692-9c9d-36929c571ada",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        500,
+        740
+      ],
+      "id": "0d22eaee-6bea-47b9-a749-4c7e358b7422",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "KwBIsMIVn4DfpHPT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"score\": \"X\",\n\n\"Status\": \"Shortlisted/Rejected\",\n \n\"Summary\": \"Short reason here\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        680,
+        700
+      ],
+      "id": "77d9c1b1-fa9b-44d0-85f4-76b79a15a44e",
+      "name": "Structured Output Parser1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4d8083c8-bfcf-4fb2-b600-b45fa088ccb6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "shTFcR3hfcBkOThJ",
+  "tags": []
+}
