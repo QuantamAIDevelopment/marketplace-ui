@@ -14,6 +14,7 @@ import PolicyChangeNotification from './workflows/PolicyChangeNotification';
 import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
 import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
+import SentimentAgentWorkflowPage from '../pages/SentimentAgentWorkflowPage';
 
 const workflows = [
   {
@@ -148,3 +149,6 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+/* In your App.js (not Dashboard.js), ensure this route exists:
+<Route path="/workflows/sentiment-agent" element={<SentimentAgentWorkflowPage />} />
+*/
