@@ -1,0 +1,782 @@
+{
+  "name": "SalesForecast AI – Predictive Sales Planning Agent 2",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "leads",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -660,
+        -80
+      ],
+      "id": "5d16fcd8-ed53-434f-bd55-8dec2c2e41c9",
+      "name": "Webhook",
+      "webhookId": "d15256a7-acfe-423f-9ebf-0d93d11623f1"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "pipeline",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -160
+      ],
+      "id": "eac9e4db-1c71-4808-abb8-51f6059afa12",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "historical",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        40
+      ],
+      "id": "0c4c8d4f-d69f-4b60-8b61-4f3c98e4710e",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -240,
+        -80
+      ],
+      "id": "fcc9960c-7d31-4291-9711-c81772e03d21",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map((item, index) => ({\n  json: {\n    index,\n    keys: Object.keys(item.json),\n    raw: item.json\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        -80
+      ],
+      "id": "2ba34227-217d-4336-a8f4-a75d8938bbba",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all().map(i => i.json.raw);\n\n// --- STEP 1: Separate Leads and Historical Deals ---\nconst leads = [];\nconst historicalDeals = [];\n\nfor (const item of allItems) {\n  if ('expected_close_date' in item && 'last_updated' in item) {\n    leads.push(item);\n  } else if ('cycle_length_days' in item) {\n    historicalDeals.push(item);\n  }\n}\n\n// --- STEP 2: Remove stale/inactive leads ---\nconst THIRTY_DAYS_AGO = new Date();\nTHIRTY_DAYS_AGO.setDate(THIRTY_DAYS_AGO.getDate() - 30);\n\nconst activeLeads = leads.filter(lead => {\n  const isOpen = lead.status === 'Open';\n  const lastUpdated = lead.last_updated ? new Date(lead.last_updated) : null;\n  return isOpen && lastUpdated && lastUpdated >= THIRTY_DAYS_AGO;\n});\n\n// --- STEP 3: Trim top/bottom 1% outliers by deal value ---\nconst sortedValues = activeLeads.map(l => Number(l.value) || 0).sort((a, b) => a - b);\nconst lowIndex = Math.floor(sortedValues.length * 0.01);\nconst highIndex = Math.ceil(sortedValues.length * 0.99);\nconst minVal = sortedValues[lowIndex] || 0;\nconst maxVal = sortedValues[highIndex] || Number.MAX_SAFE_INTEGER;\n\nconst filteredLeads = activeLeads.filter(lead => {\n  const val = Number(lead.value) || 0;\n  return val >= minVal && val <= maxVal;\n});\n\n// --- STEP 4: Calculate average deal cycle length ---\nconst cycleDays = historicalDeals\n  .map(deal => Number(deal.cycle_length_days))\n  .filter(day => !isNaN(day) && day > 0);\n\nconst avgCycleLength = cycleDays.length > 0\n  ? cycleDays.reduce((sum, val) => sum + val, 0) / cycleDays.length\n  : 1;\n\n// --- STEP 5: Define seasonality boost map ---\nconst seasonalityMap = {\n  \"APAC_CRM Tool\": 1.12,\n  \"NA_Analytics\": 0.95,\n  \"EMEA_Analytics\": 1.05,\n  \"NA_HR System\": 1.08,\n  \"APAC_Analytics\": 1.10\n};\n\n// --- STEP 6a: Precompute adjusted values ---\nconst today = new Date();\n\nconst enrichedLeads = filteredLeads.map(lead => {\n  const lastUpdated = new Date(lead.last_updated);\n  const leadAgeDays = Math.ceil((today - lastUpdated) / (1000 * 60 * 60 * 24));\n  const normalizedCycle = +(leadAgeDays / avgCycleLength).toFixed(2);\n\n  const seasonKey = `${lead.region}_${lead.product}`;\n  const seasonalityBoost = seasonalityMap[seasonKey] || 1;\n  const adjustedValue = Math.round(lead.value * seasonalityBoost);\n\n  return {\n    lead,\n    normalizedCycle,\n    seasonalityBoost,\n    adjustedValue\n  };\n});\n\n\n// --- STEP 6c: Final Output with last_updated ---\nconst output = enrichedLeads.map(e => {\n  const lead = e.lead;\n  return {\n    json: {\n      id: lead.id,\n      value: lead.value,\n      rep: lead.rep,\n      region: lead.region,\n      product: lead.product,\n      stage: lead.stage,\n      status: lead.status,\n      expected_close_date: lead.expected_close_date,\n      last_updated: lead.last_updated,  // ✅ Added this line\n      normalized_lead_age: e.normalizedCycle,\n      seasonality_multiplier: e.seasonalityBoost,\n      adjusted_value: e.adjustedValue,\n      category_key: `${lead.region}_${lead.product}_${lead.rep}_${lead.stage}`\n    }\n  };\n});\n\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        -80
+      ],
+      "id": "2f6fefe3-5bfa-4f85-9ed4-c87b144032bf",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a B2B Sales Forecasting AI Agent.\n\n🎯 Your Objective:\nForecast sales deal outcomes using the provided CRM lead data.\n\n📈 Forecasting Model Logic:\n\nPredict:\n- Expected deal values likely to close:\n  - This week\n  - This month\n  - This quarter\n- Forecast confidence score (between 0.0 to 1.0)\n- Probability-weighted pipeline value = adjusted_value × probability_of_closure\n\nInclude:\n- Baseline forecast using historical sales performance by category (e.g., stage, rep, region, product)\n- Uplift or dip based on current lead signals such as:\n  - Lead stage and age\n  - Seasonality multiplier\n  - Status/activity changes\n- Support filtered forecasting:\n  - Team-wise (rep-based)\n  - Product-wise\n  - Territory-wise (region-based)\n\n📦 Use the following input fields:\n- id:{{ $json.id }}\n- rep:{{ $json.rep }} \n- region:{{ $json.region }}\n- product:{{ $json.product }}\n- stage: {{ $json.stage }}\n- status: {{ $json.status }}\n- expected_close_date: {{ $json.expected_close_date }}\n- value:{{ $json.value }}\n- adjusted_value: {{ $json.adjusted_value }}\n- normalized_lead_age: {{ $json.normalized_lead_age }}\n- seasonality_multiplier: {{ $json.seasonality_multiplier }}\n- category_key:{{ $json.category_key }}\n\noutput:\n{\n  \"id\": \"{{ $json.id }}\",\n  \"rep\": \"{{ $json.rep }}\",\n  \"stage\": \"{{ $json.stage }}\",\n  \"value\": {{ $json.value }},\n  \"forecast_this_week\": number,\n  \"forecast_this_month\": number,\n  \"forecast_this_quarter\": number,\n  \"forecast_confidence\": number (0.0 to 1.0),\n  \"weighted_pipeline_value\": number,\n  \"reasoning\": \"Short explanation of prediction logic\"\n}\n\n\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -80
+      ],
+      "id": "8f7922db-c6e8-4f85-9cb2-2ff04602abfa",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- STEP 1: Get AI raw output ---\nconst raw = $input.all().map(i => i.json.output).join('\\n');\n\n// --- STEP 2: Extract valid JSON blocks only ---\nconst matches = raw.match(/{[\\s\\S]*?}/g); // find all JSON-like {...} blocks\n\nif (!matches || matches.length === 0) {\n  throw new Error(\"❌ No valid JSON blocks found in AI output.\");\n}\n\n// --- STEP 3: Clean and join JSON blocks ---\nconst cleaned = matches\n  .map(block => block.replace(/\\n/g, '').trim()) // remove newlines, extra spaces\n  .join(',');\n\nconst jsonArray = `[${cleaned}]`;\n\n// --- STEP 4: Parse JSON array ---\nlet dealsData;\ntry {\n  dealsData = JSON.parse(jsonArray);\n} catch (e) {\n  throw new Error(\"❌ Failed to parse AI output into valid JSON: \" + e.message);\n}\n\n// --- STEP 5: Config ---\nconst target = 110000;\n\n// --- STEP 6: Forecast Calculations ---\nfunction toNumber(val) {\n  if (typeof val === 'number') return val;\n  if (typeof val === 'string') return parseFloat(val.replace(/[^\\d.-]/g, '')) || 0;\n  return 0;\n}\n\nconst totalWeightedValue = dealsData.reduce((sum, deal) => sum + toNumber(deal.weighted_pipeline_value), 0);\nconst totalThisWeek = dealsData.reduce((sum, deal) => sum + toNumber(deal.forecast_this_week), 0);\nconst totalThisMonth = dealsData.reduce((sum, deal) => sum + toNumber(deal.forecast_this_month), 0);\nconst totalThisQuarter = dealsData.reduce((sum, deal) => sum + toNumber(deal.forecast_this_quarter), 0);\n\nconst expectedMin = Math.round(totalWeightedValue * 0.9);\nconst expectedMax = Math.round(totalWeightedValue * 1.2);\n\nconst riskOfShortfall = totalWeightedValue < target\n  ? Math.round((1 - totalWeightedValue / target) * 100)\n  : 0;\n\n// --- STEP 7: Top Deals ---\nconst topDeals = [...dealsData]\n  .sort((a, b) => toNumber(b.forecast_confidence) - toNumber(a.forecast_confidence))\n  .slice(0, 5)\n  .map(deal => ({\n    id: deal.id,\n    value: toNumber(deal.value),\n    stage: deal.stage,\n    confidence: toNumber(deal.forecast_confidence),\n    rep: deal.rep\n  }));\n\n// --- STEP 8: Visualizations ---\nconst stageFunnel = {};\nfor (const deal of dealsData) {\n  if (deal.stage) {\n    stageFunnel[deal.stage] = (stageFunnel[deal.stage] || 0) + 1;\n  }\n}\n\nconst forecastVsTarget = {\n  forecast: Math.round(totalWeightedValue),\n  target\n};\n\nconst heatmap = {};\nfor (const deal of dealsData) {\n  const region = deal.region || 'Unknown';\n  const product = deal.product || 'Unknown';\n  const key = `${region}__${product}`;\n  heatmap[key] = (heatmap[key] || 0) + 1;\n}\n\n// --- STEP 9: Output ---\nreturn [\n  {\n    json: {\n      summary: {\n        expected_revenue_range: `₹${expectedMin.toLocaleString()} – ₹${expectedMax.toLocaleString()}`,\n        forecast_this_week: totalThisWeek,\n        forecast_this_month: totalThisMonth,\n        forecast_this_quarter: totalThisQuarter,\n        top_5_deals: topDeals,\n        risk_of_shortfall: `${riskOfShortfall}%`,\n        timestamp: new Date().toISOString()\n      },\n      visualizations: {\n        forecast_vs_target: forecastVsTarget,\n        stage_funnel: stageFunnel,\n        region_product_heatmap: heatmap\n      }\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1000,
+        -80
+      ],
+      "id": "d91810bf-3522-4f79-b39c-e75db479f3fc",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d46cef28-0f0a-47d2-93c2-61f54bfe3eee",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "350cd011-7d51-47b4-815b-0f90a64a83b5",
+              "name": "value",
+              "value": "={{ $json.value }}",
+              "type": "string"
+            },
+            {
+              "id": "96aa7b8c-04e5-4920-bb99-9c15cef400a7",
+              "name": "rep",
+              "value": "={{ $json.rep }}",
+              "type": "string"
+            },
+            {
+              "id": "88ba6f5c-65fc-4dc5-bfc5-ab4b563d869d",
+              "name": "region",
+              "value": "={{ $json.region }}",
+              "type": "string"
+            },
+            {
+              "id": "e7132674-55b5-4686-8df4-a1576c41f4bb",
+              "name": "product",
+              "value": "={{ $json.product }}",
+              "type": "string"
+            },
+            {
+              "id": "201e58a2-5453-4d59-ae32-be08b85f4c51",
+              "name": "stage",
+              "value": "={{ $json.stage }}",
+              "type": "string"
+            },
+            {
+              "id": "78a7c057-e065-400a-bd62-3cd3cdb78bd5",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "cd88ca05-11f2-49f9-8b6f-0a9f58b3c43c",
+              "name": "expected_close_date",
+              "value": "={{ $json.expected_close_date }}",
+              "type": "string"
+            },
+            {
+              "id": "0ab5fc8c-afb9-448c-934c-17cdeaad2128",
+              "name": "normalized_lead_age",
+              "value": "={{ $json.normalized_lead_age }}",
+              "type": "number"
+            },
+            {
+              "id": "19d45f19-c09c-4620-a731-bce9500fd405",
+              "name": "seasonality_multiplier",
+              "value": "={{ $json.seasonality_multiplier }}",
+              "type": "number"
+            },
+            {
+              "id": "220ce89f-fcdf-4264-9391-7f069c56141d",
+              "name": "adjusted_value",
+              "value": "={{ $json.adjusted_value }}",
+              "type": "number"
+            },
+            {
+              "id": "4e0437a6-99f3-4dc5-bbed-f1ce5fe920b3",
+              "name": "category_key",
+              "value": "={{ $json.category_key }}",
+              "type": "string"
+            },
+            {
+              "id": "d4ed4c61-2546-49d2-a3a8-9bb76139023e",
+              "name": "timestamp",
+              "value": "={{ $json.last_updated }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        420,
+        -80
+      ],
+      "id": "6ea210e2-2afc-4332-846e-38c6b004779e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get input data\nconst input = $input.all()[0].json;\n\nconst expectedRevenueRange = input.summary.expected_revenue_range;\nconst riskOfShortfall = input.summary.risk_of_shortfall;\nconst forecast = input.visualizations.forecast_vs_target.forecast;\nconst target = input.visualizations.forecast_vs_target.target;\n\nconst top5Deals = input.summary.top_5_deals;\n\n// Format top deals\nconst formattedDeals = top5Deals.map(deal =>\n  `Lead #${deal.id} – ₹${deal.value.toLocaleString()} – Stage: ${deal.stage}`\n).join('\\n');\n\n// Example conversion trend (you can replace with dynamic value)\nconst funnelConversionRate = \"24.3% (↑ from last week)\";\n\n// Final summary message\nconst forecastSummary = `\n📬 *SalesForecast AI – Weekly Forecast Summary*\n\n🧮 *Expected Revenue:* ${expectedRevenueRange}\n🎯 *Target:* ₹${target.toLocaleString()}\n📉 *Risk of Shortfall:* ${riskOfShortfall}\n\n🔝 *High Confidence Deals (Closing This Week):*\n${formattedDeals}\n\n📊 *Funnel Conversion Rate:* ${funnelConversionRate}\n_Generated by QAID's SalesForecast AI Agent_\n`.trim();\n\n// Return as output\nreturn [{ json: { forecastSummary } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1240,
+        -100
+      ],
+      "id": "1df53abd-dcf6-4b38-8c4e-7564dd686c5e",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "sendTo": "manikarri41@gmail.com",
+        "subject": "=forecast summary",
+        "emailType": "text",
+        "message": "={{ $json.forecastSummary }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1420,
+        -120
+      ],
+      "id": "3cb487d3-8c14-42de-86a7-67b91791d43f",
+      "name": "Gmail",
+      "webhookId": "26c11cc6-abc1-49b9-bdb1-f3bd353332b0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KokRp5nrKDKnwJiM",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1200,
+        -380
+      ],
+      "id": "8cc944f9-f35a-4335-aac5-377f791582cf",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1xXtmyddrDJUWS3sUtrps6ZhD4Fhqm8sgxfZX6twgBUE",
+          "mode": "list",
+          "cachedResultName": "log error",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xXtmyddrDJUWS3sUtrps6ZhD4Fhqm8sgxfZX6twgBUE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xXtmyddrDJUWS3sUtrps6ZhD4Fhqm8sgxfZX6twgBUE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "revenue range": "={{ $json.summary.expected_revenue_range }}",
+            "month": "={{ $json.summary.forecast_this_month }}",
+            "quarter": "={{ $json.summary.forecast_this_quarter }}",
+            "top deals": "={{ $json.summary.top_5_deals }}",
+            "risk of shortfall": "={{ $json.summary.risk_of_shortfall }}",
+            "forecast": "={{ $json.visualizations.forecast_vs_target.forecast }}",
+            "target": "={{ $json.visualizations.forecast_vs_target.target }}",
+            "stage funnel proposal": "={{ $json.visualizations.stage_funnel['Proposal Sent'] }}",
+            "stage funnel qualified": "={{ $json.visualizations.stage_funnel.Qualified }}",
+            "stage funnel negotiation": "={{ $json.visualizations.stage_funnel.Negotiation }}",
+            "timestamp": "={{ $json.summary.timestamp }}",
+            "week": "={{ $json.summary.forecast_this_week }}"
+          },
+          "matchingColumns": [
+            "forecastSummary"
+          ],
+          "schema": [
+            {
+              "id": "revenue range",
+              "displayName": "revenue range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "week",
+              "displayName": "week",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "month",
+              "displayName": "month",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "quarter",
+              "displayName": "quarter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "top deals",
+              "displayName": "top deals",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "risk of shortfall",
+              "displayName": "risk of shortfall",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "forecast",
+              "displayName": "forecast",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "target",
+              "displayName": "target",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stage funnel proposal",
+              "displayName": "stage funnel proposal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stage funnel qualified",
+              "displayName": "stage funnel qualified",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stage funnel negotiation",
+              "displayName": "stage funnel negotiation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1420,
+        100
+      ],
+      "id": "4a7af36e-0924-4d98-adc2-e96f2b38033a",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "bdDMMS5FtqlDLxzQ",
+          "name": "Google Sheets account 7"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7e239994-3f4b-4eb9-8187-66c32b52112b",
+              "name": "summary.expected_revenue_range",
+              "value": "={{ $json.summary.expected_revenue_range }}",
+              "type": "string"
+            },
+            {
+              "id": "091a1b53-6914-40d7-8f5d-d12a9fb734c1",
+              "name": "summary.forecast_this_week",
+              "value": "={{ $json.summary.forecast_this_week }}",
+              "type": "number"
+            },
+            {
+              "id": "627cb947-9a99-4e2f-92d2-4fa3f10d37ca",
+              "name": "summary.forecast_this_month",
+              "value": "={{ $json.summary.forecast_this_month }}",
+              "type": "number"
+            },
+            {
+              "id": "4a1cef07-84c4-480a-90a6-86c192d18588",
+              "name": "summary.forecast_this_quarter",
+              "value": "={{ $json.summary.forecast_this_quarter }}",
+              "type": "number"
+            },
+            {
+              "id": "25b22adf-10dc-4926-a064-b58db47fd81b",
+              "name": "summary.top_5_deals",
+              "value": "={{ $json.summary.top_5_deals }}",
+              "type": "array"
+            },
+            {
+              "id": "d43bd0d5-18c6-4fb7-949c-6c05cc12cb24",
+              "name": "summary.risk_of_shortfall",
+              "value": "={{ $json.summary.risk_of_shortfall }}",
+              "type": "string"
+            },
+            {
+              "id": "45fce4a9-1ad6-4289-8993-678704c5de27",
+              "name": "visualizations.forecast_vs_target.forecast",
+              "value": "={{ $json.visualizations.forecast_vs_target.forecast }}",
+              "type": "number"
+            },
+            {
+              "id": "080847e3-890e-4828-87e8-71a98b1ca6f1",
+              "name": "visualizations.forecast_vs_target.target",
+              "value": "={{ $json.visualizations.forecast_vs_target.target }}",
+              "type": "number"
+            },
+            {
+              "id": "6e2172ec-3cb8-483d-b652-5acf8dcd010a",
+              "name": "visualizations.stage_funnel['Proposal Sent']",
+              "value": "={{ $json.visualizations.stage_funnel['Proposal Sent'] }}",
+              "type": "number"
+            },
+            {
+              "id": "1e631d1f-7262-464a-8b57-2baab021839f",
+              "name": "visualizations.stage_funnel.Qualified",
+              "value": "={{ $json.visualizations.stage_funnel.Qualified }}",
+              "type": "number"
+            },
+            {
+              "id": "1729a5c8-2eb4-4864-b0b3-70cb4380b07f",
+              "name": "visualizations.stage_funnel.Negotiation",
+              "value": "={{ $json.visualizations.stage_funnel.Negotiation }}",
+              "type": "number"
+            },
+            {
+              "id": "a97fe70c-04da-4565-b33b-283a50672fff",
+              "name": "summary.timestamp",
+              "value": "={{ $json.summary.timestamp }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        120
+      ],
+      "id": "86751c46-dbd8-46f0-a401-4f0332e765fd",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "52f411f4-1056-4fdd-9ee1-4c2d8b597838",
+              "leftValue": "={{ !$json[\"test_cases\"] || $json[\"test_cases\"].length === 0 }}  ",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        980,
+        360
+      ],
+      "id": "81d5daae-c319-4a7a-a2ab-b1de9ccc2efe",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "manikarri41@gmail.com",
+        "subject": "Subject: ❌ SalesForecast AI – Forecast Failed",
+        "emailType": "text",
+        "message": " SalesForecast AI could not fetch or process CRM data for the forecast run.  🔎 Issue: TypeError: Cannot read property 'json' of undefined  🕒 Timestamp: 30/06/2025, 16:12:53  📦 Workflow: Sales Forecast – Weekly Automation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1260,
+        400
+      ],
+      "id": "a73754a5-d18d-41b8-97ae-20a5815db3cf",
+      "name": "Gmail1",
+      "webhookId": "ec6cbf2a-fbbb-4ba2-bebf-ac66b03dcf9e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KokRp5nrKDKnwJiM",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        600,
+        240
+      ],
+      "id": "58bb46a5-58a6-458d-9a0b-c637a2650991",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "ddmeE7ukzGvQTO7y",
+          "name": "Groq account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e62304f5-a7d0-465c-b089-f907710cda4d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c408c018f869741cb7bc816f39799de97c0d14efaa2363cfbb10a31e62790d35"
+  },
+  "id": "JmHzxR8oRzgkXrra",
+  "tags": []
+}

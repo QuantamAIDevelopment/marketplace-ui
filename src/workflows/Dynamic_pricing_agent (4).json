@@ -1,0 +1,949 @@
+{
+  "name": "Dynamic pricing agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2340,
+        160
+      ],
+      "id": "78e481b5-94f4-464d-84ce-620fc4bb04c6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
+          "mode": "list",
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2020,
+        160
+      ],
+      "id": "081b2e72-6590-438c-b778-fafbbfc60dbc",
+      "name": "Product_Inventory_Reader",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1760,
+        380
+      ],
+      "id": "7c848154-222d-4b63-b03a-ac80512f8ffc",
+      "name": "Data_Source_Combiner"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "33149601-a81c-48b6-9cc6-4b6b87ac0c4d",
+              "leftValue": "={{ $json.changed }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -980,
+        380
+      ],
+      "id": "63466c38-4d95-4da4-b6b4-14ebc6e0743d",
+      "name": "Price_Change_Decision_Router"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b1bb91e-ba51-4e99-8d80-9903d556e992",
+              "name": "productId",
+              "value": "={{ $json.productId }}",
+              "type": "string"
+            },
+            {
+              "id": "ad046851-b915-474e-8ecf-8f40e6ed4c57",
+              "name": "productName",
+              "value": "={{ $json.productName }}",
+              "type": "string"
+            },
+            {
+              "id": "c7fddccc-1449-4d10-89a6-748b0c5c9777",
+              "name": "oldPrice",
+              "value": "={{ $json.oldPrice }}",
+              "type": "string"
+            },
+            {
+              "id": "d4a2bd4a-8fe6-44dd-a553-4bb51ddaeeb9",
+              "name": "newPrice",
+              "value": "={{ $json.newPrice }}",
+              "type": "string"
+            },
+            {
+              "id": "4268290f-fdbe-4048-88f3-a805dbbfa3ac",
+              "name": "reason",
+              "value": "={{ $json.reason }}",
+              "type": "string"
+            },
+            {
+              "id": "69d87606-2eed-48a4-8f46-5f0760c12e01",
+              "name": "timestamp",
+              "value": "={{ $('Data_Source_Combiner').item.json.timestamp }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -760,
+        240
+      ],
+      "id": "0860ef6b-c1b9-42ed-a244-68ca99652e3a",
+      "name": "Update_Data_Formatter"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
+          "mode": "list",
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1642149970,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=1642149970"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Product Id": "={{ $json.productId }}",
+            "Product Name": "={{ $json.productName }}",
+            "Old Price": "={{ $json.oldPrice }}",
+            "New Price": "={{ $json.newPrice }}",
+            "Reason": "={{ $json.reason }}",
+            "Timestamp": "={{ $json.timestamp }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Product Id",
+              "displayName": "Product Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Old Price",
+              "displayName": "Old Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "New Price",
+              "displayName": "New Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reason",
+              "displayName": "Reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -540,
+        240
+      ],
+      "id": "32aa8e69-117c-4a6a-8db7-8f50984aee70",
+      "name": "Pricing_History_Logger",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let html = `\n  <html>\n  <head>\n    <style>\n      body { font-family: Arial, sans-serif; padding: 10px; }\n      table { width: 100%; border-collapse: collapse; margin-top: 10px; }\n      th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\n      th { background-color: #f2f2f2; }\n      caption { font-size: 1.4em; margin: 10px 0; font-weight: bold; }\n    </style>\n  </head>\n  <body>\n    <h2>Dynamic Pricing Update – ${new Date().toLocaleDateString()}</h2>\n    <table>\n      <caption>Pricing Changes</caption>\n      <tr>\n        <th>Product ID</th>\n        <th>Product Name</th>\n        <th>Old Price</th>\n        <th>New Price</th>\n        <th>Reason</th>\n        <th>Updated At</th>\n      </tr>\n`;\n\nfor (const item of items) {\n  const d = item.json;\n\n  const oldPrice = parseFloat(d[\"Old Price\"] || d.oldPrice);\n  const newPrice = parseFloat(d[\"New Price\"] || d.newPrice);\n  const formattedOldPrice = isNaN(oldPrice) ? (d[\"Old Price\"] || d.oldPrice || '') : `₹${oldPrice.toFixed(2)}`;\n  const formattedNewPrice = isNaN(newPrice) ? (d[\"New Price\"] || d.newPrice || '') : `₹${newPrice.toFixed(2)}`;\n  const updatedAt = d[\"Timestamp\"] || d.dateTime || '-';\n\n  html += `\n      <tr>\n        <td>${d[\"Product Id\"] || d.productId || ''}</td>\n        <td>${d[\"Product Name\"] || d.productName || ''}</td>\n        <td>${formattedOldPrice}</td>\n        <td>${formattedNewPrice}</td>\n        <td>${d[\"Reason\"] || d.reason || ''}</td>\n        <td>${updatedAt}</td>\n      </tr>\n  `;\n}\n\nhtml += `\n    </table>\n  </body>\n  </html>\n`;\n\nreturn [{\n  json: {\n    html\n  }\n}];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        240
+      ],
+      "id": "a780da9a-20da-4af8-933d-7637cdc89b31",
+      "name": "HTML_Report_Generator"
+    },
+    {
+      "parameters": {
+        "sendTo": "manikarri41@gmail.com",
+        "subject": "Pricing Report PDF",
+        "message": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -160,
+        240
+      ],
+      "id": "4fd9b650-75b0-4e51-b96a-9dd85a74cbff",
+      "name": "Report_Sender",
+      "webhookId": "3f11591c-5f13-40f8-94c2-09ab84e91f99",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mxrA4n6IaRAaZeF8",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        -220,
+        20
+      ],
+      "id": "c2d27f25-a4b2-4ecf-8aea-f3065073f8a3",
+      "name": "API_Response_Handler"
+    },
+    {
+      "parameters": {
+        "sendTo": "manikarri41@gmail.com",
+        "subject": "Pricing Agent Error Alert",
+        "message": "=❌ Pricing update failed.\nProduct ID: {{$json.productId}}\nStep: {{$json.step}}\nreason: {{ $json.reason }}\nTime: {{$json.timestamp}}",
+        "options": {}
+      },
+      "id": "b880d53a-df2f-4420-aa33-be27d82328d4",
+      "name": "System_Error_Alerter",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        500
+      ],
+      "webhookId": "ac5b3100-1bdd-436f-a9b4-30e3071854b2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "mxrA4n6IaRAaZeF8",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const changed = $json.changed;\nconst productId = $json.productId || $json.productid || 'unknown';\nconst productName = $json.productName || $json.productname || 'unknown';\nconst oldPrice = Number($json.oldPrice || $json.currentprice || 0);\nconst newPrice = Number($json.newPrice || oldPrice);\nconst productViews = Number($json.productViews || $json.productviews || 0);\nconst inventoryCount = Number($json.inventoryCount || $json.inventorycount || 0);\nconst lastSoldDaysAgo = Number($json.lastSoldDaysAgo || $json.lastsolddaysago || 0);\nconst dayOfWeek = $json.dayOfWeek || $json.dayofweek || '';\nconst timeOfDay = $json.timeOfDay || $json.timeofday || '';\nconst timestamp = new Date().toISOString();\n\nlet reason = $json.reason || '';\n\nif (!changed) {\n  const reasons = [];\n\n  if (productViews <= 1000) {\n    reasons.push('Low demand (views ≤ 1000)');\n  }\n  if (inventoryCount >= 10) {\n    reasons.push('Stock level high (inventory ≥ 10)');\n  }\n  if (lastSoldDaysAgo <= 30) {\n    reasons.push('Recently sold (≤ 30 days ago)');\n  }\n\n  const hour = parseInt(timeOfDay.split(':')[0] || '0', 10);\n  const inPromoTime = (dayOfWeek === 'Friday') || (hour >= 17 && hour < 20);\n  if (!inPromoTime) {\n    reasons.push('Not in promo time or day');\n  }\n\n  if (reasons.length === 0) {\n    reasons.push('No pricing rule matched');\n  }\n\n  reason = reasons.join('; ');\n}\n\nreturn [{\n  json: {\n    productId,\n    productName,\n    oldPrice,\n    newPrice,\n    status: changed ? \"Price changed\" : \"Price not changed\",\n    reason,\n    step: \"Price Evaluation\",\n    timestamp\n  }\n}];\n\n"
+      },
+      "id": "bf4ee089-c29b-4b73-890e-8729cef9cb06",
+      "name": "Non_Change_Reason_Analyzer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -760,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
+          "mode": "list",
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 486452548,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=486452548"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "productId": "={{ $json.productId }}",
+            "productName": "={{ $json.productName }}",
+            "oldPrice": "={{ $json.oldPrice }}",
+            "newPrice": "={{ $json.newPrice }}",
+            "status": "={{ $json.status }}",
+            "reason": "={{ $json.reason }}",
+            "step": "={{ $json.step }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "productId",
+              "displayName": "productId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "productName",
+              "displayName": "productName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "oldPrice",
+              "displayName": "oldPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "newPrice",
+              "displayName": "newPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "step",
+              "displayName": "step",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "69168e8f-3053-4f40-9fae-fddc3b31187d",
+      "name": "Decision_Audit_Logger",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -560,
+        500
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
+          "mode": "list",
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "productId": "={{ $json.productId }}",
+            "productName": "={{ $json.productName }}",
+            "currentPrice": "={{ $json.currentPrice }}",
+            "costPrice": "={{ $json.costPrice }}",
+            "inventoryCount": "={{ $json.inventoryCount }}",
+            "productViews": "={{ $json.productViews }}",
+            "historicalSales7Days": "={{ $json.historicalSales7Days }}",
+            "competitorFlipkartPrice": "={{ $json.competitorFlipkartPrice }}",
+            "minPrice": "={{ $json.minPrice }}",
+            "maxPrice": "={{ $json.maxPrice }}",
+            "lastSoldDaysAgo": "={{ $json.lastSoldDaysAgo }}",
+            "timeOfDay": "={{ $json.timeOfDay }}",
+            "dayOfWeek": "={{ $json.dayOfWeek }}",
+            "category": "={{ $json.category }}",
+            "priority": "={{ $json.priority }}",
+            "timestamp": "={{ $json.timestamp }}"
+          },
+          "matchingColumns": [
+            "productId"
+          ],
+          "schema": [
+            {
+              "id": "productId",
+              "displayName": "productId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "productName",
+              "displayName": "productName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "currentPrice",
+              "displayName": "currentPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "costPrice",
+              "displayName": "costPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "inventoryCount",
+              "displayName": "inventoryCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "productViews",
+              "displayName": "productViews",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "historicalSales7Days",
+              "displayName": "historicalSales7Days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "competitorFlipkartPrice",
+              "displayName": "competitorFlipkartPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "minPrice",
+              "displayName": "minPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "maxPrice",
+              "displayName": "maxPrice",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lastSoldDaysAgo",
+              "displayName": "lastSoldDaysAgo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timeOfDay",
+              "displayName": "timeOfDay",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "dayOfWeek",
+              "displayName": "dayOfWeek",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2020,
+        600
+      ],
+      "id": "ee4634b6-4ce4-4dfe-99c3-e1baed1c0981",
+      "name": "Product_Data_Updater",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Dynamic_Post",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -2500,
+        600
+      ],
+      "id": "1bb4789f-21d9-4e18-aba0-0cd43abf4c7d",
+      "name": "External_Pricing_API_Endpoint",
+      "webhookId": "aeff43cf-a96f-4241-874e-2f66cc475d62"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Given the following product data:\n- Product Name:{{ $json.productName }} \n- Product ID: {{ $json.productId }}\n- Current Price: ₹{{ $json.currentPrice }}\n- Cost Price: ₹{{ $json.costPrice }}\n- Inventory Count:{{ $json.inventoryCount }}\n- Product Views: {{ $json.productViews }}\n- Historical Sales in Last 7 Days: {{ $json.historicalSales7Days }}\n- Competitor Flipkart Price: ₹{{ $json.competitorFlipkartPrice }}\n- Minimum Price: ₹{{ $json.minPrice }}\n- Maximum Price: ₹{{ $json.maxPrice }}\n- Last Sold Days Ago: {{ $json.lastSoldDaysAgo }}\n- Time of Day: {{ $json.timestamp }} (24hr format, e.g., 17:30)\n- Day of Week:{{ $json.dayOfWeek }} \n",
+        "options": {
+          "systemMessage": "=You are an intelligent pricing agent for an eCommerce store.\n\nYour job is to calculate the optimal selling price for a product using defined pricing rules and return output in a strict JSON object format.\n\n---\n\n## INPUT VARIABLES:\n- productId: {{ $json.productId }}\n- productName: {{ $json.productName }}\n- currentPrice: {{ $json.currentPrice }}\n- costPrice: {{ $json.costPrice }}\n- inventoryCount: {{ $json.inventoryCount }}\n- productViews: {{ $json.productViews }}\n- historicalSales7Days: {{ $json.historicalSales7Days }}\n- competitorFlipkartPrice: {{ $json.competitorFlipkartPrice }}\n- daysSinceLastSale: {{ $json.lastSoldDaysAgo }}\n- maxPrice: {{ $json.maxPrice }}\n- minPrice: {{ $json.minPrice }}\n- dayOfWeek: {{ $json.dayOfWeek }}\n- currentTime:{{ $json.timestamp }}\n\n---\n\n## PRICING RULES TO APPLY:\n\n1. **Demand-Based Rule**: If views > 1000 and stock < 10 → increase price by 10%.\n2. **Competitor Undercut Rule**: If competitorPrice > currentPrice → set price to ₹5 less than competitor.\n3. **Friday Discount Rule**: If today is Friday → reduce price by 10%.\n4. **Promo Time Window**: If time is between 5 PM–8 PM → reduce price by 5%.\n5. **Aging Stock Rule**: If daysSinceLastSale > 30 → reduce price by 10%.\n6. **Surge Pricing**: If inventory < 10 → increase price by 5%.\n\n---\n\n## OUTPUT FORMAT:\nReturn **only** the following JSON object without any explanation:\n\nIf price is changed:\n```json\n{\n  \"json\": {\n    \"productId\": \"BHDX1\",\n    \"productName\": \"Bluetooth Headset DX1\",\n    \"oldPrice\": 2799,\n    \"newPrice\": 2949,\n    \"reason\": \"Demand-Based Rule: High views + Low stock\",\n    \"changed\": true\n  }\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1560,
+        380
+      ],
+      "id": "e650c40f-980d-436c-bc24-65be1c54a3ce",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1540,
+        580
+      ],
+      "id": "00617ec3-1b4f-40aa-a229-7c7635021c8d",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "ZEleCzLCONixInHZ",
+          "name": "Groq account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nfor (const item of items) {\n  const rawText = item.json.output || \"\";\n\n  // Match all JSON-like blocks\n  const matches = rawText.match(/\\{[^{}]*\"productId\"[^{}]*\\}/g);\n\n  if (matches) {\n    for (const block of matches) {\n      try {\n        const parsed = JSON.parse(block);\n\n        results.push({\n          json: {\n            productId: parsed.productId,\n            productName: parsed.productName,\n            oldPrice: parsed.oldPrice,\n            newPrice: parsed.newPrice,\n            reason: parsed.reason,\n            changed: parsed.changed\n          }\n        });\n\n      } catch (err) {\n        // Skip malformed blocks\n        continue;\n      }\n    }\n  }\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1200,
+        380
+      ],
+      "id": "d334c342-8af0-4201-8581-7dfe08acd619",
+      "name": "Code",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "dynamic",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -2260,
+        600
+      ],
+      "id": "0700a028-d060-419e-9183-c578418556f4",
+      "name": "Extract from File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Product_Inventory_Reader",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product_Inventory_Reader": {
+      "main": [
+        [
+          {
+            "node": "Data_Source_Combiner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data_Source_Combiner": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Price_Change_Decision_Router": {
+      "main": [
+        [
+          {
+            "node": "Update_Data_Formatter",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Non_Change_Reason_Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update_Data_Formatter": {
+      "main": [
+        [
+          {
+            "node": "Pricing_History_Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pricing_History_Logger": {
+      "main": [
+        [
+          {
+            "node": "HTML_Report_Generator",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "API_Response_Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML_Report_Generator": {
+      "main": [
+        [
+          {
+            "node": "Report_Sender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Non_Change_Reason_Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Decision_Audit_Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decision_Audit_Logger": {
+      "main": [
+        [
+          {
+            "node": "System_Error_Alerter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product_Data_Updater": {
+      "main": [
+        [
+          {
+            "node": "Data_Source_Combiner",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "External_Pricing_API_Endpoint": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Price_Change_Decision_Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Product_Data_Updater",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c62f7956-68b7-49f1-a023-dac127836b14",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "6sZbEyZ7UULSYuBL",
+  "tags": []
+}

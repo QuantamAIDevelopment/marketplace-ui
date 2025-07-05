@@ -1,0 +1,525 @@
+{
+  "name": "leave balance chatbot agent",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c0299563-a85e-42ae-b4c1-7c55da94c0cd",
+              "name": "subject",
+              "value": "={{ $json.body.Subject }}",
+              "type": "string"
+            },
+            {
+              "id": "41164c10-2bbb-4316-96c3-3488b69b85bd",
+              "name": "text",
+              "value": "={{ $json.body.snippet }}",
+              "type": "string"
+            },
+            {
+              "id": "0e133cae-b6e9-4261-83c0-52f3fd617c80",
+              "name": "email",
+              "value": "={{ $json.body.From }}",
+              "type": "string"
+            },
+            {
+              "id": "2f89a409-3404-4226-839e-ee59d01f6369",
+              "name": "Date",
+              "value": "={{ $json.body.internalDate }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2840,
+        -40
+      ],
+      "id": "9a30ece0-8b6a-4f88-aa8f-f2a550ff247c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nconst casualUsed = data[\"Casual Leave used\"] || 0;\nconst sickUsed = data[\"Sick Leave Used\"] || 0;\nconst casualTotal = data[\"Casual Leave Total\"] || 0;\nconst sickTotal = data[\"Sick Leave Total\"] || 0;\n\nconst totalLeavesUsed = casualUsed + sickUsed;\nconst remainingCasualLeaves = casualTotal - casualUsed;\nconst remainingSickLeaves = sickTotal - sickUsed;\nconst remainingTotalLeaves = remainingCasualLeaves + remainingSickLeaves;\n\nreturn [{\n  json: {\n    email: data[\"Email\"],\n    employee_id: data[\"Employee_id\"],\n    casual_leave_total: casualTotal,\n    casual_leave_used: casualUsed,\n    sick_leave_total: sickTotal,\n    sick_leave_used: sickUsed,\n    total_leaves_used: totalLeavesUsed,\n    remaining_casual_leaves: remainingCasualLeaves,\n    remaining_sick_leaves: remainingSickLeaves,\n    remaining_total_leaves: remainingTotalLeaves\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1580,
+        -160
+      ],
+      "id": "0de63902-6f15-4def-a07a-328dc771a4e6",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d01c4c63-2bac-435a-9564-22ca601045c8",
+              "leftValue": "={{ $json.Employee_id }}",
+              "rightValue": "leave",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1860,
+        -40
+      ],
+      "id": "d62af060-9240-4add-a3c9-228f3f8a74a8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an intent classification AI.\n\nUser message: \"{{ $json.text }}\"\nUser email: \"{{ $json[\"email\"] }}\"\n\nClassify the intent as one of:\n- \"check_leave_balance\"\n- \"other\"\n\nReturn result in the following JSON format:\n{\n  \"email\": \"{{ $json[\"email\"] }}\",\n  \"intent\": \"check_leave_balance\"  // or \"other\"\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -2420,
+        -40
+      ],
+      "id": "f49fb678-86cc-4263-b7df-d8010968dc47",
+      "name": "OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "sdne4Pn7sYCfDHMz",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst updatedItems = items.map((item) => {\n  // Try to get the internalDate from current item\n  const timestampMillis = item.json.internalDate;\n\n  // Use internalDate if available, otherwise fallback to current time\n  const date = new Date(Number(timestampMillis || Date.now()));\n\n  const year = date.getFullYear();\n  const month = String(date.getMonth() + 1).padStart(2, \"0\");\n  const day = String(date.getDate()).padStart(2, \"0\");\n\n  // Add formatted date to item\n  item.json.Date = `${year}-${month}-${day}`;\n\n  return item;\n});\n\nreturn updatedItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2620,
+        -40
+      ],
+      "id": "bdddb4af-a4ea-47fd-b9b2-94e5cfd9e9f6",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email '] }}",
+        "subject": "Leave Balance",
+        "emailType": "text",
+        "message": "=Hello 👋, here's your current leave balance:\n\n📧 Email: {{ $json['Email '] }}\n🆔 Employee ID: {{ $json.Employee_id }}\n\n🟢 Casual Leaves Remaining:  {{ $json['Remaining Causal leaves'] }}\n🟡 Sick Leaves Remaining: {{ $json['Remaining Sick Leaves'] }}\n📊 Total Leaves Used: {{ $json['Total leaves used'] }}\n📘 Total Remaining Leaves: {{ $json['Remaining Leaves'] }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        -160
+      ],
+      "id": "a328ce19-6576-44f1-b104-bf935e8df613",
+      "name": "Gmail",
+      "webhookId": "12b354d4-6cb4-40ed-be11-4bddfd8e2d40",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "39wk3pOa7NWGBS49",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email '] }}",
+        "subject": "Leave balance data",
+        "emailType": "text",
+        "message": "=Sorry, we couldn't find leave details for the provided email or employee ID.\n\nPlease double-check the information and try again.  \nIf the issue persists, contact HR for assistance.\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1560,
+        100
+      ],
+      "id": "efd9570d-a218-4023-9f7e-ccda65d7ec5b",
+      "name": "Gmail1",
+      "webhookId": "d4bae13c-3875-4d3a-b845-7936dd52ef8d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "39wk3pOa7NWGBS49",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "leaves_Post",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -3080,
+        -40
+      ],
+      "id": "e726b8ae-86de-4756-8140-967db7ce0772",
+      "name": "Webhook",
+      "webhookId": "cbbf59f7-daed-4a40-883c-3f8e795c2b20"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1ek3e8reP6PSAxsviEI3Huj7jpit0DO3DigpeSqwaqZc",
+          "mode": "list",
+          "cachedResultName": "Leaves",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ek3e8reP6PSAxsviEI3Huj7jpit0DO3DigpeSqwaqZc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ek3e8reP6PSAxsviEI3Huj7jpit0DO3DigpeSqwaqZc/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Email ",
+              "lookupValue": "={{ $json.message.content.email }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2060,
+        -40
+      ],
+      "id": "e106a063-f052-4ad8-9893-2963f6664b54",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lowsggcdQwMJ9GxF",
+          "name": "Google Sheets account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        -1160,
+        -460
+      ],
+      "id": "4a9eb094-7222-4e6c-929a-a1eb810c1b66",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1ek3e8reP6PSAxsviEI3Huj7jpit0DO3DigpeSqwaqZc",
+          "mode": "list",
+          "cachedResultName": "Leaves",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ek3e8reP6PSAxsviEI3Huj7jpit0DO3DigpeSqwaqZc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ek3e8reP6PSAxsviEI3Huj7jpit0DO3DigpeSqwaqZc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Employee_id": "={{ $json.employee_id }}",
+            "Email ": "={{ $('If').item.json['Email '] }}",
+            "Casual Leave Total": "={{ $json.casual_leave_total }}",
+            "Casual Leave used": "={{ $json.casual_leave_used }}",
+            "Sick Leave Total": "={{ $json.sick_leave_total }}",
+            "Sick Leave Used": "={{ $json.sick_leave_used }}",
+            "Total leaves used": "={{ $json.total_leaves_used }}",
+            "Remaining Causal leaves": "={{ $json.remaining_casual_leaves }}",
+            "Remaining Sick Leaves": "={{ $json.remaining_sick_leaves }}",
+            "Remaining Leaves": "={{ $json.remaining_total_leaves }}"
+          },
+          "matchingColumns": [
+            "Employee_id"
+          ],
+          "schema": [
+            {
+              "id": "Employee_id",
+              "displayName": "Employee_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email ",
+              "displayName": "Email ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Casual Leave Total",
+              "displayName": "Casual Leave Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Casual Leave used",
+              "displayName": "Casual Leave used",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sick Leave Total",
+              "displayName": "Sick Leave Total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sick Leave Used",
+              "displayName": "Sick Leave Used",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Total leaves used",
+              "displayName": "Total leaves used",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remaining Leaves",
+              "displayName": "Remaining Leaves",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remaining Causal leaves",
+              "displayName": "Remaining Causal leaves",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Remaining Sick Leaves",
+              "displayName": "Remaining Sick Leaves",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1360,
+        -160
+      ],
+      "id": "6410348d-1395-4ee3-a33b-083aaa21c9f9",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lowsggcdQwMJ9GxF",
+          "name": "Google Sheets account 8"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        []
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0ebb4fc9-9d22-495e-aaa9-210e07e00b1d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c408c018f869741cb7bc816f39799de97c0d14efaa2363cfbb10a31e62790d35"
+  },
+  "id": "LpHs6ZPMLvD8tIdU",
+  "tags": []
+}
