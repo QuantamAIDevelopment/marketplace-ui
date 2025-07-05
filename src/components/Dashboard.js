@@ -93,6 +93,14 @@ const workflows = [
     isButton: true,
     buttonText: 'Open Sentiment Agent',
   },
+  {
+    title: 'Resume Analyzer',
+    icon: FaUserAlt,
+    path: '/resume-analyzer',
+    description: 'Analyze and extract insights from resumes using AI.',
+    isButton: true,
+    buttonText: 'Open Resume Analyzer',
+  },
 ];
 
 const WorkflowCard = ({ title, icon: Icon, description, onClick, isButton, buttonText }) => (
