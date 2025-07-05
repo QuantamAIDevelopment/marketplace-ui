@@ -89,6 +89,8 @@ const workflows = [
     icon: FaRobot,
     path: '/workflows/sentiment-agent',
     description: 'Analyze sentiment from text using AI.',
+    isButton: true,
+    buttonText: 'Open Sentiment Agent',
   },
 ];
 
