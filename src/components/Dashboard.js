@@ -88,8 +88,8 @@ const workflows = [
   {
     title: 'Sentiment Agent',
     icon: FaRobot,
-    path: '/workflows/sentiment-agent',
-    description: 'Analyze sentiment from text using AI.',
+    path: '/sentiment-agent-report',
+    description: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.',
     isButton: true,
     buttonText: 'Open Sentiment Agent',
   },

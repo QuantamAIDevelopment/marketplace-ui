@@ -1,29 +1,45 @@
 import React, { useEffect, useState } from 'react';
 
+const SENTIMENT_API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/Sentiment agent';
+
 const SentimentAgentWorkflowPage = () => {
-  const [workflow, setWorkflow] = useState(null);
+  const [report, setReport] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/src/workflows/Sentiment_agent.json')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to load workflow definition');
-        return res.json();
-      })
-      .then(setWorkflow)
-      .catch(setError);
+    const fetchReport = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(SENTIMENT_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch sentiment report');
+        }
+        const text = await response.text();
+        setReport(text);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReport();
   }, []);
 
-  if (error) return <div className="p-8 text-red-600">Error: {error.message}</div>;
-  if (!workflow) return <div className="p-8">Loading workflow...</div>;
-
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">{workflow.name || 'Sentiment Agent Workflow'}</h1>
-      <pre className="bg-gray-100 p-4 rounded text-xs overflow-x-auto">
-        {JSON.stringify(workflow, null, 2)}
-      </pre>
-      <p className="mt-4 text-gray-600">This is a placeholder. You can build a custom UI to interact with this workflow.</p>
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded shadow mt-8">
+      <h1 className="text-2xl font-bold mb-4">Sentiment Agent Report</h1>
+      {loading && <div className="text-blue-500">Loading...</div>}
+      {error && <div className="text-red-500">{error}</div>}
+      {!loading && !error && (
+        <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded text-sm overflow-x-auto">{report}</pre>
+      )}
     </div>
   );
 };

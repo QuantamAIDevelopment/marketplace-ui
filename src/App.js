@@ -60,6 +60,7 @@ function App() {
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
               <Route path="/workflows/sentiment-agent" element={<SentimentAgentWorkflowPage />} />
+              <Route path="/sentiment-agent-report" element={<SentimentAgentPage />} />
             </Routes>
           </main>
         </div>

@@ -1,381 +1,57 @@
 {
-  "name": "Sentiment_agent",
+  "name": "Sentiment_Agent",
   "nodes": [
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are a smart customer support analyst assistant. Your task is to process customer feedback and return a structured summary for automation purposes.\n\nBelow is a customer message:\n{{ $json.body.message }}\n\nFollow these steps:\n1. Analyze the overall **sentiment** of the message. It should be one of: `Positive`, `Neutral`, or `Negative`.\n2. Identify **tags** that represent the core topic(s) of the feedback. Examples include:\n   - billing_issue\n   - app_bug\n   - late_delivery\n   - inventory_stockout\n   - support_praise\n   - product_suggestion\n   - account_login_issue\n3. Determine the **affected module** or department:\n   - Inventory\n   - Mobile App\n   - Billing\n   - Logistics\n   - Customer Support\n   - Web Portal\n   - General\n4. Generate a 1–2 sentence **summary** of the feedback.\n5. If sentiment is Negative and topic is critical (e.g., billing_issue, stockout, app_bug), consider it **high urgency**.\n6.Identify the product name or product ID mentioned (if any).\nDetermine the product type (e.g., shoes, mobile phone, skin cream, software license).\n\nOutput the result in **JSON** format like this:\n\n```json\n{\n  \"sentiment\": \"Negative\",\n  \"tags\": [\"inventory_stockout\"],\n  \"module\": \"Inventory\",\n  \"summary\": \"Customer couldn't order headphones due to repeated stockouts. Frustration expressed.\",\n  \"urgency\": \"high\"\n}\nname : {{ $json.body.name }}\ntime stamp: {{ $now }}\nconvert time to indian time\nmail : {{ $json.body.mail }}\n ",
+        "text": "=You are a smart customer support analyst assistant. Your task is to process customer feedback and return a structured summary for automation purposes.\n\nBelow is a customer message:\n{{ $json.snippet }}\n\nFollow these steps:\n1. Analyze the overall **sentiment** of the message. It should be one of: `Positive`, `Neutral`, or `Negative`.\n2. Identify **tags** that represent the core topic(s) of the feedback. Examples include:\n   - billing_issue\n   - app_bug\n   - late_delivery\n   - inventory_stockout\n   - support_praise\n   - product_suggestion\n   - account_login_issue\n3. Determine the **affected module** or department:\n   - Inventory\n   - Mobile App\n   - Billing\n   - Logistics\n   - Customer Support\n   - Web Portal\n   - General\n4. Generate a 1–2 sentence **summary** of the feedback.\n5. If sentiment is Negative and topic is critical (e.g., billing_issue, stockout, app_bug), consider it **high urgency**.\n\nOutput the result in **JSON** format like this:\n\n```json\n{\n  \"sentiment\": \"Negative\",\n  \"tags\": [\"inventory_stockout\"],\n  \"module\": \"Inventory\",\n  \"summary\": \"Customer couldn't order headphones due to repeated stockouts. Frustration expressed.\",\n  \"urgency\": \"high\"\n}\nname : {{ $workflow.name }}\ntime stamp: {{ $now }}\nFrom :{{ $json.From }}\nextract product ID or product name",
         "hasOutputParser": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        -880,
+        -600,
         300
       ],
-      "id": "f91a1536-c2c4-40fd-9143-06c0f0b8d7a2",
+      "id": "ab491e2f-6ccd-43ad-b5a8-4ba8e21592d4",
       "name": "AI Agent"
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"name\":\"\",\n  \"mail\":\"xxx@gmail.com\",\n  \"time stamp\":\"\",\n  \"product\":\"ghhj\",\n  \"sentiment\": \"\",\n  \"tags\": [\"xxxx\"],\n  \"module\": \"\",\n  \"summary\": \"\",\n  \"urgency\": \"high,low\"\n  \n}"
+        "jsonSchemaExample": "{\n  \n  \"sentiment\": \"\",\n  \"tags\": [\"xxxx\"],\n  \"module\": \"\",\n  \"summary\": \"\",\n  \"urgency\": \"high,low\",\n  \"name\":\"\",\n  \"From\":\"xxx@gmail.com\",\n  \"time stamp\":\"\",\n  \"product\":\"\"\n  \n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        -720,
-        520
+        -400,
+        540
       ],
-      "id": "302cbbeb-be58-4be3-a0a2-60c629471b7e",
+      "id": "1d2c0a8c-9370-4e93-9ab7-ca6f2b4b5613",
       "name": "Structured Output Parser"
     },
     {
       "parameters": {
-        "jsCode": "const feedback = items.map(item => item.json);\n\n// Debug first item\nconsole.log(\"First item:\", JSON.stringify(feedback[0], null, 2));\n\n// Helper: Get field case-insensitively\nfunction getField(obj, ...keys) {\n  for (const key of keys) {\n    const found = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());\n    if (found) return obj[found];\n  }\n  return undefined;\n}\n\n// Step 1: Initialize structure\nconst moduleStats = {};\nlet crmPraise = [];\n\nfor (const item of feedback) {\n  const module = getField(item, 'Module') || 'General';\n  const sentiment = getField(item, 'Sentiment') || 'Neutral';\n  const tag = getField(item, 'Tag') || 'untagged';\n  const urgency = getField(item, 'Urgency') || 'low';\n\n  // Route CRM praise separately\n  if (module.toLowerCase() === 'crm' && (tag === 'support_praise' || sentiment === 'Positive')) {\n    crmPraise.push(item);\n    continue;\n  }\n\n  if (!moduleStats[module]) {\n    moduleStats[module] = {\n      count: 0,\n      tagCounts: {},\n      sentimentCounts: { Positive: 0, Neutral: 0, Negative: 0 }\n    };\n  }\n\n  moduleStats[module].count += 1;\n  moduleStats[module].sentimentCounts[sentiment] = (moduleStats[module].sentimentCounts[sentiment] || 0) + 1;\n  moduleStats[module].tagCounts[tag] = (moduleStats[module].tagCounts[tag] || 0) + 1;\n}\n\n// Step 2: Format the output message\nconst lines = [];\nlines.push(\"📊 Customer Feedback Sentiment Report – Last 7 Days\\n\");\n\nfor (const [module, data] of Object.entries(moduleStats)) {\n  const topTag = Object.entries(data.tagCounts).sort((a, b) => b[1] - a[1])[0];\n  const topTagText = topTag\n    ? `${topTag[1]} complaints flagged for “${topTag[0].replace(/_/g, ' ')}”`\n    : `${data.count} feedback items`;\n\n  const total = data.count;\n  const sentiments = data.sentimentCounts;\n\n  const negPct = total > 0 ? Math.round((sentiments.Negative / total) * 100) : 0;\n  const neuPct = total > 0 ? Math.round((sentiments.Neutral / total) * 100) : 0;\n  const posPct = total > 0 ? Math.round((sentiments.Positive / total) * 100) : 0;\n\n  lines.push(`🔹 ${module} Module\\n`);\n  lines.push(topTagText);\n  \n  const sentimentParts = [];\n  if (negPct > 0) sentimentParts.push(`${negPct}% Negative`);\n  if (neuPct > 0) sentimentParts.push(`${neuPct}% Neutral`);\n  if (posPct > 0 || sentimentParts.length === 0) sentimentParts.push(`${posPct}% Positive`);\n  lines.push(`Feedback sentiment: ${sentimentParts.join(', ')}`);\n\n  const suggestion = module === \"Inventory\"\n    ? \"Recheck stock sync & restock thresholds\"\n    : module === \"Mobile App\"\n    ? \"Investigate crash reports and Android compatibility\"\n    : module === \"Billing\"\n    ? \"Verify invoice generator and customer charge rules\"\n    : \"Review and triage issues with responsible team\";\n\n  lines.push(`Suggested action: ${suggestion}\\n`);\n}\n\n// Step 3: Add CRM Praise\nif (crmPraise.length) {\n  lines.push(\"🔸 CRM Updates:\\n\");\n  lines.push(`${crmPraise.length} loyalty customers praised support handling`);\n  lines.push(\"Logged to CRM with satisfaction tags\");\n}\n\n// Return result\nreturn [{\n  json: {\n    summary: lines.join('\\n')\n  }\n}];\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2180,
-        180
-      ],
-      "id": "7ff0e506-a517-45e6-8f8c-88db5f8fd665",
-      "name": "Code"
-    },
-    {
-      "parameters": {
-        "content": "ERP"
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        860,
-        60
-      ],
-      "id": "82f26dfa-5115-4c9c-ac79-a40c5d13167a",
-      "name": "Sticky Note"
-    },
-    {
-      "parameters": {
-        "content": "CRM"
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        860,
-        300
-      ],
-      "id": "75662be8-9040-4060-9022-469fe26b031a",
-      "name": "Sticky Note1"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "2b096751-ede2-417e-bc92-48669f1630fb",
-              "leftValue": "={{ $json.output.sentiment }}",
-              "rightValue": "Negative",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        280,
-        160
-      ],
-      "id": "67db2941-76e3-4c3a-a6e6-8d67ef6e1d58",
-      "name": "If"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "e644ed76-acf8-412c-a840-74662c0338b9",
-              "leftValue": "={{ $json.output.tags }}",
-              "rightValue": "app_bug",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "looseTypeValidation": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -220,
-        540
-      ],
-      "id": "3e40bff6-fea4-49e7-8cc8-4c4ad9c1a718",
-      "name": "If1"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "21cff7c2-468a-470c-a797-47b4c55e84a3",
-              "leftValue": "={{ $json.output.module }}",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "empty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "or"
-        },
-        "looseTypeValidation": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -220,
-        100
-      ],
-      "id": "1cf107bc-e9d2-4a62-a101-f02832ae0038",
-      "name": "If2"
-    },
-    {
-      "parameters": {
-        "sendTo": "telegram4228@gmail.com",
-        "subject": "resend",
-        "emailType": "text",
-        "message": "resend",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "7be98fce-771d-44cd-97d0-7c55ed7b7ba3",
-      "name": "Send a message",
-      "webhookId": "b2f67b94-dc23-4cd2-ac72-e6eb5e7a2c84",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "IXvr56nA1pBAKeFO",
-          "name": "Gmail account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "sendTo": "telegram4228@gmail.com",
-        "subject": "App bug",
-        "emailType": "text",
-        "message": "App bug",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [
-        180,
-        520
-      ],
-      "id": "a3919ff0-01df-4456-9bb9-c27a767d066e",
-      "name": "Send a message1",
-      "webhookId": "dd9a355e-247e-4a9c-afdb-c6a6d30ae6e4",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "IXvr56nA1pBAKeFO",
-          "name": "Gmail account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1VysNazQ_U0ElQ4lTjHVeTNdMX0EsNCC60F0E-TwHD2g",
+          "value": "1vliFey24pzGDsqG6qm738rURU-WNt_-SDv5TYMp7IuA",
           "mode": "list",
-          "cachedResultName": "ERP",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VysNazQ_U0ElQ4lTjHVeTNdMX0EsNCC60F0E-TwHD2g/edit?usp=drivesdk"
+          "cachedResultName": "CRM_Sentiment_agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vliFey24pzGDsqG6qm738rURU-WNt_-SDv5TYMp7IuA/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1wi9EBIoh--GvaDjXGbujAhFbSKIy-neDS3ljmhnYHYM/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vliFey24pzGDsqG6qm738rURU-WNt_-SDv5TYMp7IuA/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "name": "={{ $json.output.name }}",
-            "email": "={{ $json.output.mail }}",
-            "time": "={{ $json.output['time stamp'] }}",
-            "sentiment": "={{ $json.output.sentiment }}",
-            "product": "={{ $json.output.product }}",
-            "tag": "={{ $json.output.tags }}",
-            "module": "={{ $json.output.module }}",
-            "summary": "={{ $json.output.summary }}",
-            "urgency": "={{ $json.output.urgency }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "name",
-              "displayName": "name",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "email",
-              "displayName": "email",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "time",
-              "displayName": "time",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "product",
-              "displayName": "product",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "sentiment",
-              "displayName": "sentiment",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "tag",
-              "displayName": "tag",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "module",
-              "displayName": "module",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "summary",
-              "displayName": "summary",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "urgency",
-              "displayName": "urgency",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.6,
-      "position": [
-        920,
-        80
-      ],
-      "id": "0582be23-6e47-4120-9d9b-bddbde73467c",
-      "name": "Append row in sheet",
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3h6d09tR0Red9ok3",
-          "name": "Google Sheets account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "append",
-        "documentId": {
-          "__rl": true,
-          "value": "1xwo8gDZq9hQlKx8OzuoJV8l9FkNBdFEDVczj6sqXixk",
-          "mode": "list",
-          "cachedResultName": "CRM",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xwo8gDZq9hQlKx8OzuoJV8l9FkNBdFEDVczj6sqXixk/edit?usp=drivesdk"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1oePAWdPlyfL2ukBGbzdw8qQM6ta7UqKJNOQU8C5N2LI/edit#gid=0"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "name": "={{ $json.output.name }}",
-            "email": "={{ $json.output.mail }}",
+            "email": "={{ $json.output.From }}",
             "time": "={{ $json.output['time stamp'] }}",
             "product": "={{ $json.output.product }}",
             "sentiment": "={{ $json.output.sentiment }}",
@@ -476,15 +152,333 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        900,
-        340
+        560,
+        280
       ],
-      "id": "9e09585c-a426-4d15-80e5-736b7c371dfb",
-      "name": "Append row in sheet1",
+      "id": "b922c47d-cc50-4518-af24-d2172667daea",
+      "name": "Google Sheets",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "3h6d09tR0Red9ok3",
-          "name": "Google Sheets account"
+          "id": "q5jLzgTAwCAvEGRu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const feedback = items.map(item => item.json);\n\n// Debug first item\nconsole.log(\"First item:\", JSON.stringify(feedback[0], null, 2));\n\n// Helper: Get field case-insensitively\nfunction getField(obj, ...keys) {\n  for (const key of keys) {\n    const found = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());\n    if (found) return obj[found];\n  }\n  return undefined;\n}\n\n// Step 1: Initialize structure\nconst moduleStats = {};\nlet crmPraise = [];\n\nfor (const item of feedback) {\n  const module = getField(item, 'Module') || 'General';\n  const sentiment = getField(item, 'Sentiment') || 'Neutral';\n  const tag = getField(item, 'Tag') || 'untagged';\n  const urgency = getField(item, 'Urgency') || 'low';\n\n  // Route CRM praise separately\n  if (module.toLowerCase() === 'crm' && (tag === 'support_praise' || sentiment === 'Positive')) {\n    crmPraise.push(item);\n    continue;\n  }\n\n  if (!moduleStats[module]) {\n    moduleStats[module] = {\n      count: 0,\n      tagCounts: {},\n      sentimentCounts: { Positive: 0, Neutral: 0, Negative: 0 }\n    };\n  }\n\n  moduleStats[module].count += 1;\n  moduleStats[module].sentimentCounts[sentiment] = (moduleStats[module].sentimentCounts[sentiment] || 0) + 1;\n  moduleStats[module].tagCounts[tag] = (moduleStats[module].tagCounts[tag] || 0) + 1;\n}\n\n// Step 2: Format the output message\nconst lines = [];\nlines.push(\"📊 Customer Feedback Sentiment Report – Last 7 Days\\n\");\n\nfor (const [module, data] of Object.entries(moduleStats)) {\n  const topTag = Object.entries(data.tagCounts).sort((a, b) => b[1] - a[1])[0];\n  const topTagText = topTag\n    ? `${topTag[1]} complaints flagged for “${topTag[0].replace(/_/g, ' ')}”`\n    : `${data.count} feedback items`;\n\n  const total = data.count;\n  const sentiments = data.sentimentCounts;\n\n  const negPct = total > 0 ? Math.round((sentiments.Negative / total) * 100) : 0;\n  const neuPct = total > 0 ? Math.round((sentiments.Neutral / total) * 100) : 0;\n  const posPct = total > 0 ? Math.round((sentiments.Positive / total) * 100) : 0;\n\n  lines.push(`🔹 ${module} Module\\n`);\n  lines.push(topTagText);\n  \n  const sentimentParts = [];\n  if (negPct > 0) sentimentParts.push(`${negPct}% Negative`);\n  if (neuPct > 0) sentimentParts.push(`${neuPct}% Neutral`);\n  if (posPct > 0 || sentimentParts.length === 0) sentimentParts.push(`${posPct}% Positive`);\n  lines.push(`Feedback sentiment: ${sentimentParts.join(', ')}`);\n\n  const suggestion = module === \"Inventory\"\n    ? \"Recheck stock sync & restock thresholds\"\n    : module === \"Mobile App\"\n    ? \"Investigate crash reports and Android compatibility\"\n    : module === \"Billing\"\n    ? \"Verify invoice generator and customer charge rules\"\n    : \"Review and triage issues with responsible team\";\n\n  lines.push(`Suggested action: ${suggestion}\\n`);\n}\n\n// Step 3: Add CRM Praise\nif (crmPraise.length) {\n  lines.push(\"🔸 CRM Updates:\\n\");\n  lines.push(`${crmPraise.length} loyalty customers praised support handling`);\n  lines.push(\"Logged to CRM with satisfaction tags\");\n}\n\n// Return result\nreturn [{\n  json: {\n    summary: lines.join('\\n')\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        960
+      ],
+      "id": "ce8f08d9-c8b6-4073-beff-0ef9c233b557",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "telegram4228@gmail.com",
+        "subject": "Customer feedback sentiment report",
+        "emailType": "text",
+        "message": "={{ $json.summary }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        960
+      ],
+      "id": "62253f8a-c6a3-4e35-9b84-cad04bac42e4",
+      "name": "Gmail",
+      "webhookId": "aac661d7-ce5e-493f-a57b-e6bcaf781e5d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "he0PtimxTRwIgMyA",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "ERP"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        520,
+        0
+      ],
+      "id": "4f77bb65-6eac-4c4f-bbb1-88178314a927",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1tjyIaZpexSB1paUy7X7dUrGOd5x27XOMrgeoZwIXyb4",
+          "mode": "list",
+          "cachedResultName": "Sentiment_agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tjyIaZpexSB1paUy7X7dUrGOd5x27XOMrgeoZwIXyb4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tjyIaZpexSB1paUy7X7dUrGOd5x27XOMrgeoZwIXyb4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -440,
+        960
+      ],
+      "id": "1d2d0a68-1c1b-4584-ad5d-ab42558d6b00",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "q5jLzgTAwCAvEGRu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "CRM"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        520,
+        240
+      ],
+      "id": "8c8bc5f4-28ca-44ec-bf93-b0fbba60e6d6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "sendTo": "telegram4228@gmail.com",
+        "subject": "App bug",
+        "emailType": "text",
+        "message": "App bug",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        200,
+        520
+      ],
+      "id": "6b973571-8e44-40a9-9b70-5943ac684ba4",
+      "name": "Gmail1",
+      "webhookId": "dd9a355e-247e-4a9c-afdb-c6a6d30ae6e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "he0PtimxTRwIgMyA",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "2b096751-ede2-417e-bc92-48669f1630fb",
+              "leftValue": "={{ $json.output.sentiment }}",
+              "rightValue": "Negative",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        280,
+        160
+      ],
+      "id": "9aac63fd-4a94-44fb-8517-7e9c03834bb9",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e644ed76-acf8-412c-a840-74662c0338b9",
+              "leftValue": "={{ $json.output.tags }}",
+              "rightValue": "app_bug",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -200,
+        540
+      ],
+      "id": "dd375504-bab5-4d11-b765-01e432f137aa",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HgfTjoYlFkRWkkpL9jy6s1TRkO-08zRTxoyoqZElSVs",
+          "mode": "list",
+          "cachedResultName": "ERP_Sentiment_agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HgfTjoYlFkRWkkpL9jy6s1TRkO-08zRTxoyoqZElSVs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HgfTjoYlFkRWkkpL9jy6s1TRkO-08zRTxoyoqZElSVs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tag": "={{ $json.output.tags }}",
+            "sentiment": "={{ $json.output.sentiment }}",
+            "module": "={{ $json.output.module }}",
+            "summary": "={{ $json.output.summary }}",
+            "urgency": "={{ $json.output.urgency }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "product",
+              "displayName": "product",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tag",
+              "displayName": "tag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "module",
+              "displayName": "module",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "urgency",
+              "displayName": "urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        580,
+        20
+      ],
+      "id": "4eee4c06-fae8-4809-92cd-e5faf0edc71e",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "q5jLzgTAwCAvEGRu",
+          "name": "Google Sheets account 2"
         }
       }
     },
@@ -493,17 +487,17 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1FW5WRq-bChlV6fKSL4z896S3mbNvAT_FUWCO9CNqXMU",
+          "value": "1tjyIaZpexSB1paUy7X7dUrGOd5x27XOMrgeoZwIXyb4",
           "mode": "list",
-          "cachedResultName": "sentiment_agent_workflow",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FW5WRq-bChlV6fKSL4z896S3mbNvAT_FUWCO9CNqXMU/edit?usp=drivesdk"
+          "cachedResultName": "Sentiment_agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tjyIaZpexSB1paUy7X7dUrGOd5x27XOMrgeoZwIXyb4/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KpUws9G-VQtnTLmStl9VxRXFtS3Nl1VwuaPCXZ_vILY/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tjyIaZpexSB1paUy7X7dUrGOd5x27XOMrgeoZwIXyb4/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -527,8 +521,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "email",
@@ -537,8 +530,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "time",
@@ -547,8 +539,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "product",
@@ -557,8 +548,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "sentiment",
@@ -567,8 +557,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "tag",
@@ -577,8 +566,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "module",
@@ -587,8 +575,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "summary",
@@ -597,8 +584,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "urgency",
@@ -607,8 +593,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -619,91 +604,132 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        1380,
-        200
+        900,
+        160
       ],
-      "id": "17ed0e4a-4182-4e05-9d66-a029d3fe823d",
-      "name": "Append row in sheet2",
+      "id": "9fdc2786-2b27-46bc-88c1-9bbaec80849c",
+      "name": "Google Sheets3",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "3h6d09tR0Red9ok3",
-          "name": "Google Sheets account"
+          "id": "q5jLzgTAwCAvEGRu",
+          "name": "Google Sheets account 2"
         }
       }
     },
     {
       "parameters": {
-        "documentId": {
-          "__rl": true,
-          "value": "1FW5WRq-bChlV6fKSL4z896S3mbNvAT_FUWCO9CNqXMU",
-          "mode": "list",
-          "cachedResultName": "sentiment_agent_workflow",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FW5WRq-bChlV6fKSL4z896S3mbNvAT_FUWCO9CNqXMU/edit?usp=drivesdk"
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "21cff7c2-468a-470c-a797-47b4c55e84a3",
+              "leftValue": "={{ $json.output.module }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
         },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1FW5WRq-bChlV6fKSL4z896S3mbNvAT_FUWCO9CNqXMU/edit#gid=0"
-        },
+        "looseTypeValidation": true,
         "options": {}
       },
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.6,
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
       "position": [
-        1740,
-        180
+        -220,
+        100
       ],
-      "id": "756d5e70-18ec-4700-8a78-04b00d7de755",
-      "name": "Get row(s) in sheet",
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "3h6d09tR0Red9ok3",
-          "name": "Google Sheets account"
-        }
-      }
+      "id": "f88a3ecd-46b3-4341-968e-7a588fc34475",
+      "name": "If2"
     },
     {
       "parameters": {
         "sendTo": "telegram4228@gmail.com",
-        "subject": "Customer feedback sentiment report",
+        "subject": "resend",
         "emailType": "text",
-        "message": "={{ $json.summary }}",
+        "message": "resend",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        2420,
-        180
+        0,
+        0
       ],
-      "id": "0e3984b2-a796-47c5-8e3d-3a8e374ef364",
-      "name": "Send a message2",
-      "webhookId": "aac661d7-ce5e-493f-a57b-e6bcaf781e5d",
+      "id": "b87cf766-a355-43aa-b864-e0d1823aa4f7",
+      "name": "Gmail2",
+      "webhookId": "b2f67b94-dc23-4cd2-ac72-e6eb5e7a2c84",
       "credentials": {
         "gmailOAuth2": {
-          "id": "IXvr56nA1pBAKeFO",
-          "name": "Gmail account"
+          "id": "he0PtimxTRwIgMyA",
+          "name": "Gmail account 3"
         }
       }
     },
     {
       "parameters": {
+        "content": "App bug"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        140,
+        480
+      ],
+      "id": "6ed76846-f67c-4eac-abb8-c9102996514d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
         "httpMethod": "POST",
-        "path": "siri",
+        "path": "Sentiment agent",
         "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1320,
+        -860,
+        960
+      ],
+      "id": "1b1db01d-9134-43f2-a945-9ed2be4ff07e",
+      "name": "Webhook",
+      "webhookId": "174bf967-b82d-4bda-bfe7-edf9bc4fd93b"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -880,
         300
       ],
-      "id": "b6eebdb9-6d82-4d64-ae3a-ea89378ee1fc",
-      "name": "Webhook",
-      "webhookId": "6d449783-b662-48b3-a60c-3f7c4e148834"
+      "id": "dc93c0be-a8f1-43b5-bcbd-3a6b435b2329",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "he0PtimxTRwIgMyA",
+          "name": "Gmail account 3"
+        }
+      }
     },
     {
       "parameters": {
@@ -712,45 +738,46 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1960,
-        180
+        -140,
+        960
       ],
-      "id": "111287c6-c011-4647-9dd9-6125d3d21bef",
-      "name": "Code1"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        -860,
-        520
-      ],
-      "id": "9461dc75-eb62-4979-a271-68c835a724ef",
-      "name": "OpenRouter Chat Model",
-      "credentials": {
-        "openRouterApi": {
-          "id": "n0YfdKB0eReHw7xr",
-          "name": "OpenRouter account"
-        }
-      }
+      "id": "d5257e42-6394-4e15-ad87-e4c748c2a4ff",
+      "name": "Code2",
+      "alwaysOutputData": false
     },
     {
       "parameters": {
         "respondWith": "text",
-        "responseBody": "=  {{ $('Code').item.json.summary }}",
+        "responseBody": "={{ $('Code').item.json.summary }}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        2640,
-        180
+        640,
+        960
       ],
-      "id": "d6c8410a-ee32-4755-83b7-977cb1b44fc7",
-      "name": "Respond to Webhook"
+      "id": "56a6a814-7fec-4e89-86ee-5756cce9dc93",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        480
+      ],
+      "id": "ce5f00d6-0587-42dc-8c25-09afa631b819",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "guIZYkPOUz899bc4",
+          "name": "Groq account 7"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -782,11 +809,44 @@
         ]
       ]
     },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Code": {
       "main": [
         [
           {
-            "node": "Send a message2",
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Code2",
             "type": "main",
             "index": 0
           }
@@ -797,14 +857,14 @@
       "main": [
         [
           {
-            "node": "Append row in sheet",
+            "node": "Google Sheets2",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Append row in sheet1",
+            "node": "Google Sheets",
             "type": "main",
             "index": 0
           }
@@ -815,7 +875,18 @@
       "main": [
         [
           {
-            "node": "Send a message1",
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
             "type": "main",
             "index": 0
           }
@@ -826,7 +897,7 @@
       "main": [
         [
           {
-            "node": "Send a message",
+            "node": "Gmail2",
             "type": "main",
             "index": 0
           }
@@ -840,51 +911,18 @@
         ]
       ]
     },
-    "Append row in sheet": {
-      "main": [
-        [
-          {
-            "node": "Append row in sheet2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Append row in sheet1": {
-      "main": [
-        [
-          {
-            "node": "Append row in sheet2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Append row in sheet2": {
-      "main": [
-        [
-          {
-            "node": "Get row(s) in sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get row(s) in sheet": {
-      "main": [
-        [
-          {
-            "node": "Code1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
       "main": [
         [
           {
@@ -895,7 +933,7 @@
         ]
       ]
     },
-    "Code1": {
+    "Code2": {
       "main": [
         [
           {
@@ -906,23 +944,12 @@
         ]
       ]
     },
-    "OpenRouter Chat Model": {
+    "Groq Chat Model": {
       "ai_languageModel": [
         [
           {
             "node": "AI Agent",
             "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send a message2": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
             "index": 0
           }
         ]
@@ -933,11 +960,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0788c457-1604-4ef7-adc7-acef5f5bc012",
+  "versionId": "4a4500d7-cad2-418e-8416-5132f02c58d6",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "a4d9c2b9ad3d913f5360573ed9170275c47329c5d0ae6cd0193812a6e8c000a9"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "YAAkruBPNCkF4RAz",
+  "id": "I2A0u6KpnwQri9c9",
   "tags": []
 }
