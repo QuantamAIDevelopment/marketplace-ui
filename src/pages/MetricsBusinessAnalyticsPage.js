@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChartBar, FaCheckCircle, FaExclamationTriangle, FaFileCsv } from 'react-icons/fa';
 import { triggerMetricsBusinessAnalyticsWorkflow } from '../services/workflows/metricsBusinessAnalytics';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const workflowSteps = [
   { icon: FaFileCsv, label: 'Upload Quarterly CSVs', color: 'bg-orange-500' },

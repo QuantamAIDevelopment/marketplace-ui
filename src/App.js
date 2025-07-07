@@ -25,7 +25,7 @@ import FraudDetectionPage from './pages/FraudDetectionPage';
 import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
 import './App.css';
 import './index.css';
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary from './components/workflows/ErrorBoundary';
 
 function App() {
   return (

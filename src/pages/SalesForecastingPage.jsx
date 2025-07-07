@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChartLine, FaExclamationTriangle, FaUsers, FaCalendarAlt, FaBullseye, FaPercentage } from 'react-icons/fa';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import { generateSalesForecast } from '../services/workflows/salesForecasting';
 
 const SalesForecastingContent = () => {
