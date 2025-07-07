@@ -1,9 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
-
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom';
+import { AmazonWebScrapeCard } from '../components/workflows';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -148,6 +147,12 @@ const workflowData = [
     summary: 'Generate quizzes and train with our AI agent.'
   },
   {
+    title: 'Test Case Generator',
+    icon: FaVial,
+    path: '/test-case-generator',
+    summary: 'Generate QA test cases from your feature docs using Evenmind AI.'
+  },
+  {
     title: 'Gmail Categorization',
     icon: FaEnvelopeOpenText,
     path: '/gmail-categorization',
@@ -218,6 +223,7 @@ const Dashboard = () => {
               summary={workflow.summary}
             />
           ))}
+          <AmazonWebScrapeCard compact />
         </div>
         
         <motion.div
