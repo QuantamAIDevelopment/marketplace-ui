@@ -1,0 +1,812 @@
+{
+  "name": "Policy_Change",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Manually extract counts from the item (adjusted based on your current input field names)\nconst stats = {\n  totalPolicies: items.length || 0,\n  acknowledgedPolicies: items.filter(item => item.json.Status === 'Acknowledged').length,\n  pendingAcknowledgments: items.filter(item => item.json.Status === 'Pending').length,\n};\n\n// Take first 10 records and build recentNotifications\nconst recentNotifications = items.slice(0, 10).map(item => {\n  return {\n    email: item.json.Email || '',\n    userName: item.json.User_Name || '',\n    policyId: item.json.Total_Policies || '',\n    pendingAck: item.json.Pending_Acknowledgments || '',\n    status: item.json.Status || ''\n  };\n});\n\n// Return single item output\nreturn [\n  {\n    json: {\n      stats: stats,\n      recentNotifications: recentNotifications\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        120
+      ],
+      "id": "6d7baee1-eb24-4e8c-8d59-a25b33630ebd",
+      "name": "Finalize Response",
+      "alwaysOutputData": false,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "jsCode": "let attachment = null;\nlet finalFileName = '';\n\n// Check if the source is Webhook or Form submission\nif ($json[\"source\"] === \"webhook\" || $json[\"source\"] === \"form\") {\n    // Webhook/Form attachment (binary field: 'HR_policy')\n    attachment = items[0].binary['HR_policy'];\n    finalFileName = attachment.fileName;\n} else {\n    // Default logic - check for any binary data\n    const binaryKeys = Object.keys(items[0].binary || {});\n    if (binaryKeys.length > 0) {\n        attachment = items[0].binary[binaryKeys[0]];\n        finalFileName = attachment.fileName || 'policy_document.pdf';\n        // Rename the binary field to 'HR_policy' for consistency\n        items[0].binary['HR_policy'] = attachment;\n        if (binaryKeys[0] !== 'HR_policy') {\n            delete items[0].binary[binaryKeys[0]];\n        }\n    } else {\n        finalFileName = 'default_policy.pdf';\n    }\n}\n\n// Ensure the file name is set\nif (attachment) {\n    attachment.fileName = finalFileName;\n}\n\n// Add source identifier for tracking\nitems[0].json.processedFileName = finalFileName;\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        460
+      ],
+      "id": "060baf9c-955f-445e-bca0-ef063a56f569",
+      "name": "Process Attachment"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        260,
+        720
+      ],
+      "id": "7916280b-48a6-4dfd-8621-af40e07d57a9",
+      "name": "Daily Reminder Check"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "policy-update",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        220
+      ],
+      "id": "fd35ada6-a25b-4c69-bf7f-f6c0358b96f4",
+      "name": "Policy Update Webhook",
+      "webhookId": "6f405d7c-0a4a-4469-98b1-2d68d097dac3"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Reminder: Please Acknowledge Policy",
+        "message": "=Hi {{ $json.User_Name }},\n\nThis is a reminder to review and acknowledge the policy: {{ $('Set Policy Metadata').item.json.policy_id }}.\n\n📄 View Policy Document: {{ $('Set Policy Metadata').item.json.policy_url }}\n\n✅ Click here to acknowledge: {{ $json.ack_link }}\n\nThank you,\nHR Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1220,
+        640
+      ],
+      "id": "aa6b03bf-4a27-491f-9fe6-70e24cc0e2bd",
+      "name": "First Reminder Email",
+      "webhookId": "143266e4-8b86-42f0-8db9-59693e8c9f69",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8pskWRPXLCPWfpr9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "shyam.qaid@gmail.com",
+        "subject": "=Escalation: Policy Not Acknowledged - {{ $json.User_Name }}",
+        "message": "=Hi HR Team,\n\nThis is an escalation notice that {{ $json.name }} (User ID: {{ $json.user_id }}) has not yet acknowledged the policy \"{{ $('Set Policy Metadata').item.json.policy_name }}\".\n\nEmployee Details:\n- Name: {{ $json.name }}\n- Email: {{ $json.email }}\n- User ID: {{ $json.user_id }}\n\nPlease follow up with them to complete the acknowledgment.\n\n🔗 Acknowledgment Link: {{ $json.ack_link }}\n\nThank you,\nAutomated HR System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1220,
+        840
+      ],
+      "id": "9c1c85b0-9721-4ebe-adb1-c29a3ec48583",
+      "name": "HR Escalation Email",
+      "webhookId": "cd14c5bc-dec4-4f33-a3ab-88fecc673ed8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8pskWRPXLCPWfpr9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Action Required: Acknowledge New HR Policy",
+        "message": "=Hi {{ $json.User_Name }},\n\nA new policy titled '{{ $('Set Policy Metadata').item.json.policy_id }} ' has been released. Please review it at the link below:\n\nPolicy Document: {{ $('Set Policy Metadata').item.json.policy_url }}\n\nTo acknowledge that you've read the policy, please click this link:\n{{ $json.ack_link }}\n\nThank you!\nHR Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1480,
+        360
+      ],
+      "id": "b0af18a0-bf00-4124-9bcd-4c4dfc9d3330",
+      "name": "Initial Notification Email",
+      "webhookId": "b1a260bd-a1d8-45ca-8214-fb1ea0914cdf",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8pskWRPXLCPWfpr9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        920,
+        340
+      ],
+      "id": "362723da-3d16-49f3-9cc5-f40b562db53c",
+      "name": "Process Users One by One"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        780,
+        120
+      ],
+      "id": "9acb31f4-ca8d-4073-91b4-331d9a9d30c9",
+      "name": "Respond to Webhook",
+      "executeOnce": false
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        160,
+        120
+      ],
+      "id": "b57287f0-2c1e-409b-b949-3af5957429d9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const policyId = $items(\"Insert Policy1\")[0].json.Policy_ID;\n  const userId = item.json.User_ID;\n\n  const ackLink = `https://yourdomain.com/ack?user_id=${userId}&policy_id=${policyId}`;\n  item.json.ack_link = ackLink;\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1180,
+        340
+      ],
+      "id": "76cb66ea-7bf3-4a8c-854b-6e63b449c925",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "amount": 3,
+        "unit": "seconds"
+      },
+      "id": "9eb83fb0-7d95-4f2e-a6db-da7ff3b7cb4c",
+      "name": "Wait 3 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        900,
+        640
+      ],
+      "webhookId": "7f56e7c0-7b51-47ac-b1a7-81cfd67d37f6"
+    },
+    {
+      "parameters": {
+        "amount": 4,
+        "unit": "seconds"
+      },
+      "id": "fcac0cfc-abbf-4e4d-ba4b-cd90c2d9a63c",
+      "name": "Wait Additional 4 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        960,
+        860
+      ],
+      "webhookId": "8e7f8bdb-80a3-4e23-a51d-8be23d320554"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "policy_id",
+              "value": "HR2025-05"
+            },
+            {
+              "name": "Policy_Name",
+              "value": "={{ $json.processedFileName || 'New HR Policy' }}"
+            },
+            {
+              "name": "version",
+              "value": "1.0"
+            },
+            {
+              "name": "policy_url",
+              "value": "={{ $json.processedFileName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7da0e126-38b4-444a-ba22-ba0688379556",
+      "name": "Set Policy Metadata",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So",
+          "mode": "list",
+          "cachedResultName": "Policy Changes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Policies",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1S3w1-vRD_P_edl0kEW9TJCQzv1Ko0ak0chnJ9JSATx0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Policy_ID": "={{ $json.policy_id }}",
+            "Version": "={{ $json.version }}",
+            "Publish_Date": "={{ $now }}",
+            "Policy_URL": "={{ $json.policy_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Policy_ID",
+              "displayName": "Policy_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Policy_URL",
+              "displayName": "Policy_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Publish_Date",
+              "displayName": "Publish_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Version",
+              "displayName": "Version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        340
+      ],
+      "id": "aedd4b85-4f98-4923-a414-cae91f8b9fcb",
+      "name": "Insert Policy1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "A5Q2YxyHSngOmqjO",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So",
+          "mode": "list",
+          "cachedResultName": "Policy Changes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 140227309,
+          "mode": "list",
+          "cachedResultName": "Users",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit#gid=140227309"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        440,
+        340
+      ],
+      "id": "56fec090-db77-441c-baaa-2aa518216126",
+      "name": "Create Acknowledgment Records1",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "A5Q2YxyHSngOmqjO",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So",
+          "mode": "list",
+          "cachedResultName": "Policy Changes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1883597925,
+          "mode": "list",
+          "cachedResultName": "Acknowledgments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit#gid=1883597925"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Total_Policies": "={{ $('Insert Policy1').item.json.Policy_ID }}",
+            "Email": "={{ $json.Email }}",
+            "User_Name": "={{ $json.User_Name }}",
+            "Pending_Acknowledgments": "={{ $('Insert Policy1').item.json.Policy_URL }}",
+            "Status": "Pending"
+          },
+          "matchingColumns": [
+            "Status"
+          ],
+          "schema": [
+            {
+              "id": "Total_Policies",
+              "displayName": "Total_Policies",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pending_Acknowledgments",
+              "displayName": "Pending_Acknowledgments",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User_Name",
+              "displayName": "User_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        640,
+        340
+      ],
+      "id": "a191d9f3-3082-42da-90e5-ee19fca1d44f",
+      "name": "Google Sheets",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "A5Q2YxyHSngOmqjO",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So",
+          "mode": "list",
+          "cachedResultName": "Policy Changes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1883597925,
+          "mode": "list",
+          "cachedResultName": "Acknowledgments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit#gid=1883597925"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        500,
+        720
+      ],
+      "id": "59175468-c71e-499c-a9f7-f7e1c869458e",
+      "name": "Google Sheets1",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "A5Q2YxyHSngOmqjO",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So",
+          "mode": "list",
+          "cachedResultName": "Policy Changes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1883597925,
+          "mode": "list",
+          "cachedResultName": "Acknowledgments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit#gid=1883597925"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -160,
+        260
+      ],
+      "id": "1d8e8e79-e8b7-419e-8b09-c83e2a5b2161",
+      "name": "Fetch Stats1",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "A5Q2YxyHSngOmqjO",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So",
+          "mode": "list",
+          "cachedResultName": "Policy Changes",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1883597925,
+          "mode": "list",
+          "cachedResultName": "Acknowledgments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1jMsf4oblMN_xhi_gPvh77t6dU43QKP5aWpHr6qBN1So/edit#gid=1883597925"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -180,
+        40
+      ],
+      "id": "dbbd57cd-eebc-486a-92e1-207e65e9e234",
+      "name": "Fetch Recent Notifications",
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "A5Q2YxyHSngOmqjO",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const policyId = $items(\"Insert Policy1\")[0].json.Policy_ID;\n  const userId = item.json.User_ID;\n\n  const ackLink = `https://yourdomain.com/ack?user_id=${userId}&policy_id=${policyId}`;\n  item.json.ack_link = ackLink;\n\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        740
+      ],
+      "id": "25f3f02b-f9bd-4407-955c-fbef2f6bfc65",
+      "name": "Code1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Finalize Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Attachment": {
+      "main": [
+        [
+          {
+            "node": "Set Policy Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Reminder Check": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Update Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Attachment",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Stats1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Recent Notifications",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Users One by One": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Finalize Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Initial Notification Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 Days": {
+      "main": [
+        [
+          {
+            "node": "First Reminder Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Additional 4 Days": {
+      "main": [
+        [
+          {
+            "node": "HR Escalation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Policy Metadata": {
+      "main": [
+        [
+          {
+            "node": "Insert Policy1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Policy1": {
+      "main": [
+        [
+          {
+            "node": "Create Acknowledgment Records1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Acknowledgment Records1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Process Users One by One",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Stats1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Fetch Recent Notifications": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 Days",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait Additional 4 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5ca923ea-6221-46d0-8129-49967271b596",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2a8aeac0ec10ee81fb4e6445737604c7ad67d739c54275ef173c3d839569e942"
+  },
+  "id": "WfCo4ygENcoknYXF",
+  "tags": []
+}

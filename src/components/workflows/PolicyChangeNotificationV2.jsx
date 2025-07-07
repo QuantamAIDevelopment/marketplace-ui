@@ -4,7 +4,7 @@ import { FaBell, FaFileAlt } from 'react-icons/fa';
 
 const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook-test/policy-update';
 
-const PolicyChangeNotification = () => {
+const PolicyChangeNotificationV2 = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -13,7 +13,6 @@ const PolicyChangeNotification = () => {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
-      // Remove focus from the input after selection for better UX
       e.target.blur();
     }
   };
@@ -50,7 +49,7 @@ const PolicyChangeNotification = () => {
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center gap-4 mb-6">
         <div className="relative">
-          <label htmlFor="policy-upload-input">
+          <label htmlFor="policy-upload-input-v2">
             <span
               className="flex items-center gap-2 bg-purple-100 px-4 py-2 rounded-lg shadow hover:bg-purple-200 transition-colors text-base font-semibold text-purple-700 focus:outline-none cursor-pointer"
               tabIndex={0}
@@ -60,7 +59,7 @@ const PolicyChangeNotification = () => {
             </span>
           </label>
           <input
-            id="policy-upload-input"
+            id="policy-upload-input-v2"
             type="file"
             accept="application/pdf"
             onChange={handleFileChange}
@@ -121,4 +120,4 @@ const PolicyChangeNotification = () => {
   );
 };
 
-export default PolicyChangeNotification;
+export default PolicyChangeNotificationV2;
