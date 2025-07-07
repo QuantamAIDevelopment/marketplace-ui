@@ -168,6 +168,12 @@ const workflowData = [
     icon: FaCalendarAlt,
     path: '/workflows/leave-approval-reminder',
     summary: 'Upload Excel files to process leave reminders and send notifications to managers.'
+  },
+  {
+    title: 'AI Restaurant Order Chatbot',
+    icon: FaRobot,
+    path: '/workflows/restaurant-order-chatbot',
+    summary: 'Chat with AI to place and confirm restaurant orders.'
   }
 ];
 

@@ -25,6 +25,7 @@ import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 import OnBoardingQPage from './pages/OnBoardingQPage';
 import LeaveApprovalReminderPage from './pages/LeaveApprovalReminderPage';
+import AIPoweredRestaurantOrderChatbotPage from './pages/AIPoweredRestaurantOrderChatbotPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -61,6 +62,7 @@ function App() {
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
               <Route path="/workflows/leave-approval-reminder" element={<LeaveApprovalReminderPage />} />
+              <Route path="/workflows/restaurant-order-chatbot" element={<AIPoweredRestaurantOrderChatbotPage />} />
             </Routes>
           </main>
         </div>

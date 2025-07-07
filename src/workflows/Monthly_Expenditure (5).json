@@ -1,0 +1,795 @@
+{
+  "name": "Monthly Expenditure",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -380,
+        20
+      ],
+      "id": "4657178f-b06f-4f39-bff1-9719c1e30332",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "BrLNIgFDALQ7LOSf",
+          "name": "Gmail account 24"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = items.map(item => item.json);\n\nconst breakdown = {};\nlet totalAmount = 0;\n\nfor (const row of rows) {\n  const amount = parseFloat(row[\"Amount\"]) || 0;\n  const paidTo = row[\"Paid to\"] || \"Uncategorized\";\n\n  if (!breakdown[paidTo]) {\n    breakdown[paidTo] = {\n      total: 0,\n      items: []\n    };\n  }\n\n  breakdown[paidTo].total += amount;\n  breakdown[paidTo].items.push({\n    amount,\n    date: row[\"Date\"] || \"\",\n  });\n\n  totalAmount += amount;\n}\n\nreturn [{\n  json: {\n    totalAmount,\n    categorized: breakdown\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        180
+      ],
+      "id": "2b1e55a3-2104-4a82-84b6-2f3b958cf54c",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "Monthly Expenditure",
+        "emailType": "text",
+        "message": "=Hi Asmitha,\n\nTotal Spent: {{ $json.totalAmount }}\n\nItems:\n{{ Object.entries($json.categorized)\n  .map(([category, data]) =>\n    `\\nCategory: ${category}\\n` +\n    data.items.map(item =>\n      `  - amount: ₹${item.amount}, date: ${item.date}`\n    ).join('\\n')\n  ).join('\\n\\n')\n}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1440,
+        180
+      ],
+      "id": "163d2cab-fc0d-4056-8074-5717be96cbf3",
+      "name": "Gmail",
+      "webhookId": "b7b01c52-aeba-4cf1-b53d-1f8e1635678f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AGCssk6pei2wkW8N",
+          "name": "Gmail account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ee0c9efc-9d9b-4af0-af24-f7c147e52ee7",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -380,
+        380
+      ],
+      "id": "575ae285-5822-44f1-a59c-249466c18393",
+      "name": "Webhook",
+      "webhookId": "ee0c9efc-9d9b-4af0-af24-f7c147e52ee7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=give amount without any \",\"\n{\n  \"Date of bill \": \"YYYY-MM-DD\",\n  \"amount\": \"XXXXX\",\n  \"paid to\" :\"xxx\"\n  \"mtrno\"  :\"xxx\"\n}\n analyze bill paid to\n{{ $json.webhookUrl }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -100,
+        380
+      ],
+      "id": "37873a57-7840-4daf-b269-f17c786e3ca1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        740,
+        180
+      ],
+      "id": "62a3417f-5c69-418c-b232-f7a957c83ed1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.snippet }}\nrespond strictly in json format\n{\n  \"amount\": ,\n  \"paid to\": \"\",\n  \"date\": \"2025-05-18T14:12:00\",\n  \n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        0
+      ],
+      "id": "1a7e641d-812b-47da-8c69-6d42c6c4bee4",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"amount\": \"777\",\n  \"paid to\": \"fgh\",\n  \"date\": \"2025-05-18T14:12:00\"\n  \n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        220
+      ],
+      "id": "8a26be0c-187d-413f-96d2-6c6054072d2b",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"amount\": \"777\",\n  \"paid to\": \"fgh\",\n  \"date\": \"2025-05-18T14:12:00\"\n  \n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        60,
+        540
+      ],
+      "id": "2b3196d1-feb3-4a66-8bbc-b44b4d8f8cef",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        360,
+        840
+      ],
+      "id": "df25e49b-0990-4ac4-89d4-3c097584c131",
+      "name": "When chat message received",
+      "webhookId": "57507252-02b7-4189-aa82-83329c808ea7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a smart personal expense assistant.\n\n## Expense Data:\nfetch the data from the postgres attached to tool\ngive only single output depends on input\nYou receive structured expense data from a database , and a user's question in natural language.\n\nEach expense record includes:\n\n- `amount` (in ₹)\n- `paid_to` (e.g., Fuel, Dining, Groceries)\n\n---\n\n## Your Task:\n\n1. Understand the user's query and determine their intent:\n   - Time filter: (e.g., "May", "last month", "2024")\n   - Category filter: (e.g., "fuel", "dining", "groceries")\n   - Type of question: total spent, trends, top categories, comparisons, etc.\n\n2. Analyze the given data and answer the user's query using:\n   - ✅ Filtered totals (e.g., "You spent ₹4,100 on fuel in May.")\n   - 📊 Category share (e.g., "Food made up 32% of your May expenses.")\n   - 🔁 Trend insights (e.g., "Up 8% from April.")\n   - 🏆 Top categories or vendors\n   - 📉 If spending dropped or increased\n\n3. Write a friendly, human-style response, like:\n   - "You spent ₹12,300 in May. Dining and fuel were your top categories. Compared to April, your total expenses increased by 8%."\n\n---\n\n## User Query:\n{{ $('When chat message received').item.json.chatInput }}\n\n\n\n---\n\n## Output Instructions:\n- Write a clear and concise summary of the spending behavior.\n- Use ₹ with numbers.\n- Mention key insights (totals, category share, trends).\n- End with a helpful offer, like:\n  _"Want to see this as a chart or grouped by vendor?"_\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        860,
+        840
+      ],
+      "id": "f32863f2-361a-4c70-aa81-65f5ce985ef7",
+      "name": "AI Agent2",
+      "alwaysOutputData": true,
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA",
+          "mode": "list",
+          "cachedResultName": "Monthly Expenditure",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Amount": "={{ $json.output.amount }}",
+            "Paid to": "={{ $json.output['paid to'] }}",
+            "Date": "={{ $json.output.date }}"
+          },
+          "matchingColumns": [
+            "Amount"
+          ],
+          "schema": [
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Paid to",
+              "displayName": "Paid to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        240,
+        380
+      ],
+      "id": "0fdbbdab-5298-4cb9-81e4-0abce32babde",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XJDhgsFGPx1HeQal",
+          "name": "Google Sheets account 19"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        380
+      ],
+      "id": "b8df4366-60f8-4e0d-8ce3-1473895ae38f",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -100,
+        600
+      ],
+      "id": "3bbb474c-d176-49d6-a719-40417854a0d5",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "ceY0M3DCh0ie2JRL",
+          "name": "OpenAi account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA",
+          "mode": "list",
+          "cachedResultName": "Monthly Expenditure",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Amount": "={{ $json.body.Amount }}",
+            "Paid to": "={{ $json.body['Paid to'] }}",
+            "Date": "={{ $json.body.Date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Paid to",
+              "displayName": "Paid to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -160,
+        740
+      ],
+      "id": "e2d646d6-2a33-4c4c-b417-cab48a99ddf8",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XJDhgsFGPx1HeQal",
+          "name": "Google Sheets account 19"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        160
+      ],
+      "id": "eb130a3e-c01e-45a8-8f8f-c3c7c3ea282b",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "gzDd3y6IpHo4sC8x",
+          "name": "Groq account 26"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA",
+          "mode": "list",
+          "cachedResultName": "Monthly Expenditure",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Amount": "={{ $json.output.amount }}",
+            "Paid to": "={{ $json.output['paid to'] }}",
+            "Date": "={{ $json.output.date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Paid to",
+              "displayName": "Paid to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        0
+      ],
+      "id": "98cf8b05-2b23-4b4c-9149-4e4b83b368ee",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uxfwdoE0Gk3gTF4b",
+          "name": "Google Sheets account 9"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "c411e19d-03d4-4c49-9e86-10a44edf5f16",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        740
+      ],
+      "id": "5dd26c16-83e4-45cd-b080-7c1535a13bc4",
+      "name": "Webhook1",
+      "webhookId": "c411e19d-03d4-4c49-9e86-10a44edf5f16"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        60,
+        740
+      ],
+      "id": "e4cb5124-ab8f-4a2d-a0df-6ba7532e2c0f",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA",
+          "mode": "list",
+          "cachedResultName": "Monthly Expenditure",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        580,
+        840
+      ],
+      "id": "030a0b0e-2248-42f8-b5f7-1f67fd2f25f9",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uxfwdoE0Gk3gTF4b",
+          "name": "Google Sheets account 9"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        900,
+        1060
+      ],
+      "id": "33b21616-c0c9-4141-b975-375067935a82",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "gzDd3y6IpHo4sC8x",
+          "name": "Groq account 26"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA",
+          "mode": "list",
+          "cachedResultName": "Monthly Expenditure",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-WdXX4MNV9JY4lT_K3tIGnEeDuyDmyiUkIN2g_4rKFA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        960,
+        180
+      ],
+      "id": "d01f23ba-d74b-4829-9ff3-dca8ffd8b54a",
+      "name": "Google Sheets4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uxfwdoE0Gk3gTF4b",
+          "name": "Google Sheets account 9"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets4": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "eda78574-fa3c-4e86-9570-10927866f569",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "PtG5xjIegUIqFYkG",
+  "tags": []
+}

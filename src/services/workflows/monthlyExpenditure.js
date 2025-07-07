@@ -1,20 +1,14 @@
 import axios from 'axios';
 
-export const submitManualBill = async ({ amount, merchant, transaction }) => {
-  const formData = new FormData();
-  formData.append('amount', amount);
-  formData.append('merchant', merchant);
-  formData.append('transaction', transaction);
+const API_BASE_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook';
 
-  try {
-    const response = await axios.post('http://localhost:5678/webhook/bill', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error submitting manual bill:', error);
-    throw error;
-  }
+export const submitManualBill = async ({ amount, merchant, transaction }) => {
+  // The backend expects: amount, paid to, date
+  return axios.post(`${API_BASE_URL}/c411e19d-03d4-4c49-9e86-10a44edf5f16`, {
+    amount,
+    "paid to": merchant,
+    date: transaction,
+  });
 };
 
 export const uploadBillFile = async (file) => {
@@ -45,4 +39,14 @@ export const chatExpenditure = async (message) => {
     console.error('Error chatting with expenditure bot:', error);
     throw error;
   }
+};
+
+export const uploadMonthlyExpenditureFile = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return axios.post(`${API_BASE_URL}/ee0c9efc-9d9b-4af0-af24-f7c147e52ee7`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }).then(res => res.data);
 }; 
