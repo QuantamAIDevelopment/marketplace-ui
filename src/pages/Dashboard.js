@@ -156,6 +156,18 @@ const workflowData = [
     icon: FaFileAlt,
     path: '/resume-analyzer',
     summary: 'AI-powered resume screening, scoring, and skill extraction.'
+  },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/sentiment-agent-report',
+    summary: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.'
+  },
+  {
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    summary: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.'
   }
 ];
 

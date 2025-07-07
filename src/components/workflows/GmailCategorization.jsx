@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import { FaEnvelopeOpenText, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
 
