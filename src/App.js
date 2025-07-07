@@ -27,7 +27,7 @@ import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
-import SentimentAgentWorkflowPage from './pages/SentimentAgentWorkflowPage';
+
 
 function App() {
   return (
@@ -59,7 +59,6 @@ function App() {
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
-              <Route path="/workflows/sentiment-agent" element={<SentimentAgentWorkflowPage />} />
               <Route path="/sentiment-agent-report" element={<SentimentAgentPage />} />
             </Routes>
           </main>
