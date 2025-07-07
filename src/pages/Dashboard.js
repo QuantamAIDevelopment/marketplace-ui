@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
+
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
   return (
@@ -25,6 +26,12 @@ const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
 };
 
 const workflowData = [
+  {
+    title: 'Business Intelligence BOT',
+    icon: FaChartBar,
+    path: '/business-intelligence-bot',
+    summary: 'Upload sales data and get instant KPI summaries, suggestions, and issue detection.'
+  },
   {
     title: 'AI Customer Support',
     icon: FaRobot,
@@ -104,12 +111,6 @@ const workflowData = [
     summary: 'Upload a CSV to get AI-powered dynamic price recommendations.'
   },
   {
-    title: 'Business Insights Agent',
-    icon: FaChartLine,
-    path: '/workflows/business-insights',
-    summary: 'Upload a sales CSV to get KPIs, error detection, and suggestions.'
-  },
-  {
     title: 'Metrics Business Analytics',
     icon: FaChartBar,
     path: '/workflows/metrics-business-analytics',
@@ -139,12 +140,13 @@ const workflowData = [
     path: '/appointment-scheduler',
     summary: 'Book and manage appointments with ease.'
   },
-  {
+{
     title: 'MCQ Generator & Trainer',
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
-  }
+  },
+  
 ];
 
 const Dashboard = () => {
@@ -204,4 +206,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import LeavesClassifierPage from './pages/LeavesClassifierPage';
-import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
@@ -14,10 +13,11 @@ import ProductRecommendationPage from './pages/ProductRecommendationPage';
 import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
+import BusinessIntelligenceExplainerBotPage from './pages/BusinessIntelligenceExplainerBotPage';
+import BusinessIntelligenceBOTPage from './pages/BusinessIntelligenceBOTPage';
 import AppointmentSchedulerPage from './pages/AppointmentSchedulerPage';
 import ProductFeedbackSummarizerPage from './pages/ProductFeedbackSummarizerPage';
 import DynamicPricingAgentPage from './pages/DynamicPricingAgentPage';
-import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
@@ -34,7 +34,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
-              <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
+              {/* <Route path="/workflows/birthday-anniversary" element={<BirhdayWorkAnniversaryPage />} /> */}
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
@@ -46,13 +46,7 @@ function App() {
               <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
-              <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
-              <Route path="/workflows/product-feedback-summarizer" element={<ProductFeedbackSummarizerPage />} />
-              <Route path="/workflows/dynamic-pricing" element={<DynamicPricingAgentPage />} />
-              <Route path="/workflows/business-insights" element={<BusinessInsightsAgentPage />} />
-              <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
-              <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
-              <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/business-intelligence-bot" element={<BusinessIntelligenceBOTPage />} />
             </Routes>
           </main>
         </div>

@@ -22,6 +22,7 @@ const workflows = [
     path: '/ai-customer-support',
     description: 'Automate customer support with AI-driven responses.',
   },
+  
   {
     title: 'Leaves Classifier',
     icon: FaCalendarAlt,
