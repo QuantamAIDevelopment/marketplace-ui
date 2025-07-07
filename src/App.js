@@ -22,6 +22,12 @@ import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import SentimentAgentPage from './pages/SentimentAgentPage';
+import './App.css';
+import './index.css';
+import GmailCategorizationPage from './pages/GmailCategorizationPage';
+import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
+import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
 import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
 import './App.css';
 import './index.css';
@@ -57,6 +63,10 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
+              <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
+              <Route path="/sentiment-agent-report" element={<SentimentAgentPage />} />
+              <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
             </Routes>
