@@ -86,6 +86,14 @@ const workflows = [
     description: 'Recommend products based on user data.',
   },
   {
+    title: 'Resume Analyzer',
+    icon: FaUserAlt,
+    path: '/resume-analyzer',
+    description: 'Analyze and extract insights from resumes using AI.',
+    isButton: true,
+    buttonText: 'Open Resume Analyzer',
+  },
+  {
     title: 'Sentiment Agent',
     icon: FaRobot,
     path: '/sentiment-agent-report',
@@ -94,12 +102,12 @@ const workflows = [
     buttonText: 'Open Sentiment Agent',
   },
   {
-    title: 'Resume Analyzer',
-    icon: FaUserAlt,
-    path: '/resume-analyzer',
-    description: 'Analyze and extract insights from resumes using AI.',
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    description: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.',
     isButton: true,
-    buttonText: 'Open Resume Analyzer',
+    buttonText: 'Open Support Agent',
   },
 ];
 

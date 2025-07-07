@@ -27,6 +27,7 @@ import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
+import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
 
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
               <Route path="/sentiment-agent-report" element={<SentimentAgentPage />} />
+              <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
             </Routes>
           </main>
         </div>
