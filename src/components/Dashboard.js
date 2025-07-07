@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaChartLine } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaChartLine, FaUserPlus, FaBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
@@ -16,6 +16,12 @@ import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
 
 const workflows = [
+  {
+    title: 'OnBoarding Email Generator',
+    icon: FaUserPlus,
+    path: '/onboarding',
+    description: 'Generate onboarding emails from client files with AI.',
+  },
   {
     title: 'Inventory Predict AI',
     icon: FaChartLine,
@@ -89,6 +95,18 @@ const workflows = [
     icon: FaBoxOpen,
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
+  },
+  {
+    title: 'Onboarding Email Generator',
+    path: '/onboarding-email-generator',
+    icon: '📧',
+    description: 'Generate onboarding email bodies from client files using Evenmind-AI.'
+  },
+  {
+    title: 'Leave Approval Remainder',
+    icon: FaBell,
+    path: '/leave-approval-remainder',
+    description: 'Upload leave requests and trigger automated reminders for pending approvals.',
   },
 ];
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserPlus, FaUserCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -25,6 +25,18 @@ const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
 };
 
 const workflowData = [
+  {
+    title: 'OnBoarding Q Email Generator',
+    icon: FaUserCheck,
+    path: '/onboarding-q',
+    summary: 'Generate onboarding emails from ODS files using the On_Boarding.Q workflow.'
+  },
+  {
+    title: 'OnBoarding Email Generator',
+    icon: FaUserPlus,
+    path: '/onboarding',
+    summary: 'Generate onboarding emails from client files with AI.'
+  },
   {
     title: 'AI Customer Support',
     icon: FaRobot,
@@ -150,6 +162,12 @@ const workflowData = [
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
+  },
+  {
+    title: 'Leave Approval Reminder',
+    icon: FaCalendarAlt,
+    path: '/workflows/leave-approval-reminder',
+    summary: 'Upload Excel files to process leave reminders and send notifications to managers.'
   }
 ];
 

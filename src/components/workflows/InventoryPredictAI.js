@@ -49,7 +49,7 @@ const InventoryPredictAI = ({ compact = false }) => {
     setLoading(true);
     try {
       const response = await uploadInventoryAndGetForecast(file);
-      console.log('API response:', responsegit ); // Debug log
+      console.log('API response:', response ); // Debug log
       // Try to extract the summary string
       const summaryText = typeof response === 'string'
         ? response
