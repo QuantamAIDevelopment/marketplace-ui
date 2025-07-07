@@ -1,0 +1,245 @@
+{
+  "name": "transcripts generator using webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-meeting",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "cb4805b3-435f-431a-8cdf-3008d6bbfa0f",
+      "name": "Webhook",
+      "webhookId": "abc82b20-9fd6-439a-9bcd-61e5bd60d46d"
+    },
+    {
+      "parameters": {
+        "command": "=whisper \"{{ $json.fileName }}\" --model tiny --output_format txt --output_dir C:\\Users\\Admin\\Desktop\\video"
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        460,
+        0
+      ],
+      "id": "ec76bf29-6f3a-4012-bf8a-b7ab34454495",
+      "name": "Execute Command1"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "C:/Users/Admin/Desktop/video/meeting_audio.wav",
+        "dataPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "471ae921-5988-4327-815e-b19a1ae6db57",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a meeting summarization assistant. Extract key points, action items, and \ndecisions from the transcript\n{{ $json.stdout }}\n\n\"\n Example Output format (Email or Notion)\n\n📝 Meeting Summary – Marketing Sync (June 7, 2025)\n\nKey Points:\n\nNew campaign to launch by June 15\nWebsite redesign budget discussed\n\nAction Items:\n\nRaj to finalize email templates by Tuesday\nPriya to schedule client feedback session\n\nDecisions:\n\nAgreed to increase PPC budget by 20%\nDelay newsletter rollout by one week\" \n\ngive in json format \n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "5a54f509-5f7f-46d8-98c7-516e4373a6c4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        780,
+        220
+      ],
+      "id": "b20e4fd0-0ba7-4924-bda0-cf8402e54579",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "t09eaiST1Ih8ywhA",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "srikanthjosh539@gmail.com",
+        "subject": "Meeting Summary",
+        "emailType": "text",
+        "message": "=keypoints:\n{{ $json.key_point }}\n\naction items:\n{{ $json.action_item }}\n\ndecisions:\n{{ $json.decision }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1660,
+        0
+      ],
+      "id": "304ab0bc-200a-4e75-b620-f956fa49900f",
+      "name": "Gmail",
+      "webhookId": "96d83241-8a2c-4d5b-a29c-6bd56af94c00",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "yQEgzuRyzjXIoFM1",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.output;\n\n// Step 1: Fix escaped characters\nconst cleanedJsonString = rawText\n  .replace(/^```json/, '')     // Remove code block marker if present\n  .replace(/```$/, '')         // Remove closing code block marker\n  .replace(/\\\\n/g, '')         // Remove newline escape sequences\n  .replace(/\\\\+\"/g, '\"')       // Fix escaped quotes\n  .replace(/\\\\\\\\/g, '\\\\');     // Fix double slashes\n\nlet summary;\ntry {\n  const parsed = JSON.parse(cleanedJsonString);\n  summary = parsed.meeting_summary;\n\n  const keyPoints = summary.key_points.map(item => ({ type: 'key_point', content: item }));\n  const actionItems = summary.action_items.map(item => ({ type: 'action_item', content: item }));\n  const decisions = summary.decisions.map(item => ({ type: 'decision', content: item }));\n\n  return [...keyPoints, ...actionItems, ...decisions];\n\n} catch (error) {\n  throw new Error(\"❌ Failed to parse meeting summary JSON: \" + error.message + \"\\nRaw string:\\n\" + cleanedJsonString);\n}\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1260,
+        0
+      ],
+      "id": "e1406880-0afc-46a3-8951-21a2a0dd8a9c",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all().map(item => item.json);\n\n// Initialize output structure\nconst grouped = {};\n\nfor (const item of inputItems) {\n  const type = item.type;\n  const content = item.content;\n\n  if (!grouped[type]) {\n    grouped[type] = [];\n  }\n\n  grouped[type].push(content);\n}\n\n// Return as single object in an array (n8n format)\nreturn [{ json: grouped }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        0
+      ],
+      "id": "2774f34a-2b08-4e84-9815-467d1b72c2ed",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1660,
+        200
+      ],
+      "id": "dbbfab04-684e-484a-a809-ab6a6c5725f2",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Command1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Execute Command1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ce87f4e8-0c24-456f-b9d4-2483498c0b69",
+  "meta": {
+    "instanceId": "5bd368e942320c16690e1a71cfa468777455c92b450be774f87882024307b470"
+  },
+  "id": "6cNZqjqvQAFRM5fu",
+  "tags": []
+}

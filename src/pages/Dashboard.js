@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaCalendarCheck } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaCalendarCheck , FaFilePdf } from 'react-icons/fa
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -146,6 +146,11 @@ const workflowData = [
     summary: 'Generate quizzes and train with our AI agent.'
   },
   {
+    title: 'PDF Summarizer',
+    icon: FaFilePdf,
+    path: '/pdf-summarizer',
+    summary: 'Upload a PDF to extract key points, executive summary, entities, and topics using AI.'
+  },
     title: 'Sales Forecasting Agent',
     icon: FaChartLine,
     path: '/sales-forecasting',
@@ -216,4 +221,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
