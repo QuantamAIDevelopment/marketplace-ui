@@ -24,7 +24,7 @@ import FraudDetectionPage from './pages/FraudDetectionPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
-import PdfSummarizerAgentPage from './pages/PdfSummarizerAgentPage';
+import PdfSummarizerPage from './pages/PdfSummarizerPage';
 
 function App() {
   return (
@@ -54,7 +54,7 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
-              <Route path="/pdf-summarizer" element={<PdfSummarizerAgentPage />} />
+              <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
             </Routes>
           </main>
         </div>

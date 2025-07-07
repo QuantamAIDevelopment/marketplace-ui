@@ -146,10 +146,10 @@ const workflowData = [
     summary: 'Generate quizzes and train with our AI agent.'
   },
   {
-    title: 'PDF Summarizer Agent',
+    title: 'PDF Summarizer',
     icon: FaFilePdf,
     path: '/pdf-summarizer',
-    summary: 'Upload a PDF and get an executive summary, key points, entities, and topics extracted by Evenmind AI.'
+    summary: 'Upload a PDF to extract key points, executive summary, entities, and topics using AI.'
   },
 ];
 
