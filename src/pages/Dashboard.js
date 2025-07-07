@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaBook } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -150,6 +150,12 @@ const workflowData = [
     icon: FaFileInvoiceDollar,
     path: '/smart-invoice-ai',
     summary: 'Upload and validate invoices with AI. Get instant feedback and Google Sheets integration.'
+  },
+  {
+    title: 'AI-Powered Book Price Tracker',
+    icon: FaBook,
+    path: '/ai-book-price-tracker',
+    summary: 'Track book prices, availability, and details using AI-powered extraction.'
   }
 ];
 

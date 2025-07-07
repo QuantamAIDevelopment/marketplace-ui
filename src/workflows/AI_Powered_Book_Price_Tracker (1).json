@@ -1,0 +1,286 @@
+{
+  "name": "AI-Powered Book Price Tracker",
+  "nodes": [
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "id": "77645a5d-b4f2-4b9a-8def-5692e6b86f5e",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        880,
+        -160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.data }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"results\": {\n      \"type\": \"array\",\n      \"items\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"price\": {\n              \"type\": \"string\"\n              },\n            \"title\": {\n              \"type\": \"string\"\n            },\n            \"image_url\": {\n              \"type\": \"string\"\n            },\n            \"product_url\": {\n              \"type\": \"string\"\n            },\n            \"availability\": {\n              \"type\": \"string\"\n            }            \n           }\n      }\n  }\n}",
+        "options": {
+          "systemPromptTemplate": "You are an expert extraction algorithm.\nOnly extract relevant information from the text.\nIf you do not know the value of an attribute asked to extract, you may omit the attribute's value.\nAlways output the data in a json array called results.  Each book should have a title, price, availability and product_url, image_url"
+        }
+      },
+      "id": "6908211e-126c-4bd4-8c5d-8195a8e50a10",
+      "name": "Information Extractor",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [
+        540,
+        -160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://r.jina.ai/http://books.toscrape.com/catalogue/category/books/historical-fiction_4/index.html",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "id": "7dff64b0-20cc-4ee3-9631-2dfd52296961",
+      "name": "Jina Fetch",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        360,
+        -160
+      ],
+      "typeVersion": 4.1,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "DK6pY2N60ptMFbTv",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "book_price",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        180,
+        -160
+      ],
+      "id": "fbcadb25-38bb-43d1-867f-d5acb20df3d3",
+      "name": "Webhook",
+      "webhookId": "d3fe00a3-5cfc-4b9a-a83c-141b5ca56cbe"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1260,
+        -160
+      ],
+      "id": "cdcbc9d4-4ef5-466c-bb20-f3e98cf0dde6",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "model": "llama3-70b-8192",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        580,
+        40
+      ],
+      "id": "511283fd-5576-4b3a-95db-02d2b5448df8",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Qh4v8wgwh6wx8sSH",
+          "name": "Groq account 20"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1KEAYp-46ZrParlhIbm8-mRW-QvhRo9EBgzICyS_4oYM",
+          "mode": "list",
+          "cachedResultName": "book_prices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KEAYp-46ZrParlhIbm8-mRW-QvhRo9EBgzICyS_4oYM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KEAYp-46ZrParlhIbm8-mRW-QvhRo9EBgzICyS_4oYM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Price": "={{ $json['19'].price }}",
+            "producturl": "={{ $json['19'].product_url }}",
+            "Title": "={{ $json['19'].title }}",
+            "avaliabilty": "={{ $json['19'].availability }}",
+            "imageurl": "={{ $json['19'].image_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "avaliabilty",
+              "displayName": "avaliabilty",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "producturl",
+              "displayName": "producturl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "imageurl",
+              "displayName": "imageurl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "2fcd8c00-0e16-4ce5-84bd-879b2be2102a",
+      "name": "book_prices",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1080,
+        -160
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "rnPe2iIrbKH450Zv",
+          "name": "Google Sheets account 7"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "book_prices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jina Fetch": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Jina Fetch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "book_prices": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fa742e23-427f-41e3-9e30-96a5f6996857",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "DU3IMdh6VPc3wSTy",
+  "tags": []
+}

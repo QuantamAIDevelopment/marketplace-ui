@@ -1,21 +1,35 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://bhanubhavani.app.n8n.cloud/webhook';
+const API_BASE_URL = 'http://localhost:5678/webhook';
 
-export const uploadInvoiceAndGetSummary = async (file) => {
+const handleRequest = async (endpoint, formData) => {
   try {
-    const formData = new FormData();
-    formData.append('invoice', file);
-    const response = await axios.post(`${API_BASE_URL}/invoice%20summary`, formData, {
+    const response = await axios.post(`${API_BASE_URL}/${endpoint}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
     return response.data;
   } catch (error) {
-    if (error.response && error.response.data) {
-      throw new Error(error.response.data);
-    }
-    throw new Error('Failed to process invoice.');
+    console.error(`Error triggering workflow for ${endpoint}:`, error);
+    throw error;
   }
+};
+
+export const uploadInvoiceAndGetSummary = (file) => {
+  const formData = new FormData();
+  if (file) {
+    formData.append('file', file);
+  }
+  return handleRequest('smartinvoice-upload', formData);
+};
+
+export const getInvoiceStatus = (invoiceNumber) => {
+  const formData = new FormData();
+  formData.append('invoiceNumber', invoiceNumber);
+  return handleRequest('smartinvoice-status', formData);
+};
+
+export const getVendors = () => {
+  return axios.get(`${API_BASE_URL}/smartinvoice-vendors`).then(res => res.data);
 };

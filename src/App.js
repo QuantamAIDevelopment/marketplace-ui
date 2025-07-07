@@ -25,6 +25,7 @@ import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
 import SmartInvoiceAIPage from './pages/SmartInvoiceAIPage';
+import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
+              <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
             </Routes>
           </main>
         </div>
