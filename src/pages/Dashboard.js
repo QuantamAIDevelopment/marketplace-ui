@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaVial } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { AmazonWebScrapeCard } from '../components/workflows';
+import { AmazonWebScrapeCard, ContractRedFlagDetectorCard } from '../components/workflows';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -182,6 +182,7 @@ const Dashboard = () => {
             />
           ))}
           <AmazonWebScrapeCard compact />
+          <ContractRedFlagDetectorCard compact />
         </div>
         
         <motion.div

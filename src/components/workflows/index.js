@@ -6,4 +6,5 @@ export { default as MonthlyExpenditure } from './MonthlyExpenditure';
 export { default as FraudDetection } from './FraudDetection';
 export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
 // export { default as AmazonWebScrape } from './AmazonWebScrape.jsx';
-// export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx'; 
+// export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
+export { default as ContractRedFlagDetectorCard } from './ContractRedFlagDetectorCard'; 

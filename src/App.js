@@ -11,7 +11,7 @@ import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
 import AICustomerSupport from './pages/AICustomerSupport';
 import ProductRecommendationPage from './pages/ProductRecommendationPage';
-import ContractRedFlagDectectorPage from './pages/ContractRedFlagDectectorPage';
+import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
 import AppointmentSchedulerPage from './pages/AppointmentSchedulerPage';
@@ -45,7 +45,8 @@ function App() {
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
               <Route path="/workflows/product-recommendation" element={<ProductRecommendationPage />} />
-              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDectectorPage />} />
+              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
+              <Route path="/contract-red-flag-detector" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
               <Route path="/test-case-generator" element={<TestCaseGeneratorPage />} />
