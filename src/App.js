@@ -14,6 +14,7 @@ import ProductRecommendationPage from './pages/ProductRecommendationPage';
 import ContractRedFlagDectectorPage from './pages/ContractRedFlagDectectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
+import SalesForecastingPage from './pages/SalesForecastingPage';
 import AppointmentSchedulerPage from './pages/AppointmentSchedulerPage';
 import ProductFeedbackSummarizerPage from './pages/ProductFeedbackSummarizerPage';
 import DynamicPricingAgentPage from './pages/DynamicPricingAgentPage';
@@ -23,9 +24,17 @@ import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 import TestCaseGeneratorPage from './pages/TestCaseGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
+import SentimentAgentPage from './pages/SentimentAgentPage';
 import './App.css';
 import './index.css';
-import ErrorBoundary from './components/ErrorBoundary';
+import GmailCategorizationPage from './pages/GmailCategorizationPage';
+import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
+import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
+import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
+import './App.css';
+import './index.css';
+import ErrorBoundary from './components/workflows/ErrorBoundary';
+import PdfSummarizerPage from './pages/PdfSummarizerPage';
 
 function App() {
   return (
@@ -49,6 +58,7 @@ function App() {
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
               <Route path="/test-case-generator" element={<TestCaseGeneratorPage />} />
+              <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
               <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
               <Route path="/workflows/product-feedback-summarizer" element={<ProductFeedbackSummarizerPage />} />
               <Route path="/workflows/dynamic-pricing" element={<DynamicPricingAgentPage />} />
@@ -57,6 +67,12 @@ function App() {
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
+              <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
+              <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
+              <Route path="/sentiment-agent-report" element={<SentimentAgentPage />} />
+              <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
+              <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
+              <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
             </Routes>
           </main>
         </div>

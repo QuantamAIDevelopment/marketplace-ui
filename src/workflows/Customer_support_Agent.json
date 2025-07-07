@@ -1,0 +1,216 @@
+{
+  "name": "Customer_support_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an intelligent customer support assistant. A customer has submitted a message. Your task is:\n\n1. Categorize the message into one of the following types:\n   - Order Tracking\n   - Return/Refund Request\n   - Payment Issue\n   - Shipping Delay\n   - Product Inquiry\n   - Cancel/Change Order\n   - Escalation to Human\n   - Other\n\n2. Check if the message includes both the **customer's name** and **order ID**.\n\nyou should ask the customer about these first\nOrder tracking\nReturn/refund request\nPayment issue\nShipping delay\nProduct inquiry\nCancel/change order\nEscalation to human\nthe customer must include their name and order ID\ninput :{{ $json.body }}\n\nrespond based on the input using attached googlesheets",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a helpful assistant using google sheet e respond accordingly wish them with their names"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1480,
+        20
+      ],
+      "id": "3f2c75dd-83f9-4485-8e37-d5dffc090d84",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1awPqukOli06Km4HoI2NTJ2epO_g51Fk5TmVysH58pTc",
+          "mode": "list",
+          "cachedResultName": "Customer_Details(Telegram_Bot)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1awPqukOli06Km4HoI2NTJ2epO_g51Fk5TmVysH58pTc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1awPqukOli06Km4HoI2NTJ2epO_g51Fk5TmVysH58pTc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -1320,
+        380
+      ],
+      "id": "ba323d5e-7076-4357-8004-f88649f8ac14",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "q5jLzgTAwCAvEGRu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1y8IibSU_8KgRE25n3HjTfkgfbw5Z8gHo-0xdJGo8ASY",
+          "mode": "list",
+          "cachedResultName": "FAQ(Telegram_Bot)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1y8IibSU_8KgRE25n3HjTfkgfbw5Z8gHo-0xdJGo8ASY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1y8IibSU_8KgRE25n3HjTfkgfbw5Z8gHo-0xdJGo8ASY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.6,
+      "position": [
+        -1200,
+        360
+      ],
+      "id": "8f84992f-0cf5-4c48-9be0-a14dd87f4b84",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "q5jLzgTAwCAvEGRu",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Customer support",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1820,
+        40
+      ],
+      "id": "014a0175-283e-4e1a-bfd9-385652b7c4c0",
+      "name": "Webhook",
+      "webhookId": "1c5cab55-e508-40c4-b90b-c46bb5bbfcfe"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        -1100,
+        20
+      ],
+      "id": "e6863cbe-ad57-468f-be90-a41c73fe5505",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1480,
+        240
+      ],
+      "id": "50793172-e6ac-433f-a5db-82a16e9f6a1c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "KwBIsMIVn4DfpHPT",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "70c914ba-97b0-490d-b95d-2d600b61c123",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "zGTAFLGICAx4wSQg",
+  "tags": []
+}
