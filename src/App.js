@@ -26,6 +26,7 @@ import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
+import PdfSummarizerPage from './pages/PdfSummarizerPage';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
             </Routes>
           </main>
