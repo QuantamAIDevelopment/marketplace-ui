@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaCalendarCheck , FaFilePdf } from 'react-icons/fa
+
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaCalendarCheck , FaFilePdf, FaEnvelopeOpenText } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -146,11 +147,36 @@ const workflowData = [
     summary: 'Generate quizzes and train with our AI agent.'
   },
   {
+    title: 'Gmail Categorization',
+    icon: FaEnvelopeOpenText,
+    path: '/gmail-categorization',
+    summary: 'Automatically categorize and label your emails using AI and Google Sheets integration.'
+  },
+  {
+    title: 'Resume Analyzer',
+    icon: FaFileAlt,
+    path: '/resume-analyzer',
+    summary: 'AI-powered resume screening, scoring, and skill extraction.'
+  },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/sentiment-agent-report',
+    summary: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.'
+  },
+  {
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    summary: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.'
+  },
+  {
     title: 'PDF Summarizer',
     icon: FaFilePdf,
     path: '/pdf-summarizer',
     summary: 'Upload a PDF to extract key points, executive summary, entities, and topics using AI.'
   },
+  {
     title: 'Sales Forecasting Agent',
     icon: FaChartLine,
     path: '/sales-forecasting',

@@ -14,6 +14,7 @@ import PolicyChangeNotification from './workflows/PolicyChangeNotification';
 import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
 import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
+import SentimentAgentWorkflowPage from '../pages/SentimentAgentWorkflowPage';
 
 const workflows = [
   {
@@ -84,6 +85,30 @@ const workflows = [
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
   },
+  {
+    title: 'Resume Analyzer',
+    icon: FaUserAlt,
+    path: '/resume-analyzer',
+    description: 'Analyze and extract insights from resumes using AI.',
+    isButton: true,
+    buttonText: 'Open Resume Analyzer',
+  },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/sentiment-agent-report',
+    description: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.',
+    isButton: true,
+    buttonText: 'Open Sentiment Agent',
+  },
+  {
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    description: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.',
+    isButton: true,
+    buttonText: 'Open Support Agent',
+  },
 ];
 
 const WorkflowCard = ({ title, icon: Icon, description, onClick, isButton, buttonText }) => (
@@ -139,4 +164,7 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;
+/* In your App.js (not Dashboard.js), ensure this route exists:
+<Route path="/workflows/sentiment-agent" element={<SentimentAgentWorkflowPage />} />
+*/
