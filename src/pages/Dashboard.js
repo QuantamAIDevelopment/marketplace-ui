@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaFilePdf } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaCalendarCheck , FaFilePdf } from 'react-icons/fa
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -150,6 +150,17 @@ const workflowData = [
     icon: FaFilePdf,
     path: '/pdf-summarizer',
     summary: 'Upload a PDF to extract key points, executive summary, entities, and topics using AI.'
+  },
+    title: 'Sales Forecasting Agent',
+    icon: FaChartLine,
+    path: '/sales-forecasting',
+    summary: 'AI-powered sales forecasting with pipeline analysis and revenue predictions.'
+  },
+  {
+    title: 'Leave Balance Chatbot',
+    icon: FaCalendarCheck,
+    path: '/leave-balance-chatbot',
+    summary: 'Get instant leave balance information through AI-powered HR assistant.'
   },
 ];
 
