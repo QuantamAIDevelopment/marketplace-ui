@@ -1,5 +1,5 @@
 {
-  "name": "Dynamic_Pricing_Agent",
+  "name": "Dynamic pricing agent",
   "nodes": [
     {
       "parameters": {
@@ -14,42 +14,42 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -3000,
-        -140
+        -2340,
+        160
       ],
-      "id": "acc4cf21-8478-43fa-983f-86fceda6c12e",
+      "id": "78e481b5-94f4-464d-84ce-620fc4bb04c6",
       "name": "Schedule Trigger"
     },
     {
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1379251538,
+          "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "dynamic-pricing",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1379251538"
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=0"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        -2760,
-        -140
+        -2020,
+        160
       ],
-      "id": "c4e1e369-af2e-46ec-a766-642dc8993a09",
+      "id": "081b2e72-6590-438c-b778-fafbbfc60dbc",
       "name": "Product_Inventory_Reader",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
         }
       }
     },
@@ -58,10 +58,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -2100,
-        20
+        -1760,
+        380
       ],
-      "id": "39df151d-fa3b-4558-b01a-5fb8fd92cd8d",
+      "id": "7c848154-222d-4b63-b03a-ac80512f8ffc",
       "name": "Data_Source_Combiner"
     },
     {
@@ -91,10 +91,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1380,
-        -40
+        -980,
+        380
       ],
-      "id": "95ac2f6c-8556-4bfb-a637-abc56cd7bdb6",
+      "id": "63466c38-4d95-4da4-b6b4-14ebc6e0743d",
       "name": "Price_Change_Decision_Router"
     },
     {
@@ -134,7 +134,7 @@
             {
               "id": "69d87606-2eed-48a4-8f46-5f0760c12e01",
               "name": "timestamp",
-              "value": "=",
+              "value": "={{ $('Data_Source_Combiner').item.json.timestamp }}",
               "type": "string"
             }
           ]
@@ -144,10 +144,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1160,
-        -140
+        -760,
+        240
       ],
-      "id": "aa94ccbf-ba8a-469f-94bc-bc2f436141e0",
+      "id": "0860ef6b-c1b9-42ed-a244-68ca99652e3a",
       "name": "Update_Data_Formatter"
     },
     {
@@ -155,33 +155,51 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1194882208,
+          "value": 1642149970,
           "mode": "list",
-          "cachedResultName": "dynamic-pricing-logs",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1194882208"
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=1642149970"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "productId": "={{ $json.productId }}",
-            "productName": "={{ $json.productName }}",
-            "oldPrice": "={{ $json.oldPrice }}",
-            "newPrice": "={{ $json.newPrice }}",
-            "reason": "={{ $json.reason }}",
-            "timestamp": "={{ $json.timestamp }}"
+            "Product Id": "={{ $json.productId }}",
+            "Product Name": "={{ $json.productName }}",
+            "Old Price": "={{ $json.oldPrice }}",
+            "New Price": "={{ $json.newPrice }}",
+            "Reason": "={{ $json.reason }}",
+            "Timestamp": "={{ $json.timestamp }}"
           },
           "matchingColumns": [],
           "schema": [
             {
-              "id": "productId",
-              "displayName": "productId",
+              "id": "Product Id",
+              "displayName": "Product Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Old Price",
+              "displayName": "Old Price",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -190,8 +208,8 @@
               "removed": false
             },
             {
-              "id": "productName",
-              "displayName": "productName",
+              "id": "New Price",
+              "displayName": "New Price",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -200,38 +218,17 @@
               "removed": false
             },
             {
-              "id": "oldPrice",
-              "displayName": "oldPrice",
+              "id": "Reason",
+              "displayName": "Reason",
               "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
-              "id": "newPrice",
-              "displayName": "newPrice",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "reason",
-              "displayName": "reason",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "timestamp",
-              "displayName": "timestamp",
+              "id": "Timestamp",
+              "displayName": "Timestamp",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -248,15 +245,15 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        -940,
-        -140
+        -540,
+        240
       ],
-      "id": "53362948-b481-4a32-97a3-b7954183ffce",
+      "id": "32aa8e69-117c-4a6a-8db7-8f50984aee70",
       "name": "Pricing_History_Logger",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
         }
       }
     },
@@ -267,10 +264,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -720,
-        -140
+        -320,
+        240
       ],
-      "id": "c4a58adc-afd5-4777-8d84-af9f38d5cbd4",
+      "id": "a780da9a-20da-4af8-933d-7637cdc89b31",
       "name": "HTML_Report_Generator"
     },
     {
@@ -283,16 +280,16 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        -560,
-        -140
+        -160,
+        240
       ],
-      "id": "3750b099-4e7f-4866-9124-7372c40d9840",
+      "id": "4fd9b650-75b0-4e51-b96a-9dd85a74cbff",
       "name": "Report_Sender",
       "webhookId": "3f11591c-5f13-40f8-94c2-09ab84e91f99",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "mxrA4n6IaRAaZeF8",
+          "name": "Gmail account 2"
         }
       }
     },
@@ -306,10 +303,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        -620,
-        -360
+        -220,
+        20
       ],
-      "id": "3d8c1c79-b5ef-4039-801a-9aa4693ea8d2",
+      "id": "c2d27f25-a4b2-4ecf-8aea-f3065073f8a3",
       "name": "API_Response_Handler"
     },
     {
@@ -319,19 +316,19 @@
         "message": "=❌ Pricing update failed.\nProduct ID: {{$json.productId}}\nStep: {{$json.step}}\nreason: {{ $json.reason }}\nTime: {{$json.timestamp}}",
         "options": {}
       },
-      "id": "3b84de21-46f7-434a-b3c2-88b2197def91",
+      "id": "b880d53a-df2f-4420-aa33-be27d82328d4",
       "name": "System_Error_Alerter",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        -720,
-        140
+        -320,
+        500
       ],
       "webhookId": "ac5b3100-1bdd-436f-a9b4-30e3071854b2",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "mxrA4n6IaRAaZeF8",
+          "name": "Gmail account 2"
         }
       }
     },
@@ -339,13 +336,13 @@
       "parameters": {
         "jsCode": "const changed = $json.changed;\nconst productId = $json.productId || $json.productid || 'unknown';\nconst productName = $json.productName || $json.productname || 'unknown';\nconst oldPrice = Number($json.oldPrice || $json.currentprice || 0);\nconst newPrice = Number($json.newPrice || oldPrice);\nconst productViews = Number($json.productViews || $json.productviews || 0);\nconst inventoryCount = Number($json.inventoryCount || $json.inventorycount || 0);\nconst lastSoldDaysAgo = Number($json.lastSoldDaysAgo || $json.lastsolddaysago || 0);\nconst dayOfWeek = $json.dayOfWeek || $json.dayofweek || '';\nconst timeOfDay = $json.timeOfDay || $json.timeofday || '';\nconst timestamp = new Date().toISOString();\n\nlet reason = $json.reason || '';\n\nif (!changed) {\n  const reasons = [];\n\n  if (productViews <= 1000) {\n    reasons.push('Low demand (views ≤ 1000)');\n  }\n  if (inventoryCount >= 10) {\n    reasons.push('Stock level high (inventory ≥ 10)');\n  }\n  if (lastSoldDaysAgo <= 30) {\n    reasons.push('Recently sold (≤ 30 days ago)');\n  }\n\n  const hour = parseInt(timeOfDay.split(':')[0] || '0', 10);\n  const inPromoTime = (dayOfWeek === 'Friday') || (hour >= 17 && hour < 20);\n  if (!inPromoTime) {\n    reasons.push('Not in promo time or day');\n  }\n\n  if (reasons.length === 0) {\n    reasons.push('No pricing rule matched');\n  }\n\n  reason = reasons.join('; ');\n}\n\nreturn [{\n  json: {\n    productId,\n    productName,\n    oldPrice,\n    newPrice,\n    status: changed ? \"Price changed\" : \"Price not changed\",\n    reason,\n    step: \"Price Evaluation\",\n    timestamp\n  }\n}];\n\n"
       },
-      "id": "018b6161-dafc-4644-be4b-b1f1c2f6624f",
+      "id": "bf4ee089-c29b-4b73-890e-8729cef9cb06",
       "name": "Non_Change_Reason_Analyzer",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1160,
-        140
+        -760,
+        500
       ]
     },
     {
@@ -353,17 +350,17 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1593495007,
+          "value": 486452548,
           "mode": "list",
-          "cachedResultName": "dynamic-pricing-decision-logs",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1593495007"
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=486452548"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -454,18 +451,18 @@
         },
         "options": {}
       },
-      "id": "6fc694f0-92d7-42db-a6ab-c26d121362ba",
+      "id": "69168e8f-3053-4f40-9fae-fddc3b31187d",
       "name": "Decision_Audit_Logger",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        -960,
-        140
+        -560,
+        500
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
         }
       }
     },
@@ -474,17 +471,17 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Dynamic pricing agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1379251538,
+          "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "dynamic-pricing",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1379251538"
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lVBAAPyS8DtFOHAaKrsywI9gQAkjWl-wAV5vX6uWYsI/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -501,7 +498,10 @@
             "maxPrice": "={{ $json.maxPrice }}",
             "lastSoldDaysAgo": "={{ $json.lastSoldDaysAgo }}",
             "timeOfDay": "={{ $json.timeOfDay }}",
-            "dayOfWeek": "={{ $json.dayOfWeek }}"
+            "dayOfWeek": "={{ $json.dayOfWeek }}",
+            "category": "={{ $json.category }}",
+            "priority": "={{ $json.priority }}",
+            "timestamp": "={{ $json.timestamp }}"
           },
           "matchingColumns": [
             "productId"
@@ -624,6 +624,33 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -634,32 +661,32 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        -2460,
-        100
+        -2020,
+        600
       ],
-      "id": "7af226a3-4a0c-4bf2-94a4-461471c1354a",
+      "id": "ee4634b6-4ce4-4dfe-99c3-e1baed1c0981",
       "name": "Product_Data_Updater",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
+          "id": "kmmF72fLG9pg4goo",
+          "name": "Google Sheets account 3"
         }
       }
     },
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "dynamic-pricing",
+        "path": "Dynamic_Post",
         "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -2980,
-        100
+        -2500,
+        600
       ],
-      "id": "77bafc71-99ac-4f5c-8aab-da241adabbe2",
+      "id": "1bb4789f-21d9-4e18-aba0-0cd43abf4c7d",
       "name": "External_Pricing_API_Endpoint",
       "webhookId": "aeff43cf-a96f-4241-874e-2f66cc475d62"
     },
@@ -674,10 +701,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        -1920,
-        -20
+        -1560,
+        380
       ],
-      "id": "2a6d5235-13a1-4571-9a98-0e65c8996469",
+      "id": "e650c40f-980d-436c-bc24-65be1c54a3ce",
       "name": "AI Agent"
     },
     {
@@ -687,15 +714,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -1940,
-        220
+        -1540,
+        580
       ],
-      "id": "4abe9e74-bb50-4f76-8130-f3b92b2d9991",
+      "id": "00617ec3-1b4f-40aa-a229-7c7635021c8d",
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "1E3ZL2vIpcClZdxZ",
-          "name": "Groq account"
+          "id": "ZEleCzLCONixInHZ",
+          "name": "Groq account 5"
         }
       }
     },
@@ -706,25 +733,25 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1580,
-        20
+        -1200,
+        380
       ],
-      "id": "af3aea45-08a4-4379-803e-74ad026c54f8",
+      "id": "d334c342-8af0-4201-8581-7dfe08acd619",
       "name": "Code",
       "alwaysOutputData": true
     },
     {
       "parameters": {
-        "binaryPropertyName": "prices-list",
+        "binaryPropertyName": "dynamic",
         "options": {}
       },
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        -2720,
-        100
+        -2260,
+        600
       ],
-      "id": "5e419dd8-9d0e-4015-bbc1-6d50a142ef77",
+      "id": "0700a028-d060-419e-9183-c578418556f4",
       "name": "Extract from File"
     }
   ],
@@ -863,23 +890,23 @@
         ]
       ]
     },
-    "Groq Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "AI Agent": {
       "main": [
         [
           {
             "node": "Code",
             "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -908,15 +935,15 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "92775e78-4ef2-46d1-85cf-a602ab54cafb",
+  "versionId": "c62f7956-68b7-49f1-a023-dac127836b14",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "Oh6Jcx0O6yj6PyBg",
+  "id": "6sZbEyZ7UULSYuBL",
   "tags": []
 }

@@ -45,7 +45,7 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
                     // Color key words in headings
                     let text = child.props.children;
                     if (typeof text === 'string') {
-                      text = text.replace(/(AI|Use Cases|Stands Out|Features|Components Used)/g, match => `<span class='text-indigo-600 font-extrabold'>${match}</span>`);
+                      text = text.replace(/(AI|Use Cases|Stands Out|Features|Components Used)/g, match => `<span class="text-indigo-600 font-extrabold">${match}</span>`);
                       return <h2 className="text-2xl md:text-3xl font-bold mb-4" dangerouslySetInnerHTML={{__html: text}} />;
                     }
                     return <h2 className="text-2xl md:text-3xl font-bold mb-4">{text}</h2>;
