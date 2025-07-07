@@ -23,9 +23,10 @@ import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 import './App.css';
 import './index.css';
-import ErrorBoundary from './components/ErrorBoundary';
+import ErrorBoundary from './components/workflows/ErrorBoundary';
 import SmartInvoiceAIPage from './pages/SmartInvoiceAIPage';
-import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
+import CandidateAcceptanceAIPage from './pages/CandidateAcceptanceAIPage';
+import AutomateCandidateAcceptancePage from './pages/AutomateCandidateAcceptancePage';
 
 function App() {
   return (
@@ -56,7 +57,8 @@ function App() {
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
-              <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
+              <Route path="/candidate-acceptance" element={<CandidateAcceptanceAIPage />} />
+              <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
             </Routes>
           </main>
         </div>

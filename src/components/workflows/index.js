@@ -4,4 +4,5 @@ export { default as BusinessInsightsAgent } from './BusinessInsightsAgent';
 export { default as MetricsBusinessAnalytics } from './MetricsBusinessAnalytics';
 export { default as MonthlyExpenditure } from './MonthlyExpenditure';
 export { default as FraudDetection } from './FraudDetection';
-// export { default as BookPrices } from './BookPrices'; 
+// export { default as BookPrices } from './BookPrices';
+export { default as AutomateCandidateAcceptance } from './AutomateCandidateAcceptance';
