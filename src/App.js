@@ -11,7 +11,7 @@ import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
 import AICustomerSupport from './pages/AICustomerSupport';
 import ProductRecommendationPage from './pages/ProductRecommendationPage';
-import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
+import ContractRedFlagDectectorPage from './pages/ContractRedFlagDectectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
 import AppointmentSchedulerPage from './pages/AppointmentSchedulerPage';
@@ -21,6 +21,8 @@ import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import TestCaseGeneratorPage from './pages/TestCaseGeneratorPage';
+import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -43,9 +45,10 @@ function App() {
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
               <Route path="/workflows/product-recommendation" element={<ProductRecommendationPage />} />
-              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
+              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDectectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
+              <Route path="/test-case-generator" element={<TestCaseGeneratorPage />} />
               <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
               <Route path="/workflows/product-feedback-summarizer" element={<ProductFeedbackSummarizerPage />} />
               <Route path="/workflows/dynamic-pricing" element={<DynamicPricingAgentPage />} />
@@ -53,6 +56,7 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
             </Routes>
           </main>
         </div>

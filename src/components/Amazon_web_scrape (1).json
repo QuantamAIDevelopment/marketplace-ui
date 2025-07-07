@@ -1,0 +1,384 @@
+{
+  "name": "Amazon web scrape",
+  "nodes": [
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"name\":\" \",\n  \"description\":\"\",\n\"rating\":\"\",\n\"reviews\":\"\",\n\"price\":\"\"\n}"
+      },
+      "id": "200d845c-6f07-4337-8afc-0638adf405a3",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        340,
+        140
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "url": "https://api.scraperapi.com/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_key",
+              "value": "fc29ee637c458841047d7058f776485c"
+            },
+            {
+              "name": "url",
+              "value": "={{ $json.body.url }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "id": "f4405904-0ef8-445e-af2e-bb8c68f38334",
+      "name": "scrap url",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -260,
+        -40
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "341d52a1-c3a9-4b02-832a-1faa39ac3dad",
+      "name": "url",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -520,
+        100
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "jsCode": "// CleanHtmlFunction.js\n// Purpose: n8n Function node to clean HTML: remove doctype, scripts, styles, head, comments, classes, extra blank lines, and non-whitelisted tags\n\nreturn items.map(item => {\n  const rawHtml = item.json.data;\n\n  // 1) remove doctype, scripts, styles, comments and head section, and strip class attributes\n  let cleaned = rawHtml\n    .replace(/<!doctype html>/gi, '')\n    .replace(/<script[\\s\\S]*?<\\/script>/gi, '')\n    .replace(/<style[\\s\\S]*?<\\/style>/gi, '')\n    .replace(/<!--[\\s\\S]*?-->/g, '')\n    .replace(/<head[\\s\\S]*?<\\/head>/gi, '')\n    .replace(/\\sclass=\"[^\"]*\"/gi, '');\n\n  // 2) define whitelist of tags to keep\n  const allowedTags = [\n    'h1','h2','h3','h4','h5','h6',\n    'p','ul','ol','li',\n    'strong','em','a','blockquote',\n    'code','pre'\n  ];\n\n  // 3) strip out all tags not in the whitelist, reconstruct allowed tags cleanly\n  cleaned = cleaned.replace(\n    /<\\/?([a-z][a-z0-9]*)\\b[^>]*>/gi,\n    (match, tagName) => {\n      const name = tagName.toLowerCase();\n      if (allowedTags.includes(name)) {\n        return match.startsWith('</') ? `</${name}>` : `<${name}>`;\n      }\n      return '';\n    }\n  );\n\n  // 4) collapse multiple blank or whitespace-only lines into a single newline\n  cleaned = cleaned.replace(/(\\s*\\r?\\n\\s*){2,}/g, '\\n');\n\n  // 5) trim leading/trailing whitespace\n  cleaned = cleaned.trim();\n\n  return {\n    json: { cleanedHtml: cleaned }\n  };\n});"
+      },
+      "id": "2be9601d-819a-4766-a2a5-0a20bdb4cc47",
+      "name": "clean html",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -40,
+        -40
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.cleanedHtml }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are an expert in web page scraping. Provide a structured response in JSON format. Only the response, without commentary.\n\nExtract the product information for {{ $('url').item.json.url }} present on the page.\n\nname\ndescription\nrating\nreviews\nprice"
+            }
+          ]
+        }
+      },
+      "id": "7e0a4d37-578d-4f5f-a980-f241a19d9f6d",
+      "name": "extract data",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        180,
+        -40
+      ],
+      "typeVersion": 1.6
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BmfxJO7P8mrcBGW_x2tRbih6MFVZ3D6pJ-oQZVwTQyU",
+          "mode": "list",
+          "cachedResultName": "Amazon web scrape",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BmfxJO7P8mrcBGW_x2tRbih6MFVZ3D6pJ-oQZVwTQyU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 948811029,
+          "mode": "list",
+          "cachedResultName": "result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BmfxJO7P8mrcBGW_x2tRbih6MFVZ3D6pJ-oQZVwTQyU/edit#gid=948811029"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "NAME": "={{ $json.output.name }}",
+            "DESCRPITION": "={{ $json.output.description }}",
+            "RATING": "={{ $json.output.rating }}",
+            "REVIEW": "={{ $json.output.reviews }}",
+            "PRICE": "={{ $json.output.price }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "NAME",
+              "displayName": "NAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DESCRPITION",
+              "displayName": "DESCRPITION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RATING",
+              "displayName": "RATING",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "REVIEW",
+              "displayName": "REVIEW",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "PRICE",
+              "displayName": "PRICE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "c4e41fbe-3952-4b8d-a2fb-dcc4703d8202",
+      "name": "add results",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        780,
+        100
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PlxPPnnNjyQv8Pvk",
+          "name": "Google Sheets account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "id": "652f953b-f530-4840-b281-d3343bcad728",
+      "name": "Split items",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        560,
+        -40
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "amazon",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        100
+      ],
+      "id": "bf7d1015-69b8-4f42-8a08-ab23468be28f",
+      "name": "Webhook",
+      "webhookId": "4a1e3ae9-54bc-44a5-a5bb-c6f48a4a58cf"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=name:{{ $json.NAME }}\ndescrption:{{ $json.DESCRPITION }}\nrating:{{ $json.RATING }}\nreview:{{ $json.REVIEW }}\nprice:{{ $json.PRICE }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1040,
+        120
+      ],
+      "id": "ab27e9b5-7c14-4ea8-a5a9-332531939aba",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        140
+      ],
+      "id": "d0db978b-d360-4ee3-a32f-01c3a5e049cf",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "34tzNLlljKlQJI5B",
+          "name": "OpenAi account 11"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "extract data",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "scrap url": {
+      "main": [
+        [
+          {
+            "node": "clean html",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "url": {
+      "main": [
+        [],
+        [
+          {
+            "node": "scrap url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "clean html": {
+      "main": [
+        [
+          {
+            "node": "extract data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract data": {
+      "main": [
+        [
+          {
+            "node": "Split items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "add results": {
+      "main": [
+        [
+          {
+            "node": "url",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split items": {
+      "main": [
+        [
+          {
+            "node": "add results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "extract data",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8527dabe-d814-4ea7-bae1-24e24ddc7eb1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "vQ5nQxhvbRoKbf0Y",
+  "tags": []
+}
