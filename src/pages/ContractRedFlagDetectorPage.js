@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaFileContract, FaUpload, FaSpinner, FaCheckCircle, FaEnvelope } from 'react-icons/fa';
 import axios from 'axios';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const workflowSteps = [
   { icon: FaUpload, label: 'Upload Contract', color: 'bg-blue-500' },

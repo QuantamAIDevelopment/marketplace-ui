@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaFileContract, FaCheckCircle, FaUsers, FaChartBar, FaExclamationCircle } from 'react-icons/fa';
 import axios from 'axios';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const PolicyChangeNotificationPageContent = () => {
   const [stats, setStats] = useState({

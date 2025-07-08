@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaBook } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaBook, FaUserCheck, FaFileCsv, FaUserTie } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -156,6 +156,24 @@ const workflowData = [
     icon: FaBook,
     path: '/ai-book-price-tracker',
     summary: 'Track book prices, availability, and details using AI-powered extraction.'
+  },
+  {
+    title: 'Automate Candidate Acceptance',
+    icon: FaUserCheck,
+    path: '/automate-candidate-acceptance',
+    summary: 'Automate candidate acceptance and send onboarding notifications.'
+  },
+  {
+    title: 'Attendance Anomalies',
+    icon: FaFileCsv,
+    path: '/attendance-anomalies',
+    summary: 'Upload attendance CSVs to detect anomalies and escalate to HR.'
+  },
+  {
+    title: 'Fetch Leads',
+    icon: FaUserTie,
+    path: '/fetch-leads',
+    summary: 'Trigger the fetch leads workflow and get a personalized response.'
   }
 ];
 

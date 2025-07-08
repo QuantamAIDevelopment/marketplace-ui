@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import SmartInvoiceAI from '../components/workflows/SmartInvoiceAI';
 
 const SmartInvoiceAIPage = () => {

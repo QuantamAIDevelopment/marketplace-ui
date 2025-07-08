@@ -27,12 +27,16 @@ import ErrorBoundary from './components/workflows/ErrorBoundary';
 import SmartInvoiceAIPage from './pages/SmartInvoiceAIPage';
 import CandidateAcceptanceAIPage from './pages/CandidateAcceptanceAIPage';
 import AutomateCandidateAcceptancePage from './pages/AutomateCandidateAcceptancePage';
+import AttendanceAnomaliesPage from './pages/AttendanceAnomaliesPage';
+import FetchLeadsPage from './pages/FetchLeadsPage';
+import AppNav from './components/AppNav';
 
 function App() {
   return (
     <Router>
       <ErrorBoundary>
         <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
+          <AppNav />
           <main className="flex-1 flex flex-col items-center justify-center p-4">
             <Routes>
               <Route path="/" element={<Dashboard />} />
@@ -59,6 +63,8 @@ function App() {
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
               <Route path="/candidate-acceptance" element={<CandidateAcceptanceAIPage />} />
               <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
+              <Route path="/attendance-anomalies" element={<AttendanceAnomaliesPage />} />
+              <Route path="/fetch-leads" element={<FetchLeadsPage />} />
             </Routes>
           </main>
         </div>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaMoneyBillWave, FaCheckCircle, FaExclamationTriangle, FaFileCsv } from 'react-icons/fa';
 import { triggerDynamicPricingWorkflow } from '../services/workflows/dynamicPricing';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const workflowSteps = [
   { icon: FaFileCsv, label: 'Upload CSV', color: 'bg-green-500' },
