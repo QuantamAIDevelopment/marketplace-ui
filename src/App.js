@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import LeavesClassifierPage from './pages/LeavesClassifierPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
+import DocumentUploadReminderDetailsPage from './pages/DocumentUploadReminderDetailsPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
 import CandidateHiringStatusPage from './pages/CandidateHiringStatusPage';
@@ -56,6 +57,7 @@ function App() {
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
+              <Route path="/workflows/document-upload-details" element={<DocumentUploadReminderDetailsPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
               <Route path="/workflows/candidate-hiring-status" element={<CandidateHiringStatusPage />} />
