@@ -7,7 +7,6 @@ import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
 import DocumentUploadReminderDetailsPage from './pages/DocumentUploadReminderDetailsPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
-import CandidateHiringStatusPage from './pages/CandidateHiringStatusPage';
 import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
 import AICustomerSupport from './pages/AICustomerSupport';
@@ -25,14 +24,17 @@ import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 
 import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
-
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
+<<<<<<< HEAD
+import ATS_TO_HRMS_CANDIDATE_StatusSyncPage from './pages/ATS_TO_HRMS_CANDIDATE_StatusSyncPage';
+=======
 import TestGeneratorPage from './pages/TestGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
 
 import BackgroundVerificationAgentPage from './pages/BackgroundVerificationAgentPage';
 
+>>>>>>> efd18b966f1ca96fdeae5391fd55d0c3d6924d35
 import './App.css';
 import './index.css';
 
@@ -66,7 +68,6 @@ function App() {
               <Route path="/workflows/document-upload-details" element={<DocumentUploadReminderDetailsPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
-              <Route path="/workflows/candidate-hiring-status" element={<CandidateHiringStatusPage />} />
               <Route path="/workflows/payslip-encryption" element={<PayslipAutoEncryptedPage />} />
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
@@ -91,6 +92,9 @@ function App() {
               <Route path="/automate-candidate-acceptance/cover" element={<AutomateCandidateAcceptanceCoverPage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
               <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
+<<<<<<< HEAD
+              <Route path="/workflows/ats-to-hrms-candidate-status-sync" element={<ATS_TO_HRMS_CANDIDATE_StatusSyncPage />} />
+=======
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
@@ -104,6 +108,7 @@ function App() {
 
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
 
+>>>>>>> efd18b966f1ca96fdeae5391fd55d0c3d6924d35
             </Routes>
           </main>
         </div>

@@ -4,6 +4,11 @@ export { default as DynamicPricingAgent } from './DynamicPricingAgent';
 export { default as BusinessInsightsAgent } from './BusinessInsightsAgent';
 export { default as MetricsBusinessAnalytics } from './MetricsBusinessAnalytics';
 export { default as MonthlyExpenditure } from './MonthlyExpenditure';
+<<<<<<< HEAD
+export { default as FraudDetection } from './FraudDetection'; 
+export { default as TestmonialExtractor } from './TestmonialExtractor';
+export { default as ATS_TO_HRMS_CANDIDATES_Status_sync } from '../ATS_TO_HRMS_CANDIDATES_Status_sync';
+=======
 // export { default as BookPrices } from './BookPrices';
 export { default as AutomateCandidateAcceptance } from './AutomateCandidateAcceptance';
 export { default as TestmonialExtractor } from './TestmonialExtractor';
@@ -17,3 +22,4 @@ export { default as AIBackroundVerificationCard } from './AIBackroundVerificatio
 export { default as FraudDetection } from './FraudDetection';
 export { default as BackgroundVerificationAgent } from './BackgroundVerificationAgent'; 
 export { default as TestGenerator } from './TestGenerator';
+>>>>>>> efd18b966f1ca96fdeae5391fd55d0c3d6924d35
