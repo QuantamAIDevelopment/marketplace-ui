@@ -6,7 +6,7 @@ export { default as MetricsBusinessAnalytics } from './MetricsBusinessAnalytics'
 export { default as MonthlyExpenditure } from './MonthlyExpenditure';
 export { default as OnBoardingQ } from './OnBoardingQ';
 export { default as LeaveApprovalReminder } from './LeaveApprovalReminder';
-export { default as ATS_TO_HRMS_CANDIDATES_Status_sync } from '../ATS_TO_HRMS_CANDIDATES_Status_sync';
+export { default as ATS_TO_HRMS_CANDIDATES_Status_sync } from '../ATS_TO_HRMS_CANDIDATE_StatusSync.jsx';
 // export { default as BookPrices } from './BookPrices';
 export { default as AutomateCandidateAcceptance } from './AutomateCandidateAcceptance';
 export { default as TestmonialExtractor } from './TestmonialExtractor';
@@ -17,13 +17,11 @@ export { default as ContractRedFlagDetectorCard } from './ContractRedFlagDetecto
 export { default as SalesForecasting } from './SalesForecasting';
 export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot'; 
 export { default as AIBackroundVerificationCard } from './AIBackroundVerificationCard.jsx'; 
-<<<<<<< HEAD
+
 export { default as ProjectCoastReports } from './ProjectCoastReports.jsx';
 
 // export { default as FraudDetection } from './FraudDetection';
-=======
-export { default as FraudDetection } from './FraudDetection';
->>>>>>> fac30f89350fdb02909dc82426e7b12d8a088480
+
 export { default as BackgroundVerificationAgent } from './BackgroundVerificationAgent'; 
 export { default as TestGenerator } from './TestGenerator';
 
