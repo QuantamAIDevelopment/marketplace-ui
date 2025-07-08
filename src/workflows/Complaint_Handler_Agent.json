@@ -1,0 +1,1233 @@
+{
+  "name": "Complaint Handler Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "inputText": "={{ $json.body.Complaint }}",
+        "options": {
+          "categories": "Positive, Negative"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.sentimentAnalysis",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        200
+      ],
+      "id": "2c5704e9-9ca5-41e2-b01e-9bdbdc257b0b",
+      "name": "Sentiment Analysis",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Thanks for you taking the time to share your feedbackwith us.We apperciate you bringing your concern attention.We are sorry that our plug ins didn't meet your expectations. \n\n\nYou are a complaint classification agent.\n\nClassify the following complaint into one of the following categories:\n\n- Billing  \n- Technical Issue  \n- Delivery Delay  \n- Product Quality  \n- Other\nGenerate a unique ticket ID using the following rules:\n- Prefix: \"TICK\"\n- Include today's date in YYYYMMDD format\n- Append a 4-character random alphanumeric code\n\n\n\n\n\nReturn along the category name.\nName:\"  {{ $json.body.Name }} \"\nEmail:\"{{ $json.body['Email & Phone'] }} \"\nComplaint:\"    {{ $json.body.Complaint }}           \"\nComplaint:\n\"\"\"\n\"\"\"\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -20,
+        340
+      ],
+      "id": "c7815147-1b5e-4349-ae89-fde95df8263c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"Name\":\" the body of the name\",\n  \"Email\":\"the body text of the email\",\n  \"Complaint\":\"the body of the Complaint \",\n  \"category\":\"choose one from Billing  ,Technical Issue ,Delivery Delay, Product Quality ,Other\",\n  \"Ticket ID\":\" Generate a unique Ticket ID using the following rules: Prefix: 'TICK', Include today's date in YYYYMMDD format,Append a 4-character random alphanumeric code\",\n  \"response\":\"Thanks for you taking the time to share your feedbackwith us.We apperciate you bringing your concern attention.We are sorry that our plug ins didn't meet your expectations, we will get back to you soon . Regards Customer Feedback\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        520
+      ],
+      "id": "239c9c55-9531-41b5-abe6-76a6aa532e61",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU",
+          "mode": "list",
+          "cachedResultName": "Customer Complaint Handler",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.output.Name }}",
+            "Email": "={{ $json.output.Email }}",
+            "Complaint": "={{ $json.output.Complaint }}",
+            "Response": "={{ $json.output.response }}",
+            "Status": "pending",
+            "Ticket_ID": "={{ $json.output['Ticket ID'] }}",
+            "Time Stamp": "={{ $now }}",
+            "Category": "={{ $json.output.category }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint",
+              "displayName": "Complaint",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ticket_ID",
+              "displayName": "Ticket_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Response",
+              "displayName": "Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time Stamp",
+              "displayName": "Time Stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        300,
+        340
+      ],
+      "id": "50aec3b5-9fc0-4211-a812-98fa5f757b9c",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t2L8dSjSzYfwGDDH",
+          "name": "Google Sheets account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "={{ $json.Complaint }}",
+        "message": "={{ $json.Response }}\nYour Ticket ID: {{ $json.Ticket_ID }}\n\nRegards,\nSupport Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        340
+      ],
+      "id": "cd14fce6-20a8-4285-a5f8-63e0375bb7d1",
+      "name": "Gmail",
+      "webhookId": "aed50aaf-0bcd-41e3-8cb5-53072152eba1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Customer Complaint Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email or Phone",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Complaint",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Urgency(mandatory for negative compliant)",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "High"
+                  },
+                  {
+                    "option": "medium"
+                  },
+                  {
+                    "option": "Low"
+                  }
+                ]
+              },
+              "multiselect": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -900,
+        360
+      ],
+      "id": "17f2386a-5ba0-4c52-b8dd-3f0291675182",
+      "name": "On form submission",
+      "webhookId": "b0cd7a0a-b488-4bd2-ae01-ee8fd9b26340",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "inputText": "=You are a routing assistant.\n\nClassify the following complaint into one of the following categories for routing:\n\n- HR Agent  \n- Technical Support Agent  \n- Manager\n\nUse this logic:\n- If the complaint is related to Billing, Delivery Delay, or Product Quality → route to HR Agent  \n- If it's a Technical Issue → route to Technical Support Agent  \n- If it's unclear or outside of standard categories → route to Manager\n\nReturn only the routing target name exactly as listed above — no extra text or punctuation.\n\nCategory=={{ $('Google Sheets').item.json.Category }}\n\n",
+        "categories": {
+          "categories": [
+            {
+              "category": "HR Agent"
+            },
+            {
+              "category": "Technical Support Agent"
+            },
+            {
+              "category": "Manager"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1,
+      "position": [
+        660,
+        340
+      ],
+      "id": "fc75d09d-7ac5-42c4-82b1-c573bde7122f",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "sendTo": "nagsvadlamudi@gmail.com",
+        "subject": "={{ $('AI Agent').item.json.output.Complaint }}",
+        "emailType": "text",
+        "message": "=Dear HR Agent,\n\nYou are an HR support agent responsible for reviewing and resolving employee or customer complaints that may involve human resource-related issues.\n\nGiven the following complaint, do the following:\n1. Analyze if the Complaint\n2. If yes, Try to resolve the complaint why the complaint Occurs\n\n3. If no, return:\n   - reason: Explain why this issue is not resolved\n  \nBest regards,  \nCustomer Support Team\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        180
+      ],
+      "id": "143d8183-7338-41aa-8f77-26216609a369",
+      "name": "Gmail1",
+      "webhookId": "77667340-d8f9-4158-b5d3-57978ada251a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nagsvadlamudi@gmail.com",
+        "subject": "={{ $('Google Sheets').item.json.Complaint }}",
+        "emailType": "text",
+        "message": "=Dear Technical Agent\n\nYou are Technical support agent responsible for reviewing and resolving employee or customer complaints that may involve human resource-related issues.\n\nGiven the following complaint, do the following:\n1. Analyze if the issue \n2.If yes,Try to reslove and give me brief explaint about the complaint\n3. If no, return:\n    - reason: Explain why this issue is not resolved how long it will reslove\n\nBest regards,  \nCustomer Support Team\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        340
+      ],
+      "id": "5987839f-cd83-4c79-8235-a6684d79fdd6",
+      "name": "Gmail2",
+      "webhookId": "c2ae7df4-6449-44b2-9932-58341d12dffb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=nagsvadlamudi@gmail.com",
+        "subject": "={{ $('Google Sheets').item.json.Complaint }}",
+        "emailType": "text",
+        "message": "=Dear Manager,\n\nYou are manager responsible for reviewing and resolving employee or customer complaints that may involve related issues.\n\nGiven the following complaint, do the following:\n1. Analyze if the issue \n2.If yes,Try to reslove and give me brief explaint about the complaint\n3. If no, return:\n    - reason: Explain why this issue is not resolved\nand how many days to resslove it\nBest regards,  \nCustomer Support Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1060,
+        500
+      ],
+      "id": "89d9334b-fa12-4f79-ae6c-8001bbf2cbc1",
+      "name": "Gmail3",
+      "webhookId": "c2ae7df4-6449-44b2-9932-58341d12dffb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1340,
+        340
+      ],
+      "id": "a4da2a37-a803-4283-891f-bd137f6960f3",
+      "name": "Wait",
+      "webhookId": "1abd19e5-4a58-49dd-b0c7-40bd9627c79c"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Google Sheets1').item.json.Email }}",
+        "subject": "={{ $('Google Sheets').item.json.Complaint }}",
+        "emailType": "text",
+        "message": "=Dear {{ $('Google Sheets').item.json.Name }},\n\nwe wanted to inform you that we are still working on resolving your  complaint ( {{ $('Google Sheets').item.json.Complaint }} ) and your ticket is\n(Ticket ID: \n  {{ $('Google Sheets').item.json['Ticket ID'] }}    ),\n\n\nBest regards,  \nCustomer Support Team\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1960,
+        440
+      ],
+      "id": "2d801654-162c-45b2-aa1e-52ef19af1a0d",
+      "name": "Gmail4",
+      "webhookId": "c2ae7df4-6449-44b2-9932-58341d12dffb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "={{ $('Google Sheets').item.json.Complaint }}",
+        "emailType": "text",
+        "message": "=Dear {{ $('Google Sheets').item.json.Name }},\n\nWe hope you're doing well. we resolved your complaint ({{ $('Google Sheets').item.json.Complaint }} ), and we wanted to follow up to ensure everything has been handled to your satisfaction.\n\nIf you have any additional concerns, please don’t to reply to this email.\n\nWe’d also appreciate your feedback on how we handled your issue. It helps us improve our service.\n\n\nThank you again for your patience and for giving us the opportunity to assist you.\n\nBest regards,  \nCustomer Support Team\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1940,
+        180
+      ],
+      "id": "f479d0f7-9043-4f8c-826e-4b63fb2e0e5d",
+      "name": "Gmail5",
+      "webhookId": "c2ae7df4-6449-44b2-9932-58341d12dffb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Thanks for  sharing Positive feedback and spend time to share feedback.\nName :{{ $json.Name }}\nEmail:{{ $json['Email or Phone'] }}\nComplaint:{{ $json.Complaint }}\nTime Stamp:{{ $('On form submission').item.json.submittedAt }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        0,
+        -40
+      ],
+      "id": "d2e118d6-2dda-4091-a744-4d7fa833b69a",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "={{ $json.Complaint }}",
+        "message": "={{ $json.Response }},\n Thanks ,for your positive feedback\n\n\nRegards,\nSupport Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        -40
+      ],
+      "id": "a8c57d3b-fdec-4045-b2e9-58a7399d1ed9",
+      "name": "Gmail6",
+      "webhookId": "aed50aaf-0bcd-41e3-8cb5-53072152eba1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU",
+          "mode": "list",
+          "cachedResultName": "Customer Complaint Handler",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.output.Name }}",
+            "Email": "={{ $json.output.Email }}",
+            "Complaint": "={{ $json.output.Complaint }}",
+            "Sentiment analysis": "={{ $('Sentiment Analysis').item.json.sentimentAnalysis.category }}",
+            "Response": "={{ $json.output.Response }}",
+            "Time stamp": "={{ $('On form submission').item.json.submittedAt }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint",
+              "displayName": "Complaint",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sentiment analysis",
+              "displayName": "Sentiment analysis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ticket ID",
+              "displayName": "Ticket ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Response",
+              "displayName": "Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time stamp",
+              "displayName": "Time stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "urgency",
+              "displayName": "urgency",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        380,
+        -40
+      ],
+      "id": "6649d134-a69e-4e86-a4d2-de28e970b48d",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t2L8dSjSzYfwGDDH",
+          "name": "Google Sheets account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"Name\":\" the body of the name\",\n  \"Email\":\"the body text of the email\",\n  \"Complaint\":\"the body of the Complaint \",\n  \"Response\":\"You're welcome! I'm glad to hear you found the feedback helpful. If you have any more questions or need further assistance, feel free to ask\",\n  \"Time stamp\":\"the body of the Submitted at\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        180,
+        160
+      ],
+      "id": "64ed6715-b7ad-4ef8-b729-d620bba1021a",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU",
+          "mode": "list",
+          "cachedResultName": "Customer Complaint Handler",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/14dBH-54kHQ-2lU0ZLtZUBfajrgfgT8lgUBRFKLh-hvU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Google Sheets').item.json.Name }}",
+            "Email": "={{ $('Google Sheets').item.json.Email }}",
+            "Category": "={{ $('Google Sheets').item.json.Category }}",
+            "Complaint": "={{ $('Google Sheets').item.json.Complaint }}",
+            "Response": "={{ $('Google Sheets').item.json.Response }}",
+            "Status": "Solved",
+            "Ticket_ID": "={{ $('Google Sheets').item.json.Ticket_ID }}",
+            "Time Stamp": "={{ $('Google Sheets').item.json['Time Stamp'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Complaint",
+              "displayName": "Complaint",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ticket_ID",
+              "displayName": "Ticket_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Response",
+              "displayName": "Response",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time Stamp",
+              "displayName": "Time Stamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1520,
+        340
+      ],
+      "id": "e84610e3-e553-4a96-9829-e59f514f1f99",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "t2L8dSjSzYfwGDDH",
+          "name": "Google Sheets account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6e1ec6ad-ed65-4b1f-a62e-0458ce7404f9",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Solved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1700,
+        340
+      ],
+      "id": "98bf7cf5-42ed-4427-9065-c8a5b5688ae8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "issue",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -580,
+        200
+      ],
+      "id": "9d4672a5-651e-4f6e-a817-d6f4428db90b",
+      "name": "Webhook",
+      "webhookId": "b01db3a7-09c4-4475-bc6b-e4d091a1fb6a"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2400,
+        300
+      ],
+      "id": "a4ffa6bd-a432-45ae-9dff-6adf69c7aa84",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2140,
+        180
+      ],
+      "id": "3fd10623-cf28-427b-906a-3fa11c7746f5",
+      "name": "Gmail7",
+      "webhookId": "dd45a19e-89cd-4a36-8838-02e989692adc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2160,
+        440
+      ],
+      "id": "7dfb6523-8385-4a40-a34d-0e1d6583238b",
+      "name": "Gmail8",
+      "webhookId": "466dfff7-faea-4aa0-98f7-91061316411b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        420
+      ],
+      "id": "a69a68f6-8c56-46f7-a147-2653c0b46531",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "gBItDTqzTwGiB87M",
+          "name": "OpenRouter account 18"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        520
+      ],
+      "id": "99e58326-6a80-4651-b29e-32ae44026a5b",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "gBItDTqzTwGiB87M",
+          "name": "OpenRouter account 18"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        160
+      ],
+      "id": "e3b53c8c-28cc-4c08-b0ef-40e520c8704f",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "gBItDTqzTwGiB87M",
+          "name": "OpenRouter account 18"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        660,
+        520
+      ],
+      "id": "fdab7276-1389-4de3-976f-ac02f5fa400b",
+      "name": "OpenRouter Chat Model3",
+      "credentials": {
+        "openRouterApi": {
+          "id": "gBItDTqzTwGiB87M",
+          "name": "OpenRouter account 18"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Sentiment Analysis": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        []
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail2": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail3": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Gmail6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Gmail5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail5": {
+      "main": [
+        [
+          {
+            "node": "Gmail7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail4": {
+      "main": [
+        [
+          {
+            "node": "Gmail8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail7": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail8": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Sentiment Analysis",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9517948a-a290-4d84-af55-2599458915d5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "GcMQvrGKmJulakB2",
+  "tags": []
+}

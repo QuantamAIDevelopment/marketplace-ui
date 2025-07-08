@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import LeavesClassifier from './workflows/LeavesClassifier';
 import BirthdayWorkAnniversary from './workflows/BirthdayWorkAnniversary';
 import DocumentUploadReminder from './workflows/DocumentUploadReminder';
-import CandidateDetailsSync from './workflows/CandidateDetailsSync';
+// import CandidateDetailsSync from './workflows/CandidateDetailsSync';
 import PayslipAutoEncrypted from './workflows/PayslipAutoEncrypted';
 import EmailAttachmentProcessing from './workflows/EmailAttachmentProcessing';
 import PolicyChangeNotification from './workflows/PolicyChangeNotification';
