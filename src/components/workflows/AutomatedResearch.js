@@ -5,26 +5,17 @@ import { useNavigate } from 'react-router-dom';
 
 const AutomatedResearch = ({ compact = false }) => {
   const navigate = useNavigate();
-
   return (
-    <div className={compact ? "space-y-4 w-full overflow-hidden" : "space-y-8 w-full"}>
-      <div className={compact ? "flex items-center space-x-2 mb-1" : "flex items-center space-x-4 mb-2"}>
-        <div className={compact ? "bg-purple-500 p-2 rounded-lg shadow" : "bg-purple-500 p-3 rounded-lg shadow-lg"}>
-          <FaSearch className={compact ? "w-5 h-5 text-white" : "w-6 h-6 text-white"} />
+    <div className="bg-white rounded-3xl shadow-md p-8 flex flex-col items-start w-full max-w-xs mx-auto min-h-[200px] cursor-pointer hover:shadow-lg transition" onClick={() => navigate('/automated-research')}>
+      <div className="flex items-center mb-4">
+        <div className="bg-purple-600 rounded-xl p-4 flex items-center justify-center mr-3">
+          <FaSearch className="text-white w-7 h-7" />
         </div>
-        <h3 className={compact ? "text-lg font-display text-anthropic-dark font-bold" : "text-2xl font-display text-anthropic-dark font-bold"}>Automated Research AI Agent</h3>
+        <h3 className="text-2xl font-bold text-gray-900">Automated Research AI Agent</h3>
       </div>
-      <p className={compact ? "text-xs text-gray-600" : "text-sm text-gray-700"}>
+      <p className="text-gray-700 text-base mt-2">
         Input any topic and receive a comprehensive research report as a downloadable PDF.
       </p>
-      <motion.button
-        whileHover={{ scale: 1.05, boxShadow: '0 8px 32px 0 #61868d33' }}
-        whileTap={{ scale: 0.97 }}
-        onClick={() => navigate('/automated-research')}
-        className={compact ? "w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-2 rounded-lg font-bold text-base shadow hover:from-purple-600 hover:to-indigo-600 transition-colors" : "w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-purple-600 hover:to-indigo-600 transition-colors"}
-      >
-        View Details
-      </motion.button>
     </div>
   );
 };

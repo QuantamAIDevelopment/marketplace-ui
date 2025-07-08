@@ -1,12 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf, FaUserCheck } from 'react-icons/fa'
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf, FaUserCheck, FaUserShield } from 'react-icons/fa'
 
 import { useNavigate } from 'react-router-dom';
-
-import { AmazonWebScrapeCard,AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+// import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
+import AutomatedResearch from '../components/workflows/AutomatedResearch';
+import InterviewPanelAutoAssignment from '../components/workflows/InterviewPanelAutoAssignment';
+import PerformanceReviewSummary from '../components/workflows/PerformanceReviewSummary';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -281,7 +283,10 @@ const Dashboard = () => {
               summary={workflow.summary}
             />
           ))}
-          <AmazonWebScrapeCard compact />
+          {/* <AmazonWebScrapeCard compact /> */}
+          <AutomatedResearch compact />
+          <InterviewPanelAutoAssignment compact />
+          <PerformanceReviewSummary compact />
         </div>
         
         <motion.div
