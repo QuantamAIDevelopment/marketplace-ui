@@ -1,5 +1,5 @@
 {
-  "name": "BI_BOT",
+  "name": "Business_Intelligence_Explainer_Bot",
   "nodes": [
     {
       "parameters": {
@@ -11,37 +11,12 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1680,
-        -220
+        0,
+        0
       ],
-      "id": "e82ed27e-490d-4ab3-a237-0b712b5f4295",
+      "id": "308b511c-b3a6-4914-b230-7936e593c7e1",
       "name": "Webhook",
       "webhookId": "cb8132ee-e9ca-4318-8baa-a49b05517d4b"
-    },
-    {
-      "parameters": {
-        "sendTo": "damodar.swathi@gmail.com",
-        "subject": "KPI Summary Report",
-        "emailType": "text",
-        "message": "= Daily Sales Report Summary (Jan 1-3, 2024)\n\n🔹Total Revenue: {{ $json['Total Revenue'] }}\n🔹Top Product: {{ $json['Top Product'] }}\n🔹Region with Highest Growth: {{ $json.RWHG }}\n🔹Issue: {{ $json.Issue }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [
-        -300,
-        -80
-      ],
-      "id": "82076fa7-0f4b-49b8-9f54-397f0aa4cc74",
-      "name": "Gmail",
-      "webhookId": "68074f94-ec89-464d-a895-a4762d454d78",
-      "executeOnce": true,
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "8pskWRPXLCPWfpr9",
-          "name": "Gmail account"
-        }
-      }
     },
     {
       "parameters": {
@@ -56,10 +31,10 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -1700,
-        100
+        -20,
+        300
       ],
-      "id": "d864a4dd-255c-411a-a686-0ac6ee86d73b",
+      "id": "087da109-0f21-402e-8a8c-6efdefc6aba0",
       "name": "Schedule Trigger"
     },
     {
@@ -67,25 +42,25 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI",
+          "value": "1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8",
           "mode": "list",
-          "cachedResultName": "Sales",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit?usp=drivesdk"
+          "cachedResultName": "Sales_Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 569428085,
+          "value": 1881852011,
           "mode": "list",
           "cachedResultName": "Sheet3",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit#gid=569428085"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit#gid=1881852011"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Time Stamp": "={{ $json.timestamp }}",
             "Summary": "={{ $json.summary }}",
             "Suggestion": "={{ $json.suggestion }}",
-            "Error": "={{ $json.error }}"
+            "Error": "={{ $json.error }}",
+            "Time Stamp": "={{ $json.timestamp }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -138,51 +113,52 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        240,
-        -80
+        1900,
+        140
       ],
-      "id": "f413f306-71eb-4956-b0f6-5d475c0b8424",
+      "id": "b815c560-ba90-4cf7-829d-363d98214caa",
       "name": "Logging & Error Handling",
       "alwaysOutputData": true,
       "retryOnFail": false,
       "notesInFlow": false,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "A5Q2YxyHSngOmqjO",
-          "name": "Google Sheets account 2"
+          "id": "t2L8dSjSzYfwGDDH",
+          "name": "Google Sheets account 8"
         }
-      }
+      },
+      "disabled": true
     },
     {
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI",
+          "value": "1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8",
           "mode": "list",
-          "cachedResultName": "Sales",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit?usp=drivesdk"
+          "cachedResultName": "Sales_Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
           "value": "gid=0",
           "mode": "list",
           "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit#gid=0"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit#gid=0"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        -960,
-        -80
+        720,
+        140
       ],
-      "id": "f6ad5560-0f43-45ef-82da-4f03a2d017ad",
+      "id": "5cc77587-2f2f-4016-9f4c-2ce0a4676f5e",
       "name": "Raw Data",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "A5Q2YxyHSngOmqjO",
-          "name": "Google Sheets account 2"
+          "id": "t2L8dSjSzYfwGDDH",
+          "name": "Google Sheets account 8"
         }
       }
     },
@@ -196,30 +172,11 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        -800,
-        -80
+        880,
+        140
       ],
-      "id": "5c01b612-db32-4508-8188-197bcb11ccb6",
+      "id": "f7002795-25b5-4de8-9e2a-db019b519260",
       "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        -860,
-        160
-      ],
-      "id": "c6e97982-2f6c-46e4-aa4c-6ef10aad95e6",
-      "name": "OpenRouter Chat Model",
-      "credentials": {
-        "openRouterApi": {
-          "id": "P2gLL0mWynLCPDKu",
-          "name": "OpenRouter account"
-        }
-      }
     },
     {
       "parameters": {
@@ -228,10 +185,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        -600,
-        180
+        1080,
+        380
       ],
-      "id": "4f258c43-e427-4e93-b4fb-cc9af9161693",
+      "id": "4c7a92d1-4d5e-411c-a880-feb21468b807",
       "name": "Structured Output Parser"
     },
     {
@@ -242,10 +199,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        460,
-        -80
+        2100,
+        140
       ],
-      "id": "7de583ef-a5f2-476d-af91-642b03411fd0",
+      "id": "9b672c7d-fdd4-496b-a76a-7ff563358e2b",
       "name": "Respond to Webhook"
     },
     {
@@ -253,24 +210,24 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI",
+          "value": "1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8",
           "mode": "list",
-          "cachedResultName": "Sales",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit?usp=drivesdk"
+          "cachedResultName": "Sales_Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 2053139700,
+          "value": 1616547051,
           "mode": "list",
           "cachedResultName": "Sheet2",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit#gid=2053139700"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit#gid=1616547051"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "Top Product": "={{ $json.output['top product'] }}",
-            "RWG": "={{ $json.output['Region with Highest Growth'] }}",
             "Total Revenue": "={{ $json.output['total revenue'] }}",
+            "RWG": "={{ $json.output['Region with Highest Growth'] }}",
             "Issue": "={{ $json.output.issue }}"
           },
           "matchingColumns": [],
@@ -282,7 +239,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "Total Revenue",
@@ -291,7 +249,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "RWG",
@@ -300,7 +259,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "Issue",
@@ -309,7 +269,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -320,15 +281,16 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        -480,
-        -80
+        1200,
+        140
       ],
-      "id": "0434224a-10db-45b8-a924-984bb3c88963",
+      "id": "721c593f-c284-4b99-bae0-35b7546ac511",
       "name": "KPI",
+      "executeOnce": true,
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "A5Q2YxyHSngOmqjO",
-          "name": "Google Sheets account 2"
+          "id": "t2L8dSjSzYfwGDDH",
+          "name": "Google Sheets account 8"
         }
       }
     },
@@ -336,32 +298,32 @@
       "parameters": {
         "documentId": {
           "__rl": true,
-          "value": "1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI",
+          "value": "1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8",
           "mode": "list",
-          "cachedResultName": "Sales",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit?usp=drivesdk"
+          "cachedResultName": "Sales_Data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
+          "value": 1881852011,
           "mode": "list",
-          "cachedResultName": "Sheet1",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1iMlIstGLFVcPqWBizrMj5NNn2gE9xRL3d3nXXvAteLI/edit#gid=0"
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1u9CU3Yk0fHqUgmZBWxWRqDB519moLa8W7wZJNZbsgS8/edit#gid=1881852011"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        -140,
-        -80
+        1540,
+        140
       ],
-      "id": "4b02cf98-59be-495a-bda6-50b7b1735bdb",
+      "id": "2dc7ce14-e433-44ad-bb72-cd600254d691",
       "name": "Raw Data1",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "A5Q2YxyHSngOmqjO",
-          "name": "Google Sheets account 2"
+          "id": "t2L8dSjSzYfwGDDH",
+          "name": "Google Sheets account 8"
         }
       }
     },
@@ -373,10 +335,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        -1440,
-        -80
+        240,
+        140
       ],
-      "id": "76bae586-b959-4d68-a2b6-193391be7b2a",
+      "id": "6f78d577-ed1a-4156-815a-639514fabcdb",
       "name": "Raw File Converter"
     },
     {
@@ -386,10 +348,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1260,
-        -80
+        420,
+        140
       ],
-      "id": "3dff8d58-f95e-4725-a55a-85a6c0d2aadf",
+      "id": "54d38b43-abae-48e9-a03a-0477daae09ef",
       "name": "KPI Calculator"
     },
     {
@@ -399,11 +361,55 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1100,
-        -80
+        580,
+        140
       ],
-      "id": "bbc8056b-5a61-4d23-ad26-f90f20976c39",
+      "id": "96504c1e-9561-4de0-a8eb-0d5be71c2236",
       "name": "KPI Extractor"
+    },
+    {
+      "parameters": {
+        "sendTo": "damodar.swathi@gmail.com",
+        "subject": "KPI Summary Report",
+        "emailType": "text",
+        "message": "= Daily Sales Report Summary (Jan 1-5, 2024)\n\n🔹Total Revenue: {{ $json['Total Revenue'] }}\n🔹Top Product: {{ $json['Top Product'] }}\n🔹Region with Highest Growth: {{ $json.RWG }}\n🔹Issue: {{ $json.Issue }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1380,
+        140
+      ],
+      "id": "2e227d0e-6d10-4b84-ac63-729b2cc0e879",
+      "name": "Send a message",
+      "webhookId": "68074f94-ec89-464d-a895-a4762d454d78",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "R4Kt29dInv576U1p",
+          "name": "Gmail account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        860,
+        380
+      ],
+      "id": "a4406659-0541-4ce8-8290-c2672b76e0fe",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "gBItDTqzTwGiB87M",
+          "name": "OpenRouter account 18"
+        }
+      }
     },
     {
       "parameters": {
@@ -412,11 +418,12 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        40,
-        -80
+        1700,
+        140
       ],
-      "id": "21e20a0a-841d-4415-a88e-05ae698638e4",
-      "name": "Logging Assistant"
+      "id": "6a3f364d-c721-49cb-945d-eccaa8fd1880",
+      "name": "Logging Assistant1",
+      "disabled": true
     }
   ],
   "pinData": {},
@@ -426,17 +433,6 @@
         [
           {
             "node": "Raw File Converter",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gmail": {
-      "main": [
-        [
-          {
-            "node": "Raw Data1",
             "type": "main",
             "index": 0
           }
@@ -460,17 +456,6 @@
           {
             "node": "AI Agent",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenRouter Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -513,7 +498,7 @@
       "main": [
         [
           {
-            "node": "Gmail",
+            "node": "Send a message",
             "type": "main",
             "index": 0
           }
@@ -524,7 +509,7 @@
       "main": [
         [
           {
-            "node": "Logging Assistant",
+            "node": "Logging Assistant1",
             "type": "main",
             "index": 0
           }
@@ -564,7 +549,29 @@
         ]
       ]
     },
-    "Logging Assistant": {
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Raw Data1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logging Assistant1": {
       "main": [
         [
           {
@@ -580,11 +587,11 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "178f3708-3de2-49e6-a79c-825fb1d3d1a7",
+  "versionId": "dbc2ddf7-0ba5-4d49-a733-f07b8995fd7d",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "2a8aeac0ec10ee81fb4e6445737604c7ad67d739c54275ef173c3d839569e942"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "hTo6dyt8j4T49CCa",
+  "id": "owbGQVPrOlHT6lre",
   "tags": []
 }
