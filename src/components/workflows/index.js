@@ -4,6 +4,8 @@ export { default as DynamicPricingAgent } from './DynamicPricingAgent';
 export { default as BusinessInsightsAgent } from './BusinessInsightsAgent';
 export { default as MetricsBusinessAnalytics } from './MetricsBusinessAnalytics';
 export { default as MonthlyExpenditure } from './MonthlyExpenditure';
+// export { default as BookPrices } from './BookPrices';
+export { default as AutomateCandidateAcceptance } from './AutomateCandidateAcceptance';
 
 export { default as TestmonialExtractor } from './TestmonialExtractor';
 
@@ -12,4 +14,3 @@ export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
 export { default as FraudDetection } from './FraudDetection'; 
 export { default as SalesForecasting } from './SalesForecasting';
 export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot'; 
-

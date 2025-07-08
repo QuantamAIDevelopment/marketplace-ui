@@ -150,6 +150,18 @@ const workflowData = [
     summary: 'Generate quizzes and train with our AI agent.'
   },
   {
+    title: 'SmartInvoice AI',
+    icon: FaFileInvoiceDollar,
+    path: '/smart-invoice-ai',
+    summary: 'Upload and validate invoices with AI. Get instant feedback and Google Sheets integration.'
+  },
+  {
+    title: 'AI-Powered Book Price Tracker',
+    icon: FaBook,
+    path: '/ai-book-price-tracker',
+    summary: 'Track book prices, availability, and details using AI-powered extraction.'
+  },
+  {
     title: 'AI Testmonial Extractor',
     icon: FaCommentDots,
     path: '/workflows/testmonial-extractor',
