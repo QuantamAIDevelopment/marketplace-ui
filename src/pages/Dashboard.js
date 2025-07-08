@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserPlus, FaUserCheck, FaBook, FaDatabase, FaVial, FaEnvelopeOpenText, FaFilePdf, FaCalendarCheck } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserPlus, FaUserCheck, FaBook, FaDatabase, FaVial, FaEnvelopeOpenText, FaFilePdf, FaCalendarCheck,FaSync } from 'react-icons/fa';
+
 import { useNavigate } from 'react-router-dom';
-import { AmazonWebScrapeCard } from '../components/workflows';
+
+import { AmazonWebScrapeCard,AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -67,12 +70,6 @@ const workflowData = [
     icon: FaFileAlt,
     path: '/workflows/document-upload',
     summary: 'Remind employees to upload documents.'
-  },
-  {
-    title: 'Candidate Hiring Status',
-    icon: FaUserAlt,
-    path: '/workflows/candidate-hiring-status',
-    summary: 'Sync candidate hiring status automatically.'
   },
   {
     title: 'Payslip Auto Encrypted',
@@ -159,6 +156,12 @@ const workflowData = [
     summary: 'Book and manage appointments with ease.'
   },
   {
+    title: 'AI Background Verification Agent',
+    icon: FaUserShield,
+    path: '/background-verification-agent',
+    summary: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.'
+  },
+  {
     title: 'MCQ Generator & Trainer',
     icon: FaBrain,
     path: '/mcq-generator',
@@ -189,6 +192,12 @@ const workflowData = [
     summary: 'Ask any question and let the agent route it to the best AI model for the job.'
   },
   {
+    title: 'AI Background Verification',
+    icon: FaUserShield,
+    path: '/ai-background-verification',
+    summary: 'Automate candidate background checks with AI. Instantly analyze resumes and public data for risk, discrepancies, and red flags.'
+  },
+  {
     title: 'Notion Knowledge Base AI Assistant',
     icon: FaBook,
     path: '/workflows/notion-knowledge-base-ai',
@@ -201,10 +210,17 @@ const workflowData = [
     summary: 'Migrate tables between databases with AI-powered automation.'
   },
   {
+
+    title: 'ATS to HRMS Candidate Status Sync',
+    icon: FaSync,
+    path: '/workflows/ats-to-hrms-candidate-status-sync',
+    summary: 'Sync and view candidate status between ATS and HRMS.'
+  },
+  {
     title: 'Test Case Generator',
     icon: FaVial,
-    path: '/test-case-generator',
-    summary: 'Generate QA test cases from your feature docs using Evenmind AI.'
+    path: '/test-generator',
+    summary: 'Generate QA test cases from your feature docs using AI.'
   },
   {
     title: 'Gmail Categorization',
@@ -248,6 +264,12 @@ const workflowData = [
     path: '/leave-balance-chatbot',
     summary: 'Get instant leave balance information through AI-powered HR assistant.'
   },
+  {
+    title: 'Automate Candidate Acceptance',
+    icon: FaUserCheck,
+    path: '/automate-candidate-acceptance/cover',
+    summary: 'Automate candidate acceptance and onboarding notifications.'
+  },
 ];
 
 const Dashboard = () => {
@@ -266,7 +288,7 @@ const Dashboard = () => {
             Explore our comprehensive suite of AI-powered automation tools designed to streamline your business processes.
           </p>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {workflowData.map((workflow, index) => (
             <WorkflowCard
@@ -279,7 +301,6 @@ const Dashboard = () => {
           ))}
           <AmazonWebScrapeCard compact />
         </div>
-        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

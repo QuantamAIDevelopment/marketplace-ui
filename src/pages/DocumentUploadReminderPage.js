@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaFileAlt, FaClock, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import axios from 'axios';
+
+import DocumentUploadReminderDetails from '../components/workflows/DocumentUploadReminderDetails';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const DocumentUploadReminderPageContent = () => {
   const [isExecuting, setIsExecuting] = useState(false);
   const [response, setResponse] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
+  const [showDetails, setShowDetails] = useState(false);
 
   const workflowSteps = [
     { icon: FaFileAlt, label: 'Check Documents', color: 'bg-blue-500' },
@@ -28,7 +31,7 @@ const DocumentUploadReminderPageContent = () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      const response = await axios.get('http://localhost:5678/webhook/documents-status');
+      const response = await axios.get('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook');
       setResponse(response.data);
     } catch (error) {
       console.error('Error executing workflow:', error);
@@ -45,12 +48,14 @@ const DocumentUploadReminderPageContent = () => {
       <motion.button
         whileHover={{ scale: 1.05, boxShadow: '0 8px 32px 0 #61868d33' }}
         whileTap={{ scale: 0.97 }}
-        onClick={executeWorkflow}
+        onClick={() => setShowDetails(true)}
         disabled={isExecuting}
         className="w-full mb-8 bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-colors disabled:opacity-50"
       >
         {isExecuting ? 'Checking...' : 'Check Status'}
       </motion.button>
+
+      {showDetails && <DocumentUploadReminderDetails />}
 
       {/* Workflow Visualization */}
       <div className="bg-dark-300 rounded-lg p-6 mb-8">

@@ -1,0 +1,589 @@
+{
+  "name": "AI Background Verification Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ai fraud",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -460,
+        -160
+      ],
+      "id": "b9e67445-571d-49b7-8851-4531117cb600",
+      "name": "Webhook",
+      "webhookId": "3c6ebcfb-c42e-4a38-8b6c-95ef016bc567"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "aifraud",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        -160
+      ],
+      "id": "7e66b87a-2ea3-4686-97f8-fbcbd28201cf",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "=  {{ $json['Resume URL'] }}",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        280,
+        -180
+      ],
+      "id": "8ef70565-312b-491b-97f8-b5d3706e657f",
+      "name": "Google Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "4MQlfdRxWVEWVCpc",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        480,
+        -180
+      ],
+      "id": "c76d0178-f98a-4a94-b5ae-522d40a0cfb5",
+      "name": "Extract from File1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "= You are a background verification agent (QAID's BGV Sentinel Agent).\n\nYour job is to analyze and validate a candidate’s background using the following sources:\n- Resume content\n- LinkedIn profile data\n- GitHub activity metadata\n- Social media sentiment analysis (e.g., toxic posts)\n\n---\n\n📥 INPUTS:\n\n- **Resume Text**: {{ $json.text }}\n- **LinkedIn Content**: {{ $('Google Drive').item.json['LinkedIn URL'] }}\n- **GitHub Info**: {{ $('Google Drive').item.json['GitHub Data'] }}\n- **Post Sentiment Data**: {{ $('Google Drive').item.json['Post Data'] }}\n\n---\n\n🔍 TASKS:\n\n1. **Parse Resume** to extract:\n   - `name`, `email`, `phone`, `linkedin`\n   - `education`: list of { degree, college_name, completion_date }\n   - `experience`: list of { organization, job_title, start_date, end_date }\n\n2. **Parse LinkedIn Content** to extract:\n   - `full_name`\n   - `education`: list of { degree, institution, start_year, end_year }\n   - `work_experience`: list of { company_name, job_title, start_date, end_date }\n   - `skills`: list of skills\n\n3. **Verify & Cross-check**:\n   - ⚠️ Name mismatch → if resume name ≠ LinkedIn full_name\n   - ⚠️ Missing companies → companies in resume not found on LinkedIn\n   - ⚠️ Degree mismatch → inconsistent degrees or institutions\n   - ⚠️ Employment gap → any unexplained 2+ year gap in resume\n   - ⚠️ Inactive GitHub → if `lastCommitDaysAgo` > 90\n   - ⚠️ Toxic posts → if posts contain `toxic == true`\n\n4. **Score the Candidate**:\n   - Start at 100\n   - Subtract:\n     - -10 → Name mismatch\n     - -20 → Missing companies\n     - -10 → Degree mismatch\n     - -10 → Employment gap\n     - -10 → Inactive GitHub\n     - -10 per toxic post\n\n5. **Assign a Risk Rating**:\n   - 90–100 → ✅ Low Risk\n   - 70–89  → ⚠️ Medium Risk\n   - <70    → 🚨 High Risk\n\n---\n\n🎯 OUTPUT FORMAT (strict JSON):\n\n```json\n{\n  \"name\": \"Candidate Full Name\",\n  \"flags\": [\n    \"⚠️ Name mismatch\",\n    \"⚠️ Missing companies: ABC Corp, XYZ Ltd\",\n    \"⚠️ Degree mismatch: BTech\",\n    \"⚠️ Employment gap(s): 2017–2020\",\n    \"⚠️ Inactive GitHub (no commits in 120 days)\",\n    \"⚠️ Toxic content found in 3 post(s)\"\n  ],\n  \"score\": 65,\n  \"riskRating\": \"High\",\n  \"summary\": \"Multiple discrepancies found: name mismatch, degree mismatch, inactive GitHub, and 3 toxic posts. Recommend High risk rating.\"\n}\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        640,
+        -180
+      ],
+      "id": "0e48a7cf-117d-432d-b4fe-034a5f1df6ed",
+      "name": "AI Agent2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        660,
+        40
+      ],
+      "id": "45c961da-f7dc-44ae-8f74-4ee197408e20",
+      "name": "Groq Chat Model1",
+      "credentials": {
+        "groqApi": {
+          "id": "qblohrQpMYUcSAWd",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": " const candidates = [\n  {\n    name: \"Rekha Harini K.\",\n    resume: {\n      name: \"Rekha Harini Kodati\",\n      experience: [\n        { organization: \"DISH Network\", start_date: \"Aug 2023\", end_date: \"Present\" },\n        { organization: \"Charles River Laboratories\", start_date: \"Jul 2020\", end_date: \"Jul 2023\" },\n        { organization: \"Amgen\", start_date: \"Jan 2019\", end_date: \"Jun 2020\" },\n        { organization: \"Astellas Pharma\", start_date: \"Jun 2015\", end_date: \"Oct 2018\" }\n      ]\n    },\n    linkedin: {\n      full_name: \"Rekha Harini K.\"\n    },\n    github: null,\n    posts: [],\n  },\n  {\n    name: \"Rakesh Badam\",\n    resume: {\n      name: \"Rakesh Badam\",\n      education: [\n        { degree: \"Bachelor of Technology\", college_name: \"GITAM, India\", completion_date: \"Apr’2014\" }\n      ],\n      experience: [\n        { organization: \"MicroStrategy\", start_date: \"Aug2022\", end_date: \"Present\" },\n        { organization: \"Capital One\", start_date: \"Jun2021\", end_date: \"Jul2022\" },\n        { organization: \"Credit Suisse\", start_date: \"Oct2019\", end_date: \"May2021\" },\n        { organization: \"Schneider Electric\", start_date: \"Jul2017\", end_date: \"May2019\" },\n        { organization: \"OSI Consulting\", start_date: \"Apr2014\", end_date: \"May2017\" }\n      ]\n    },\n    linkedin: {\n      full_name: \"Rakesh Badam\",\n      education: [\n        { degree: \"Bachelor of Technology\", institution: \"GITAM\", start_year: \"2010\", end_year: \"2014\" }\n      ],\n      work_experience: [\n        { company_name: \"MicroStrategy\" },\n        { company_name: \"Capital One\" },\n        { company_name: \"Credit Suisse\" },\n        { company_name: \"Schneider Electric\" },\n        { company_name: \"OSI Consulting\" }\n      ]\n    },\n    github: { lastCommitDaysAgo: 60 },\n    posts: [],\n  },\n  {\n    name: \"Neha Reddy\",\n    resume: {\n      name: \"Neha Reddy\",\n      education: [\n        { degree: \"Bachelor of Technology in Computer Science\", college_name: \"Sreenidhi Institute of Science and Technology, India\", completion_date: \"2014\" }\n      ],\n      experience: [\n        { organization: \"GM Financials\", start_date: \"Jan 2023\", end_date: \"Present\" },\n        { organization: \"Molina Health Care\", start_date: \"Mar 2020\", end_date: \"Dec 2022\" },\n        { organization: \"J&J\", start_date: \"June 2018\", end_date: \"Feb 2020\" },\n        { organization: \"Focaloid Technologies Private Limited\", start_date: \"Aug 2014\", end_date: \"Dec 2017\" }\n      ]\n    },\n    linkedin: {\n      full_name: \"Neha Reddy\",\n      education: [\n        { degree: \"Bachelor of Technology in Computer Science\", institution: \"Sreenidhi Institute of Science and Technology, India\" }\n      ],\n      work_experience: [\n        { company_name: \"GM Financials\" },\n        { company_name: \"Molina Health Care\" },\n        { company_name: \"J&J\" },\n        { company_name: \"Focaloid Technologies Private Limited\" }\n      ]\n    },\n    github: { lastCommitDaysAgo: 120 },\n    posts: [ { toxic: true }, { toxic: true }, { toxic: true } ],\n  }\n];\n\nfunction evaluateCandidate(candidate) {\n  let score = 100;\n  const flags = [];\n  const normalize = str => str?.toLowerCase().trim();\n\n  const resumeName = normalize(candidate.resume?.name);\n  const linkedinName = normalize(candidate.linkedin?.full_name);\n  if (resumeName && linkedinName && resumeName !== linkedinName) {\n    flags.push(\"⚠️ Name mismatch\");\n    score -= 10;\n  }\n\n  if (candidate.github?.lastCommitDaysAgo > 90) {\n    flags.push(\"⚠️ Inactive GitHub (no commits in 90+ days)\");\n    score -= 10;\n  }\n\n  const toxicCount = candidate.posts.filter(p => p.toxic).length;\n  if (toxicCount > 0) {\n    flags.push(`⚠️ Toxic content found in ${toxicCount} post(s)`);\n    score -= toxicCount * 10;\n  }\n\n  const riskRating = score >= 90 ? \"Low\" : score >= 70 ? \"Medium\" : \"High\";\n  const summary = flags.length > 0\n    ? \"Issues found: \" + flags.join(\"; \")\n    : \"✅ No significant discrepancies found. Recommend Low risk.\";\n\n  return {\n    name: candidate.name,\n    flags,\n    score,\n    riskRating,\n    summary\n  };\n}\n\n// Wrap each candidate's result in an object with `json` for n8n\nconst results = candidates.map(candidate => {\n  return { json: evaluateCandidate(candidate) };\n});\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        -160
+      ],
+      "id": "72ab29e2-85d6-4ff7-86fe-5eeca71c6d3a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": " const reports = items.map(({ json }) => {\n  const { name, score, riskRating, summary, flags } = json;\n\n  const flagList = flags.length\n    ? flags.map(flag => `<li>⚠️ ${flag}</li>`).join(\"\")\n    : \"<li>✅ No red flags found</li>\";\n\n  return `\n    <div style=\"border:1px solid #ccc; padding:20px; margin-bottom:30px; border-radius:10px;\">\n      <h2>🔍 BGV Summary Report</h2>\n      <p><strong>Candidate:</strong> ${name}</p>\n      <p><strong>Score:</strong> ${score}</p>\n      <p><strong>Risk Rating:</strong> <span style=\"color:${\n        riskRating === \"High\" ? \"red\" : riskRating === \"Medium\" ? \"orange\" : \"green\"\n      }\">${riskRating}</span></p>\n      \n      <h4>✅ Checklist</h4>\n      <ul>\n        <li>Resume Verified</li>\n        <li>LinkedIn Scraped</li>\n        <li>GitHub Checked</li>\n        <li>Posts Analyzed</li>\n      </ul>\n\n      <h4>❌ Red Flags</h4>\n      <ul>\n        ${flagList}\n      </ul>\n\n      <h4>🧠 Summary</h4>\n      <p>${summary}</p>\n    </div>\n  `;\n});\n\nconst fullHtml = `\n  <html>\n    <head>\n      <style>\n        body { font-family: Arial, sans-serif; line-height: 1.5; }\n        h2, h4 { color: #333; }\n        ul { padding-left: 20px; }\n      </style>\n    </head>\n    <body>\n      ${reports.join(\"\\n\")}\n    </body>\n  </html>\n`;\n\nreturn [{ json: { html: fullHtml } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        -180
+      ],
+      "id": "80ccecd4-784b-4f0c-8602-bc90ead90f0d",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "html": "{{ $json.html }} "
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2040,
+        -180
+      ],
+      "id": "1b49babd-c47e-4ddc-87f9-57c774955ad1",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2620,
+        -180
+      ],
+      "id": "987ec02c-e6b6-4245-bb7b-03b97dbe4560",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "URL/HTML to PDF",
+        "convertType": "htmlToPDF",
+        "html": "={{ $json.html }}",
+        "advancedOptions": {}
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        2320,
+        -180
+      ],
+      "id": "d43a5a9a-ed8b-4b12-b114-87c9e5dc886f",
+      "name": "PDFco Api",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "JM72zRRm4yY4m7Pu",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "pardhusiripuram@gmail.com",
+        "subject": "Ai candidate Summary Report",
+        "emailType": "text",
+        "message": "Here is Candidate Summary Report",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3120,
+        -180
+      ],
+      "id": "78cbae87-3da8-4cf8-9f66-865720f628f9",
+      "name": "Gmail",
+      "webhookId": "344a34ec-fda3-4b6f-a56a-f551ae3638b0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iemYv1gI6F7vH1uV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1340,
+        -420
+      ],
+      "id": "1852b839-e914-4f34-ae5f-b58b88c42f6a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cc8b64c8-54d8-4c22-bb0f-a725d96a9cb2",
+              "leftValue": "={{ $json['LinkedIn URL'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "8ead2690-b173-41b3-9917-5f838f7dc140",
+              "leftValue": "={{ $json['School/College Name'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "e11ca823-769e-46d1-b9f5-7e72158db0a5",
+              "leftValue": "={{ $json['Company Name'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        -160
+      ],
+      "id": "5256c34a-0b1e-49f8-a6b2-ba434dc43c29",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "pardhasaradhisiripuram@gmail.com",
+        "subject": "=🚨 Candidate Verification Failed   ",
+        "emailType": "text",
+        "message": "=“Insufficient public data for Candidate  ”{{ $json.Name }}\nSuggest manual verification",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        100,
+        200
+      ],
+      "id": "f5e15b75-e7a6-450e-a2b1-ba2b530d8be5",
+      "name": "Gmail1",
+      "webhookId": "db4783d3-5357-41f3-a67a-5f36314429ac",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iemYv1gI6F7vH1uV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "10RclDpUflsr9WxaOybgwI6t__KXVD9FIewOTq7BXzbM",
+          "mode": "list",
+          "cachedResultName": " AI Background Verification Agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10RclDpUflsr9WxaOybgwI6t__KXVD9FIewOTq7BXzbM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 807768565,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10RclDpUflsr9WxaOybgwI6t__KXVD9FIewOTq7BXzbM/edit#gid=807768565"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.name }}",
+            "flags": "={{ $json.flags }}",
+            "score": "={{ $json.score }}",
+            "riskRating": "={{ $json.riskRating }}",
+            "summary": "={{ $json.summary }}"
+          },
+          "matchingColumns": [
+            "html"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "flags",
+              "displayName": "flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "riskRating",
+              "displayName": "riskRating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1360,
+        -180
+      ],
+      "id": "1962d61f-d78c-4185-8165-1680b57bc20b",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fQ2nRUOlwgLZ9hlI",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Extract from File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "PDFco Api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFco Api": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        []
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d14806d-b217-479d-8f31-628090b6bdd8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0161e303ef6fc741f6b076bb1085a697e6bcdffcacd175a635027573ca13b69b"
+  },
+  "id": "YrkUvBkHYfDPd7zQ",
+  "tags": []
+}

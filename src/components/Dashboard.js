@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaUserShield, FaChartLine, FaUserPlus, FaBell } from 'react-icons/fa';
-
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaVial } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
@@ -15,21 +14,8 @@ import PolicyChangeNotification from './workflows/PolicyChangeNotification';
 import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
 import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
-import SentimentAgentWorkflowPage from '../pages/SentimentAgentWorkflowPage';
 
 const workflows = [
-  {
-    title: 'OnBoarding Email Generator',
-    icon: FaUserPlus,
-    path: '/onboarding',
-    description: 'Generate onboarding emails from client files with AI.',
-  },
-  {
-    title: 'Inventory Predict AI',
-    icon: FaChartLine,
-    path: '/inventory-predict-ai',
-    description: 'Forecast inventory, detect stock risks, and get AI-powered suggestions.',
-  },
   {
     title: 'AI Customer Support',
     icon: FaRobot,
@@ -89,8 +75,6 @@ const workflows = [
     icon: FaFileContract,
     path: '/workflows/contract-red-flag',
     description: 'Detect red flags in contracts using AI.',
-    isButton: true,
-    buttonText: 'Go to Detector',
   },
   {
     title: 'Product Recommendation Agent',
@@ -99,46 +83,10 @@ const workflows = [
     description: 'Recommend products based on user data.',
   },
   {
-    title: 'Onboarding Email Generator',
-    path: '/onboarding-email-generator',
-    icon: '📧',
-    description: 'Generate onboarding email bodies from client files using Evenmind-AI.'
-  },
-  {
-    title: 'Leave Approval Remainder',
-    icon: FaBell,
-    path: '/leave-approval-remainder',
-    description: 'Upload leave requests and trigger automated reminders for pending approvals.',
-  },
-  {
-    title: 'Resume Analyzer',
-    icon: FaUserAlt,
-    path: '/resume-analyzer',
-    description: 'Analyze and extract insights from resumes using AI.',
-    isButton: true,
-    buttonText: 'Open Resume Analyzer',
-  },
-  {
-    title: 'Sentiment Agent',
-    icon: FaRobot,
-    path: '/sentiment-agent-report',
-    description: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.',
-    isButton: true,
-    buttonText: 'Open Sentiment Agent',
-  },
-  {
-    title: 'Customer Support Agent',
-    icon: FaRobot,
-    path: '/customer-support-agent',
-    description: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.',
-    isButton: true,
-    buttonText: 'Open Support Agent',
-  },
-  {
-    title: 'AI Background Verification Agent',
-    icon: FaUserShield,
-    path: '/background-verification-agent',
-    description: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.',
+    title: 'Test Case Generator',
+    icon: FaVial,
+    path: '/test-generator',
+    description: 'Generate QA test cases from your feature docs using AI.',
   },
 ];
 
@@ -195,4 +143,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard; 
