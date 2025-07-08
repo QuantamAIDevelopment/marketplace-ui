@@ -40,6 +40,7 @@ import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
 import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
+import AIBackroundVerificationPage from './pages/AIBackroundVerificationPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
@@ -88,6 +89,7 @@ function App() {
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
+              <Route path="/ai-background-verification" element={<AIBackroundVerificationPage />} />
               <Route path="/sentiment-agent-report" element={<SentimentAgentPage />} />
               <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />

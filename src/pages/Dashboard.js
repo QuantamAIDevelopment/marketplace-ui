@@ -3,9 +3,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
+import { FaUserShield } from 'react-icons/fa';
 
 import { useNavigate } from 'react-router-dom';
-import { AmazonWebScrapeCard } from '../components/workflows';
+import { AmazonWebScrapeCard, AIBackroundVerificationCard } from '../components/workflows';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -173,7 +174,12 @@ const workflowData = [
     path: '/workflows/dynamic-model-selector',
     summary: 'Ask any question and let the agent route it to the best AI model for the job.'
   },
-  // ...existing code...
+  {
+    title: 'AI Background Verification',
+    icon: FaUserShield,
+    path: '/ai-background-verification',
+    summary: 'Automate candidate background checks with AI. Instantly analyze resumes and public data for risk, discrepancies, and red flags.'
+  },
   {
     title: 'Notion Knowledge Base AI Assistant',
     icon: FaBook,

@@ -6,10 +6,9 @@ import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
-
-import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 
 const workflowSteps = [

@@ -11,3 +11,4 @@ export { default as TestmonialExtractor } from './TestmonialExtractor';
 export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
 export { default as SalesForecasting } from './SalesForecasting';
 export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot'; 
+export { default as AIBackroundVerificationCard } from './AIBackroundVerificationCard.jsx'; 
