@@ -1,0 +1,262 @@
+{
+  "name": "database migration agent-no code",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "migrate_table",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1360,
+        -120
+      ],
+      "id": "e2b998b1-30c3-47b3-98bf-57cd9d4cfa82",
+      "name": "Webhook",
+      "webhookId": "d24f6afd-516a-417d-aa5e-c039eb06e75f"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        100
+      ],
+      "id": "b7e74347-fcc9-42e8-96f2-f78978040ae3",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "kR83omNtMshGOQML",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.output }}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        80,
+        -120
+      ],
+      "id": "f98ed2df-9dd8-420c-913c-06ea183ef676",
+      "name": "MySQL1",
+      "credentials": {
+        "mySql": {
+          "id": "KdzMsMe9zfl9jxEP",
+          "name": "MySQL account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "let total = 0;\n\n// Step 1: Sum all individual row counts\nfor (const item of items) {\n  if (item.json.total_rows_transferred) {\n    total += parseInt(item.json.total_rows_transferred, 10);\n  }\n}\n\n// Step 2: Get source/destination DB from Webhook node\nconst source = $(\"Webhook\").item.json.body.sourceDatabase;\nconst destination = $(\"Webhook\").item.json.body.destinationDatabase;\n\n// Step 3: Return merged result\nreturn [\n  {\n    json: {\n      source_database: source,\n      destination_database: destination,\n      total_rows_transferred: total,\n      migrated_at: new Date().toISOString()\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        -120
+      ],
+      "id": "6a830c05-bd6c-47f0-a773-4d3f923547ae",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -600,
+        -120
+      ],
+      "id": "52c2eb2e-ca39-4aa4-826e-5745aeb66d1e",
+      "name": "MySQL",
+      "credentials": {
+        "mySql": {
+          "id": "KdzMsMe9zfl9jxEP",
+          "name": "MySQL account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a SQL generator.\n\nGiven:\n- Source database: {{ $(\"Webhook\").item.json.body.sourceDatabase }}\n- Destination database: {{ $(\"Webhook\").item.json.body.destinationDatabase }}\n- Tables: {{ $json.Tables_in_tcs }}\n\nGenerate raw MySQL statements that:\n\n1. Truncate each destination table\n2. Insert data from each source table to its corresponding destination table\n3. At the end, generate a single SQL query that calculates the total number of rows inserted across all destination tables\n\nOnly use columns: employee_id, name, role\n\n⚠️ Output only valid raw SQL (no comments, markdown, or explanation)\n\nExample format:\nTRUNCATE TABLE analytics.backend_team;\nINSERT INTO analytics.backend_team (employee_id, name, role)\nSELECT employee_id, name, role FROM tcs.backend_team;\n\n...\n\nSELECT\n  (SELECT COUNT(*) FROM analytics.backend_team) +\n  (SELECT COUNT(*) FROM analytics.frontend_team) +\n  (SELECT COUNT(*) FROM analytics.hiring_team)\n  AS total_rows_transferred;",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        -120
+      ],
+      "id": "011a986d-31bc-44b1-8daf-4b9d9af373ce",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a MySQL assistant. Your job is to return ONLY the SQL query that lists all table names from a given database. Do not include any explanation or formatting.\n\nDatabase name: {{ $json.body.sourceDatabase }}\n\nRespond with only the SQL query.\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        -120
+      ],
+      "id": "3f3a3e5f-7b6c-469f-be58-ff8e4b921606",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        80
+      ],
+      "id": "db2cee79-b3e8-4ad3-926c-458a6643752e",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "kR83omNtMshGOQML",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Source_database:{{ $json.source_database }}\ndestination_database:{{ $json.destination_database }}\ntotal_rows_transferred:{{ $json.total_rows_transferred }}\nmigrated_at:{{ $json.migrated_at }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        580,
+        -120
+      ],
+      "id": "6b6efdcd-7c5e-402e-b416-b6003b8be6d9",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MySQL": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "MySQL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "MySQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "540a1dee-5426-4962-b0e7-c2c01543c1cd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "759f52a55a85b28860853d763a953c9b91b40f1efe38ccb8f1b9110874fee62c"
+  },
+  "id": "SPmeYTjA4n9u9yhA",
+  "tags": []
+}

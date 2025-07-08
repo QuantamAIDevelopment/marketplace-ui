@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaSync, FaExclamationTriangle } from 'react-icons/fa';
 
