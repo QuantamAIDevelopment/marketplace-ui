@@ -6,7 +6,6 @@ import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFile
 import { useNavigate } from 'react-router-dom';
 
 import { AmazonWebScrapeCard, ContractRedFlagDetectorCard } from '../components/workflows';
-import { AmazonWebScrapeCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
