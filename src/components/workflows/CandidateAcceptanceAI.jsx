@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { FaUserCheck, FaPaperPlane, FaExclamationCircle, FaCopy, FaDownload } from 'react-icons/fa';
 
-const API_URL = 'https://bhanubhavani.app.n8n.cloud/webhook/candidate-accepted';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/candidate-accepted';
 
 function ErrorMessage({ error }) {
   if (!error) return null;

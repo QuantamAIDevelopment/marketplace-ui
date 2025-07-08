@@ -1,11 +1,9 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase,FaUserShield, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf, FaTable } from 'react-icons/fa'
-
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { AmazonWebScrapeCard, AIBackroundVerificationCard } from '../components/workflows';
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -200,8 +198,8 @@ const workflowData = [
   {
     title: 'Test Case Generator',
     icon: FaVial,
-    path: '/test-case-generator',
-    summary: 'Generate QA test cases from your feature docs using Evenmind AI.'
+    path: '/test-generator',
+    summary: 'Generate QA test cases from your feature docs using AI.'
   },
   {
     title: 'Gmail Categorization',
@@ -250,6 +248,12 @@ const workflowData = [
     icon: FaTable,
     path: '/project-coast-reports',
     summary: 'Upload project data and get a detailed cost report for your projects.'
+  },
+  {
+    title: 'Automate Candidate Acceptance',
+    icon: FaUserCheck,
+    path: '/automate-candidate-acceptance/cover',
+    summary: 'Automate candidate acceptance and onboarding notifications.'
   },
 ];
 

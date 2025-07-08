@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { FaFileUpload, FaCheckCircle, FaExclamationCircle, FaCopy, FaDownload } from 'react-icons/fa';
 
-const API_URL = 'https://bhanubhavani.app.n8n.cloud/webhook/invoice%20summary';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/invoice%20summary';
 
 function ErrorMessage({ error }) {
   if (!error) return null;

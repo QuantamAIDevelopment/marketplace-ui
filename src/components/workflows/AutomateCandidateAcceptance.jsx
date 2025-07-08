@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { FaUserCheck, FaPaperPlane } from 'react-icons/fa';
 import PageRevealWrapper from './PageRevealWrapper';
 
-const API_URL = 'https://bhanubhavani.app.n8n.cloud/webhook/candidate-accepted';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/candidate-accepted';
 
 const AutomateCandidateAcceptance = () => {
   const [form, setForm] = useState({

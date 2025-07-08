@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
+import CoverScreen from '../components/workflows/CoverScreen';
 
 const AutomateCandidateAcceptancePage = () => {
   return (
