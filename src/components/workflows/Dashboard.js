@@ -165,6 +165,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-/* In your App.js (not Dashboard.js), ensure this route exists:
-<Route path="/workflows/sentiment-agent" element={<SentimentAgentWorkflowPage />} />
-*/

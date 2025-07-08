@@ -31,6 +31,10 @@ import SentimentAgentPage from './pages/SentimentAgentPage';
 
 import './App.css';
 import './index.css';
+
+import SmartInvoiceAIPage from './pages/SmartInvoiceAIPage';
+import AutomateCandidateAcceptancePage from './pages/AutomateCandidateAcceptancePage';
+
 import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
@@ -39,6 +43,7 @@ import './App.css';
 import './index.css';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+
 
 function App() {
   return (
@@ -73,6 +78,9 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+
+              <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
+              <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
               <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
