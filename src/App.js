@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
+import InventoryPredictAIPage from './pages/InventoryPredictAIPage';
 import LeavesClassifierPage from './pages/LeavesClassifierPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
 import DocumentUploadReminderDetailsPage from './pages/DocumentUploadReminderDetailsPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
-import CandidateHiringStatusPage from './pages/CandidateHiringStatusPage';
 import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
 import AICustomerSupport from './pages/AICustomerSupport';
@@ -24,49 +24,59 @@ import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 
-import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
+import OnBoardingQPage from './pages/OnBoardingQPage';
+import LeaveApprovalReminderPage from './pages/LeaveApprovalReminderPage';
+import AIPoweredRestaurantOrderChatbotPage from './pages/AIPoweredRestaurantOrderChatbotPage';
 
+import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
+
+import ATS_TO_HRMS_CANDIDATE_StatusSyncPage from './pages/ATS_TO_HRMS_CANDIDATE_StatusSyncPage';
+
 import TestGeneratorPage from './pages/TestGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
+
 
 import BackgroundVerificationAgentPage from './pages/BackgroundVerificationAgentPage';
 
 import './App.css';
 import './index.css';
-
 import SmartInvoiceAIPage from './pages/SmartInvoiceAIPage';
 import AutomateCandidateAcceptancePage from './pages/AutomateCandidateAcceptancePage';
+
 import AutomateCandidateAcceptanceCoverPage from './pages/AutomateCandidateAcceptanceCoverPage';
 
 import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
 import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
+
 import AIBackroundVerificationPage from './pages/AIBackroundVerificationPage';
-import './App.css';
-import './index.css';
+
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
+import Navbar from './components/Navbar';
 import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
-
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <ErrorBoundary>
         <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
           <main className="flex-1 flex flex-col items-center justify-center p-4">
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/inventory-predict-ai" element={<InventoryPredictAIPage />} />
+              <Route path="/onboarding-q" element={<OnBoardingQPage />} />
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
               <Route path="/workflows/document-upload-details" element={<DocumentUploadReminderDetailsPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
-              <Route path="/workflows/candidate-hiring-status" element={<CandidateHiringStatusPage />} />
               <Route path="/workflows/payslip-encryption" element={<PayslipAutoEncryptedPage />} />
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
@@ -84,13 +94,17 @@ function App() {
               <Route path="/workflows/dynamic-pricing" element={<DynamicPricingAgentPage />} />
               <Route path="/workflows/business-insights" element={<BusinessInsightsAgentPage />} />
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
+              <Route path="/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/workflows/leave-approval-reminder" element={<LeaveApprovalReminderPage />} />
+              <Route path="/workflows/restaurant-order-chatbot" element={<AIPoweredRestaurantOrderChatbotPage />} />
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
               <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
               <Route path="/automate-candidate-acceptance/cover" element={<AutomateCandidateAcceptanceCoverPage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
               <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
+              <Route path="/workflows/ats-to-hrms-candidate-status-sync" element={<ATS_TO_HRMS_CANDIDATE_StatusSyncPage />} />
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
@@ -101,9 +115,8 @@ function App() {
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
 
               <Route path="/background-verification-agent" element={<BackgroundVerificationAgentPage />} />
-
+              <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
-
             </Routes>
           </main>
         </div>
