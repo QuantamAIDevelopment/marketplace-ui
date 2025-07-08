@@ -1,6 +1,9 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
+
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
+
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard } from '../components/workflows';
 
@@ -145,6 +148,31 @@ const workflowData = [
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
+  },
+  {
+    title: 'AI Testmonial Extractor',
+    icon: FaCommentDots,
+    path: '/workflows/testmonial-extractor',
+    summary: 'Extract testimonials, sentiment, tags, and product from marketing feedback files.'
+  },
+  {
+    title: 'Dynamic Model Selector',
+    icon: FaRobot,
+    path: '/workflows/dynamic-model-selector',
+    summary: 'Ask any question and let the agent route it to the best AI model for the job.'
+  },
+  // ...existing code...
+  {
+    title: 'Notion Knowledge Base AI Assistant',
+    icon: FaBook,
+    path: '/workflows/notion-knowledge-base-ai',
+    summary: 'Ask questions and get instant answers from your Notion workspace knowledge base.'
+  },
+  {
+    title: 'Database Migration AI Agent',
+    icon: FaDatabase,
+    path: '/workflows/database-migration-ai',
+    summary: 'Migrate tables between databases with AI-powered automation.'
   },
   {
     title: 'Test Case Generator',

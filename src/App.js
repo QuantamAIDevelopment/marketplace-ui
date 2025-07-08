@@ -22,9 +22,13 @@ import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
+
+import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
 import TestCaseGeneratorPage from './pages/TestCaseGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
+
 import './App.css';
 import './index.css';
 import GmailCategorizationPage from './pages/GmailCategorizationPage';
@@ -57,6 +61,9 @@ function App() {
               <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDectectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
+
+              <Route path="/workflows/testmonial-extractor" element={React.createElement(require('./pages/TestmonialExtractorPage.jsx').default)} />
+              <Route path="/workflows/dynamic-model-selector" element={React.createElement(require('./pages/DynamicModelSelectorPage.jsx').default)} />
               <Route path="/test-case-generator" element={<TestCaseGeneratorPage />} />
               <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
               <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
@@ -66,6 +73,8 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
+              <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
