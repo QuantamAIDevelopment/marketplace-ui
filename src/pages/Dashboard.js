@@ -1,14 +1,7 @@
-<<<<<<< HEAD
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaBook, FaSync } from 'react-icons/fa';
-=======
 import React from 'react';
 import { motion } from 'framer-motion';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserPlus, FaUserCheck, FaBook, FaDatabase, FaVial, FaEnvelopeOpenText, FaFilePdf, FaCalendarCheck,FaSync } from 'react-icons/fa';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf, FaUserCheck } from 'react-icons/fa'
-
->>>>>>> efd18b966f1ca96fdeae5391fd55d0c3d6924d35
 import { useNavigate } from 'react-router-dom';
 
 import { AmazonWebScrapeCard,AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
@@ -37,10 +30,28 @@ const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
 
 const workflowData = [
   {
+    title: 'OnBoarding Q Email Generator',
+    icon: FaUserCheck,
+    path: '/onboarding-q',
+    summary: 'Generate onboarding emails from ODS files using the On_Boarding.Q workflow.'
+  },
+  {
+    title: 'OnBoarding Email Generator',
+    icon: FaUserPlus,
+    path: '/onboarding',
+    summary: 'Generate onboarding emails from client files with AI.'
+  },
+  {
     title: 'AI Customer Support',
     icon: FaRobot,
     path: '/ai-customer-support',
     summary: 'Chat with AI for customer support queries.'
+  },
+  {
+    title: 'Inventory Predict AI',
+    icon: FaChartLine,
+    path: '/inventory-predict-ai',
+    summary: 'Forecast inventory, detect stock risks, and get AI-powered suggestions.'
   },
   {
     title: 'Leaves Classifier',
@@ -123,7 +134,7 @@ const workflowData = [
   {
     title: 'Monthly Expenditure',
     icon: FaRupeeSign,
-    path: '/workflows/monthly-expenditure',
+    path: '/monthly-expenditure',
     summary: 'Track, upload, and chat about your monthly expenses.'
   },
   {
@@ -180,15 +191,12 @@ const workflowData = [
     path: '/workflows/dynamic-model-selector',
     summary: 'Ask any question and let the agent route it to the best AI model for the job.'
   },
-<<<<<<< HEAD
-=======
   {
     title: 'AI Background Verification',
     icon: FaUserShield,
     path: '/ai-background-verification',
     summary: 'Automate candidate background checks with AI. Instantly analyze resumes and public data for risk, discrepancies, and red flags.'
   },
->>>>>>> efd18b966f1ca96fdeae5391fd55d0c3d6924d35
   {
     title: 'Notion Knowledge Base AI Assistant',
     icon: FaBook,
@@ -202,13 +210,13 @@ const workflowData = [
     summary: 'Migrate tables between databases with AI-powered automation.'
   },
   {
-<<<<<<< HEAD
+
     title: 'ATS to HRMS Candidate Status Sync',
     icon: FaSync,
     path: '/workflows/ats-to-hrms-candidate-status-sync',
     summary: 'Sync and view candidate status between ATS and HRMS.'
-  }
-=======
+  },
+  {
     title: 'Test Case Generator',
     icon: FaVial,
     path: '/test-generator',
@@ -262,7 +270,6 @@ const workflowData = [
     path: '/automate-candidate-acceptance/cover',
     summary: 'Automate candidate acceptance and onboarding notifications.'
   },
->>>>>>> efd18b966f1ca96fdeae5391fd55d0c3d6924d35
 ];
 
 const Dashboard = () => {
