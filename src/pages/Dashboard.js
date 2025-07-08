@@ -1,6 +1,9 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaVial } from 'react-icons/fa';
+
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
+
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard, ContractRedFlagDetectorCard } from '../components/workflows';
 
@@ -147,11 +150,90 @@ const workflowData = [
     summary: 'Generate quizzes and train with our AI agent.'
   },
   {
+    title: 'SmartInvoice AI',
+    icon: FaFileInvoiceDollar,
+    path: '/smart-invoice-ai',
+    summary: 'Upload and validate invoices with AI. Get instant feedback and Google Sheets integration.'
+  },
+  {
+    title: 'AI-Powered Book Price Tracker',
+    icon: FaBook,
+    path: '/ai-book-price-tracker',
+    summary: 'Track book prices, availability, and details using AI-powered extraction.'
+  },
+  {
+    title: 'AI Testmonial Extractor',
+    icon: FaCommentDots,
+    path: '/workflows/testmonial-extractor',
+    summary: 'Extract testimonials, sentiment, tags, and product from marketing feedback files.'
+  },
+  {
+    title: 'Dynamic Model Selector',
+    icon: FaRobot,
+    path: '/workflows/dynamic-model-selector',
+    summary: 'Ask any question and let the agent route it to the best AI model for the job.'
+  },
+  // ...existing code...
+  {
+    title: 'Notion Knowledge Base AI Assistant',
+    icon: FaBook,
+    path: '/workflows/notion-knowledge-base-ai',
+    summary: 'Ask questions and get instant answers from your Notion workspace knowledge base.'
+  },
+  {
+    title: 'Database Migration AI Agent',
+    icon: FaDatabase,
+    path: '/workflows/database-migration-ai',
+    summary: 'Migrate tables between databases with AI-powered automation.'
+  },
+  {
     title: 'Test Case Generator',
     icon: FaVial,
     path: '/test-case-generator',
     summary: 'Generate QA test cases from your feature docs using Evenmind AI.'
-  }
+  },
+  {
+    title: 'Gmail Categorization',
+    icon: FaEnvelopeOpenText,
+    path: '/gmail-categorization',
+    summary: 'Automatically categorize and label your emails using AI and Google Sheets integration.'
+  },
+  {
+    title: 'Resume Analyzer',
+    icon: FaFileAlt,
+    path: '/resume-analyzer',
+    summary: 'AI-powered resume screening, scoring, and skill extraction.'
+  },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/sentiment-agent-report',
+    summary: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.'
+  },
+  {
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    summary: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.'
+  },
+  {
+    title: 'PDF Summarizer',
+    icon: FaFilePdf,
+    path: '/pdf-summarizer',
+    summary: 'Upload a PDF to extract key points, executive summary, entities, and topics using AI.'
+  },
+  {
+    title: 'Sales Forecasting Agent',
+    icon: FaChartLine,
+    path: '/sales-forecasting',
+    summary: 'AI-powered sales forecasting with pipeline analysis and revenue predictions.'
+  },
+  {
+    title: 'Leave Balance Chatbot',
+    icon: FaCalendarCheck,
+    path: '/leave-balance-chatbot',
+    summary: 'Get instant leave balance information through AI-powered HR assistant.'
+  },
 ];
 
 const Dashboard = () => {

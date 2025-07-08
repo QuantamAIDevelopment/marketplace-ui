@@ -1,0 +1,1258 @@
+{
+  "name": "automate_candidate_acceptance",
+  "nodes": [
+    {
+      "parameters": {
+        "amount": 2,
+        "unit": "seconds"
+      },
+      "id": "3fff82ec-9f41-4404-b6b7-4784d47eb050",
+      "name": "Delay 2 Days",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        1280,
+        180
+      ],
+      "webhookId": "12b9f14c-6d9b-4dd1-a860-bdc1231e9f49"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [],
+          "number": [],
+          "string": [
+            {
+              "value1": "={{ $('Get row(s) in sheet').item.json.Status }}",
+              "value2": "overdue"
+            }
+          ]
+        }
+      },
+      "id": "c3d46cd0-780c-4ad9-8ad7-30b9a9cfa321",
+      "name": "Task Overdue Check 1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1480,
+        180
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "eac0755f-b280-4a4a-b357-30626fb56b70",
+      "name": "Update Tracker",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        380
+      ],
+      "notes": "Simulate tracker update"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Get row(s) in sheet').item.json.Status }}",
+              "value2": "overdue"
+            }
+          ]
+        }
+      },
+      "id": "999f5f64-bfd6-41a9-9c1e-bd0a397d59f6",
+      "name": "Task Overdue Check 2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1800,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "candidate-accepted",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        620
+      ],
+      "id": "abafa1c1-9ff5-4262-b9c6-1485a65e1834",
+      "name": "Webhook",
+      "webhookId": "93899d1a-af89-4613-b552-9069b1a2a7fa"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        840
+      ],
+      "id": "79b251d7-8136-499c-98ca-d2fa60967d1c",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Q1935CHPKk5jhJ7x",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst results = items.map((item) => {\n  const text = item.json.text || \"\";\n  const match = text.match(/\\*\\*Status:\\*\\*\\s*(\\w+)/i);\n  return { json: { Status: match ? match[1] : \"Accepted\" } };\n});\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        640
+      ],
+      "id": "31cbc7b0-4693-47a7-882e-a27a18d417c8",
+      "name": "Code",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "673774ce-4bc3-4d0a-a521-586c5b7ed1a3",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "=Accepted",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        180,
+        640
+      ],
+      "id": "dfb52462-c326-4186-ac39-41621c77bdb4",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "id": "4dcb3bd1-ff0c-421e-b203-94dac52b285b",
+      "name": "Create Checklist",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        380
+      ],
+      "alwaysOutputData": true,
+      "notes": "Simulate checklist creation"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "candidate-acceptance",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        20
+      ],
+      "id": "52622633-4f62-4e76-aa80-95b94f176cf7",
+      "name": "IT",
+      "webhookId": "cc47c3a9-1e65-4463-8efd-6d065369a4a0"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4164dfbc-8218-4d51-afdc-96ac28566f26",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -320,
+        200
+      ],
+      "id": "fad4dd8b-df54-4391-a768-f9cc28dd9bb1",
+      "name": "MR",
+      "webhookId": "4164dfbc-8218-4d51-afdc-96ac28566f26"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "candidate-acceptance",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        380
+      ],
+      "id": "52e465ad-f4aa-4d93-b080-25799465a352",
+      "name": "FI",
+      "webhookId": "fd2469d5-3349-4915-83b2-23a63b4a0b74"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        360,
+        160
+      ],
+      "id": "c2c3c030-94b1-4eec-985e-67aee6683388",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "hi",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -400,
+        620
+      ],
+      "id": "8ee9278b-2086-4cf6-aa79-e40d441aa777",
+      "name": "Basic LLM Chain1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc",
+          "mode": "list",
+          "cachedResultName": "candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kIhQMtCo9l_xc9GUPXBtYRo2nal-eBVY-eTOjRoJLU0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "IT": "={{ $json.IT }}",
+            "FINANCE": "={{ $json.FINANCE }}",
+            "STATUS": "={{ $json.Status }}",
+            "Candidate ID": "={{ $('Webhook').item.json.body['Candidate ID'] }}",
+            "Name": "={{ $('Webhook').item.json.body.Name }}",
+            "Email": "={{ $('Webhook').item.json.body.Email }}",
+            "UPDATED  DATE": "={{ $('Webhook').item.json.body['UPDATED DATE'] }}"
+          },
+          "matchingColumns": [
+            "Candidate ID"
+          ],
+          "schema": [
+            {
+              "id": "Candidate ID",
+              "displayName": "Candidate ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "UPDATED  DATE",
+              "displayName": "UPDATED  DATE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IT",
+              "displayName": "IT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FINANCE",
+              "displayName": "FINANCE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MANAGER",
+              "displayName": "MANAGER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        640,
+        620
+      ],
+      "id": "78bbf682-60c3-46b2-b0f7-5203b033bd72",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc",
+          "mode": "list",
+          "cachedResultName": "candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "IT": "={{ $json.body.IT }}",
+            "Candidate ID": "={{ $json.body['Candidate ID'] }}",
+            "UPDATED  DATE": "={{ $json.body['UPDATED DATE'] }}"
+          },
+          "matchingColumns": [
+            "Candidate ID"
+          ],
+          "schema": [
+            {
+              "id": "Candidate ID",
+              "displayName": "Candidate ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "UPDATED  DATE",
+              "displayName": "UPDATED  DATE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IT",
+              "displayName": "IT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FINANCE",
+              "displayName": "FINANCE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "MANAGER",
+              "displayName": "MANAGER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6d6e80fd-330a-498e-93a2-89b29a39af56",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c92da7f5-c88b-4091-963f-97e1c5b626a1",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "8385c160-aa5b-431c-895a-11ae5ee8201f",
+              "name": "Name",
+              "value": "={{ $json.Name }}",
+              "type": "string"
+            },
+            {
+              "id": "d03ebf77-4ae2-4d40-8a41-1c4a72077023",
+              "name": "IT",
+              "value": "={{ $json.IT }}",
+              "type": "string"
+            },
+            {
+              "id": "fd2d001a-eeaf-4114-8510-19b9d852f010",
+              "name": "FINANCE",
+              "value": "={{ $json.FINANCE }}",
+              "type": "string"
+            },
+            {
+              "id": "d437c650-f111-4cc4-a7b9-522be27e5a8c",
+              "name": "MANAGER",
+              "value": "={{ $json.MANAGER }}",
+              "type": "string"
+            },
+            {
+              "id": "d95d55e9-04a2-4604-b001-63dd2da26480",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        620
+      ],
+      "id": "e2ac6cbf-8dea-4838-beec-b0f60060757d",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc",
+          "mode": "list",
+          "cachedResultName": "candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate ID": "={{ $json.body['Candidate ID'] }}",
+            "FINANCE": "={{ $json.body.FINANCE }}",
+            "UPDATED  DATE": "={{ $json.body['UPDATED DATE'] }}"
+          },
+          "matchingColumns": [
+            "Candidate ID"
+          ],
+          "schema": [
+            {
+              "id": "Candidate ID",
+              "displayName": "Candidate ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "UPDATED  DATE",
+              "displayName": "UPDATED  DATE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IT",
+              "displayName": "IT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FINANCE",
+              "displayName": "FINANCE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "MANAGER",
+              "displayName": "MANAGER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -20,
+        360
+      ],
+      "id": "e3eab98a-1eec-4b96-ae72-ed8959217415",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc",
+          "mode": "list",
+          "cachedResultName": "candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate ID": "={{ $json.body['Candidate ID'] }}",
+            "MANAGER": "={{ $json.body.MANEGER }}",
+            "UPDATED  DATE": "={{ $json.body['UPDATED DATE'] }}"
+          },
+          "matchingColumns": [
+            "Candidate ID"
+          ],
+          "schema": [
+            {
+              "id": "Candidate ID",
+              "displayName": "Candidate ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "UPDATED  DATE",
+              "displayName": "UPDATED  DATE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "IT",
+              "displayName": "IT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "FINANCE",
+              "displayName": "FINANCE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "MANAGER",
+              "displayName": "MANAGER",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -20,
+        200
+      ],
+      "id": "3c20dd97-1236-4c27-b414-e465d1f5a57d",
+      "name": "Append or update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc",
+          "mode": "list",
+          "cachedResultName": "candidates",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1xG0nnx4CwlKvbNk0Keh0-aA3103-jR_0gofjv7J1lbc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        640,
+        200
+      ],
+      "id": "5a82ba31-0142-46c7-a876-15e66fbd1a1c",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "balabhavaniilla@gmail.com",
+        "subject": "=✅ Onboarding Checklist",
+        "message": "=Hello {{ $json.Name }}  Your onboarding checklist has been successfully created.  Our IT, Finance, and Buddy/Manager teams will begin processing their tasks shortly.  Thank you,   HR Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1040,
+        180
+      ],
+      "id": "97648445-e322-450a-befb-ace002e0cf80",
+      "name": "Send a message",
+      "webhookId": "eff214fc-3a64-4810-ad1d-cbfa3f691257",
+      "alwaysOutputData": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rBXkQp220zeIzeVf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "balabhavaniilla@gmail.com",
+        "subject": "=📊 Task Tracker Updated for{{ $json['Candidate ID'] }}",
+        "message": "=Hello Team,  The task tracker for candidate  Task: {{ $json['Candidate ID'] }}- Status:You can view the latest task status in the onboarding tracker or Google Sheet.  Regards,   Onboarding Automation System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1540,
+        400
+      ],
+      "id": "ba00aff2-0d0d-4ac4-9d95-82acde392c18",
+      "name": "Send a message1",
+      "webhookId": "8aa14b38-9d18-48a3-aef6-10e51fe8f81c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rBXkQp220zeIzeVf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=balabhavaniilla@gmail.com",
+        "subject": "=⏰ Reminder: Task Overdue for bharathi",
+        "emailType": "text",
+        "message": "=Hello team\n\nPlease complete this task as soon as possible to keep onboarding on track.\n\nIf you've already completed the task, kindly update the status in the onboarding tracker.\n\nThank you,  \nOnboarding Workflow Bot\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1740,
+        180
+      ],
+      "id": "c712bf8c-e193-428c-808a-9eb1af11d449",
+      "name": "Send a message2",
+      "webhookId": "3be17959-5cf0-4fd0-994f-1de0a0b09b58",
+      "alwaysOutputData": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rBXkQp220zeIzeVf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Hello {{ $json.Name }}  Your onboarding checklist has been successfully created.  Our IT, Finance, and Buddy/Manager teams will begin processing their tasks shortly.  Thank you,  \n\n\nHR Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        620
+      ],
+      "id": "59da3700-548d-4a9d-a505-f04cffb496b7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Hello team\n\nPlease complete this task as soon as possible to keep onboarding on track.\n\nIf you've already completed the task, kindly update the status in the onboarding tracker.\n\nThank you,  \nOnboarding Workflow Bot ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1960,
+        180
+      ],
+      "id": "8482c0e6-ad1b-4509-8857-8459f3940dc4",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Hello Team, {{ $('Update Tracker').item.json['Candidate ID'] }} The task tracker forYou can view the latest task status in the onboarding tracker or Google Sheet.  Regards,   Onboarding Automation System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1740,
+        600
+      ],
+      "id": "a080cb0a-f9c1-4267-bd03-025279d02473",
+      "name": "Respond to Webhook2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Delay 2 Days": {
+      "main": [
+        [
+          {
+            "node": "Task Overdue Check 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Task Overdue Check 1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Tracker": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Checklist": {
+      "main": [
+        [
+          {
+            "node": "Update Tracker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IT": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MR": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FI": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Delay 2 Days",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Task Overdue Check 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message2": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook1": {
+      "main": [
+        []
+      ]
+    },
+    "Task Overdue Check 2": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "95bea2d6-6c54-49c6-be6f-71bd1f472c45",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "23ec5a40302af986e1c42a75c2db95ceb57d0b69f89c20293eabeeb3079fd22f"
+  },
+  "id": "wYkJul82zvpSYbao",
+  "tags": []
+}

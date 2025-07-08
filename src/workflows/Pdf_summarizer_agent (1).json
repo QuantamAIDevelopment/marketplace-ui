@@ -1,0 +1,414 @@
+{
+  "name": "Pdf summarizer agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "document_upload",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data",
+          "rawBody": true
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -640,
+        200
+      ],
+      "id": "274ee26f-18bd-4106-8685-d0588604a632",
+      "name": "Webhook",
+      "webhookId": "eee26170-bc34-4dd8-b2ee-7ed3c21285eb"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f9b31027-ea3e-497d-b23d-df1953d6b08a",
+              "leftValue": ">binary.document0.data.Mime Type",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "8f7f4644-d5c8-4aa4-9018-73ab548c4ff8",
+              "leftValue": ">binary.document0.data.Mime Type>binary",
+              "rightValue": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "e34cdc09-5c75-4aa7-a03c-d66bf84bc868",
+              "leftValue": ">binary.document0.data.Mime Type>binary",
+              "rightValue": "plain/txt",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "a2910b9a-d443-4255-9517-a68e10eeae9b",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -420,
+        200
+      ],
+      "id": "5ad83759-f02c-46aa-9e62-b1beb6be36e7",
+      "name": "check file type"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        200
+      ],
+      "id": "cafb2833-3533-4bcb-ba0a-67460d4ccf2a",
+      "name": "When chat message received",
+      "webhookId": "a6121e6a-dfb2-4e92-af35-aaff97d9fa50"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.pages[0].markdown }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "provide: key points/ executive summary / entities / topics extracted"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.6,
+      "position": [
+        760,
+        0
+      ],
+      "id": "fe5bf767-0e01-4154-9cbb-fbe1662415fd",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        920,
+        360
+      ],
+      "id": "049c8c6e-34da-414b-bf67-f7040e29b434",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "DaEBbZrOMqT6eTif",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -200,
+        100
+      ],
+      "id": "ef561b78-2454-4621-b72d-f3ff28760a97",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [
+        1140,
+        0
+      ],
+      "id": "69f8ade9-e4b0-4a4c-b27d-4f64b991469b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sendTo": "srikanthjosh539@gmail.com",
+        "subject": "Here is your summarization text ",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1340,
+        0
+      ],
+      "id": "a2bf1ab0-a913-4d2a-b706-12a59ef205eb",
+      "name": "Gmail",
+      "webhookId": "41a1df2a-5866-494d-8f89-b247ff026a2a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "O42n8ENmp0MszO0V",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "purpose",
+              "value": "ocr"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d91d74dc-86fb-48cc-83c4-40aef9fe4f11",
+      "name": "HTTP Request",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8UhPELpC4j2NWPZa",
+          "name": "mistrail ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.mistral.ai/v1/files/{{ $json.id }}/url ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "expiry",
+              "value": "24"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "2b18737f-1e7c-408a-9de9-dc506283fb7b",
+      "name": "signed url",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8UhPELpC4j2NWPZa",
+          "name": "mistrail ai"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.mistral.ai/v1/ocr",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"mistral-ocr-latest\",\n  \"document\": {\n    \"type\": \"document_url\",\n    \"document_url\": \"{{ $json.url }}\"\n  },\n  \"include_image_base64\": true\n} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        420,
+        0
+      ],
+      "id": "38653fc3-678b-4a82-b049-99077e4c910b",
+      "name": "ocr results",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "8UhPELpC4j2NWPZa",
+          "name": "mistrail ai"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "check file type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check file type": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "signed url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "signed url": {
+      "main": [
+        [
+          {
+            "node": "ocr results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ocr results": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "556266ae-ed4d-45bc-bf70-9b22e720c7dc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "8L4wYJjKT2e0irb8",
+  "tags": []
+}

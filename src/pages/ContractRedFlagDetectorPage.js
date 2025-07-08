@@ -1,5 +1,10 @@
+
 import React from 'react';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaFileContract, FaUpload, FaSpinner, FaCheckCircle, FaEnvelope } from 'react-icons/fa';
+import axios from 'axios';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import ContractRedFlagDetector from '../components/workflows/ContractRedFlagDetector';
 
 const ContractRedFlagDetectorPage = () => (

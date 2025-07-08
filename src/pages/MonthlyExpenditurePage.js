@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRupeeSign, FaFileUpload, FaRobot, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { submitManualBill, uploadBillFile, chatExpenditure } from '../services/workflows/monthlyExpenditure';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const tabs = [
   { label: 'Manual Bill Entry', icon: FaRupeeSign },

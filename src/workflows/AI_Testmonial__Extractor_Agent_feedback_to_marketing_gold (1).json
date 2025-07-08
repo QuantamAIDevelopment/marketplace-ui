@@ -1,0 +1,446 @@
+{
+  "name": "AI Testmonial  Extractor Agent feedback to marketing gold",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract a short, emotionally engaging testimonial quote from the following user feedback. Ignore neutral or irrelevant text. Only return the quote.\n\nCustomer feedback: \"{{ $json[\"Feedback Text\"] }}\"\n\nTask:\n1. Extract a short, powerful testimonial (1–2 sentences):{{ $json['Feedback Text'] }}\n2. Tag the sentiment (Positive, Neutral, Negative).\n3. Identify up to 3 themes (e.g., support, speed, design).\n4. Return it as JSON.\n\n",
+        "hasOutputParser": true
+      },
+      "id": "16f9c0d9-e187-4343-ab8f-cb5892c002ca",
+      "name": "Extract Testimonial with Gemini",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -880,
+        180
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "sendTo": "=nagsvadlamudi@gmail.com",
+        "subject": "New Testimonial Extracted",
+        "emailType": "text",
+        "message": "=🎉 *New Positive Testimonial Received!*\n\n🗣️ \"*{{ $json.Testimonial }}*\"\n\n✅ *Sentiment:  {{ $json.Sentiment }}\n🏷️ *Tags: {{ $json.Tags }}\n📦 *Product: {{ $('Extract from File').item.json.Product }} \n📝 *Source:{{ $('Extract from File').item.json.Source }}\n",
+        "options": {}
+      },
+      "id": "6038a5f2-76a3-499c-ad22-8531abd26251",
+      "name": "Notify Marketing Team",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        60,
+        60
+      ],
+      "webhookId": "acce1be8-39ab-4f30-8549-9e06614abbf3",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "numWNC8Xk79WdTCK",
+          "name": "Gmail account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"testimonial\": \"This app saved me hours every week!\",\n  \"sentiment\": \" choose one Positive,negative\",\n  \"tags\": [\"productivity\", \"time-saving\", \"usability\"]\n}\n\n\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -720,
+        480
+      ],
+      "id": "a5ead737-78e4-4914-a505-8ec4dfd30e75",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "testmonial",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1440,
+        180
+      ],
+      "id": "782858ba-977c-4e58-87d2-dc3f18cf4c7f",
+      "name": "Webhook",
+      "webhookId": "b665c3e3-b72a-4f7a-ad52-3859b0411dcd"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1220,
+        180
+      ],
+      "id": "365dabcf-9c60-4c46-85d3-6998892228ac",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1VIorgdW5DOX-h-_w9rkyN7xuR9iiXagegGfnnuuGVLc",
+          "mode": "list",
+          "cachedResultName": "Testmonial",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VIorgdW5DOX-h-_w9rkyN7xuR9iiXagegGfnnuuGVLc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1938097303,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VIorgdW5DOX-h-_w9rkyN7xuR9iiXagegGfnnuuGVLc/edit#gid=1938097303"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Testimonial": "={{ $json.output.testimonial }}",
+            "Sentiment": "={{ $json.output.sentiment }}",
+            "Tags": "={{ $json.output.tags }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Testimonial",
+              "displayName": "Testimonial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -440,
+        180
+      ],
+      "id": "200244d2-34ae-4bf6-bafd-7312e7bb7b6a",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lJdg5HTRN7AAQ0RY",
+          "name": "Google Sheets account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7570591f-aa77-4168-98bc-7ea7682ff8ed",
+              "leftValue": "={{ $json.Sentiment }}",
+              "rightValue": "Positive",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -180,
+        180
+      ],
+      "id": "c964ff69-6eb4-44b0-a6d2-4f091cbe8783",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1VIorgdW5DOX-h-_w9rkyN7xuR9iiXagegGfnnuuGVLc",
+          "mode": "list",
+          "cachedResultName": "Testmonial",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VIorgdW5DOX-h-_w9rkyN7xuR9iiXagegGfnnuuGVLc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1938097303,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1VIorgdW5DOX-h-_w9rkyN7xuR9iiXagegGfnnuuGVLc/edit#gid=1938097303"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Testimonial": "={{ $json.Testimonial }}",
+            "Sentiment": "={{ $json.Sentiment }}",
+            "Tags": "={{ $json.Tags }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Testimonial",
+              "displayName": "Testimonial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment",
+              "displayName": "Sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tags",
+              "displayName": "Tags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        60,
+        240
+      ],
+      "id": "28d10a71-a61a-4841-b4b8-be8e64f8ca7c",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lJdg5HTRN7AAQ0RY",
+          "name": "Google Sheets account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        300,
+        60
+      ],
+      "id": "177fd4a7-d68e-40bf-8898-14834b95c01c",
+      "name": "Gmail",
+      "webhookId": "97ff132e-23c8-4d81-b32b-122ba5c19969",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "numWNC8Xk79WdTCK",
+          "name": "Gmail account 12"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.snippet }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        540,
+        60
+      ],
+      "id": "edee3247-8b60-4250-8ee0-f2ea88d9332b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -900,
+        440
+      ],
+      "id": "27c21f7c-0f2a-43d8-a6d6-739f2a2d7d07",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tdgSgEu1lFYJ0T6k",
+          "name": "OpenRouter account 5"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Extract Testimonial with Gemini": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Marketing Team": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Extract Testimonial with Gemini",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Extract Testimonial with Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Notify Marketing Team",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extract Testimonial with Gemini",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8895c6b4-481e-4531-9f71-f19c6fb8df47",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "AzQLTSghLCkFKePW",
+  "tags": []
+}

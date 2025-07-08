@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaBirthdayCake, FaCalendarAlt, FaUserAlt, FaEnvelope } from 'react-icons/fa';
 import axios from 'axios';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const BirthdayWorkAnniversaryPageContent = () => {
   const [date, setDate] = useState('');
