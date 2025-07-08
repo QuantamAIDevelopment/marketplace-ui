@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 const CoverScreen = ({ onStart, heading, description, details, workflowSVG: WorkflowSVG }) => {
   return (
@@ -23,7 +24,7 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
           </div>
         ) : (
           <img
-            src={'/logo192.png'}
+            src={'https://plus.unsplash.com/premium_photo-1663040543283-a39c4554106b?q=80&w=2070&auto=format&fit=crop'}
             alt="AI Assistant"
             className="rounded-2xl shadow-xl w-full max-w-2xl object-cover border-4 border-white"
           />
@@ -45,7 +46,7 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
                     // Color key words in headings
                     let text = child.props.children;
                     if (typeof text === 'string') {
-                      text = text.replace(/(AI|Use Cases|Stands Out|Features|Components Used)/g, match => `<span class="text-indigo-600 font-extrabold">${match}</span>`);
+                      text = text.replace(/(AI|Use Cases|Stands Out|Features|Components Used)/g, match => `<span class=\"text-indigo-600 font-extrabold\">${match}</span>`);
                       return <h2 className="text-2xl md:text-3xl font-bold mb-4" dangerouslySetInnerHTML={{__html: text}} />;
                     }
                     return <h2 className="text-2xl md:text-3xl font-bold mb-4">{text}</h2>;
@@ -71,4 +72,4 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
   );
 };
 
-export default CoverScreen;
+export default CoverScreen; 
