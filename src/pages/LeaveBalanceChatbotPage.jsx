@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCalendarAlt, FaEnvelope, FaUser, FaClock, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import { getLeaveBalance, validateEmail, formatDate } from '../services/workflows/leaveBalanceChatbot';
 
 const LeaveBalanceForm = () => {

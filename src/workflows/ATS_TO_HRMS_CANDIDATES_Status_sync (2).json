@@ -1,0 +1,563 @@
+{
+  "name": "ATS TO HRMS CANDIDATES Status sync",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "/details-sync",
+        "responseMode": "responseNode",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -960,
+        1140
+      ],
+      "id": "cf16e8b0-36c5-4577-acec-8bbfa0a0e9f1",
+      "name": "ATS Webhook",
+      "webhookId": "485e7845-9675-428f-887e-287628503eda"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -540,
+        940
+      ],
+      "id": "8c6902d9-1103-441b-b8c3-df8ba70023cd",
+      "name": "Merge Triggers"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst processedIds = new Set();\nconst results = [];\nconst syncStatus = [];\n\nlet skippedCount = 0;\nlet successCount = 0;\nlet pendingCount = 0;\nlet failedCount = 0;\n\nconst statusMap = {\n  \"offer accepted\": \"Ready for Onboarding\",\n  \"offer extended\": \"Pending Offer Response\",\n  \"rejected\": \"Disqualified\",\n  \"withdrawn\": \"Withdrawn\",\n  \"application received\": \"Under Review\",\n  \"phone screening\": \"Phone Screen\",\n  \"interview scheduled\": \"Interview Scheduled\",\n  \"interview completed\": \"Interview Completed\",\n  \"reference check\": \"Reference Check\",\n  \"background check\": \"Background Check\",\n  \"final review\": \"Final Review\",\n  \"hired\": \"Hired\",\n  \"on hold\": \"On Hold\"\n};\n\nconst pendingKeywords = [\"pending\", \"onboarding\", \"scheduled\", \"in progress\"];\n\nfor (const item of items) {\n  const data = item.json;\n  const id = data[\"Candidate ID\"];\n  const name = data[\"Name\"];\n  const atsStatusRaw = data[\"ATS Status\"] || \"\";\n  const atsStatus = atsStatusRaw.toLowerCase().trim();\n\n  if (processedIds.has(id)) {\n    data.action = \"skip\";\n    data.reason = \"Duplicate\";\n    data.processedAt = new Date().toISOString();\n    skippedCount++;\n    results.push({ json: data });\n    continue;\n  }\n\n  if (!id || !name || name === \"—\") {\n    data.action = \"error\";\n    data.reason = \"Missing Candidate ID or Name\";\n    data.processedAt = new Date().toISOString();\n    failedCount++;\n    results.push({ json: data });\n    continue;\n  }\n\n  processedIds.add(id);\n\n  const hrmsStatus = statusMap[atsStatus] || \"Unknown\";\n  data.hrmsStatus = hrmsStatus;\n  data.originalStatus = atsStatusRaw;\n  data.processedAt = new Date().toISOString();\n\n  if (hrmsStatus === \"Unknown\") {\n    data.action = \"review\";\n    data.reason = `Unmapped ATS status: ${atsStatusRaw}`;\n    failedCount++;\n  } else {\n    data.action = \"sync\";\n\n    if (pendingKeywords.some(word => hrmsStatus.toLowerCase().includes(word))) {\n      pendingCount++;\n    } else {\n      successCount++;\n    }\n\n    syncStatus.push({\n      profileId: id,\n      message: data.Notes || \"\",\n      status: hrmsStatus,\n      type: \"sync\"\n    });\n  }\n\n  results.push({ json: data });\n}\n\n// Add stats summary as first item\nresults.unshift({\n  json: {\n    stats: {\n      syncedProfiles: successCount,\n      pendingSync: pendingCount,\n      failedSync: failedCount,\n      skippedRecords: skippedCount\n    },\n    syncStatus: syncStatus\n  }\n});\n\nreturn results;\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20,
+        920
+      ],
+      "id": "e5e16077-0ce9-4638-a43d-9dfb2e26754b",
+      "name": "Enhanced Status Mapping"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "sync-condition",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "sync",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "252432ab-a572-45ed-9cd8-4673a0dc183e",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        340,
+        920
+      ],
+      "id": "e7da22f4-ede8-4f7e-ab58-ce7172157356",
+      "name": "Filter for Sync"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect all syncable records\nconst candidates = $input.all().map(item => item.json);\n\n// Build a short summary message\nconst summary = {\n  totalSynced: candidates.length,\n  syncedCandidates: candidates.map(c => ({\n    id: c[\"Candidate ID\"],\n    name: c[\"Name\"],\n    hrmsStatus: c.hrmsStatus,\n    notes: c.Notes || \"\",\n    processedAt: c.processedAt\n  }))\n};\n\n// Return this to the webhook\nreturn [\n  {\n    json: summary\n  }\n];\n\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        800
+      ],
+      "id": "fd7acadf-4704-499a-94ce-ecebbf48127d",
+      "name": "Prepare Response"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collect all syncable records\nconst candidates = $input.all().map(item => item.json);\n\n// Build a short summary message\nconst summary = {\n  totalSynced: candidates.length,\n  syncedCandidates: candidates.map(c => ({\n    id: c[\"Candidate ID\"],\n    name: c[\"Name\"],\n    hrmsStatus: c.hrmsStatus,\n    notes: c.Notes || \"\",\n    processedAt: c.processedAt\n  }))\n};\n\n// Return this to the webhook\nreturn [\n  {\n    json: summary\n  }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        760,
+        1120
+      ],
+      "id": "b744ef94-e32f-4b19-99ec-060c571babe7",
+      "name": "Code",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -900,
+        840
+      ],
+      "id": "c445d8b2-e1a1-40e9-9bfd-d3b2e53351c6",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc",
+          "mode": "list",
+          "cachedResultName": "ATS to HRMS candidate status in sync",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1329501232,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc/edit#gid=1329501232"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate ID",
+              "displayName": "Candidate ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ATS Status",
+              "displayName": "ATS Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last Updated",
+              "displayName": "Last Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hrmsStatus",
+              "displayName": "hrmsStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "originalStatus",
+              "displayName": "originalStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "processedAt",
+              "displayName": "processedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        740,
+        820
+      ],
+      "id": "67bdd76e-e260-432d-927f-e0c51dd809a2",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lJdg5HTRN7AAQ0RY",
+          "name": "Google Sheets account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc",
+          "mode": "list",
+          "cachedResultName": "ATS to HRMS candidate status in sync",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1329501232,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc/edit#gid=1329501232"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate ID",
+              "displayName": "Candidate ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ATS Status",
+              "displayName": "ATS Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Updated",
+              "displayName": "Last Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hrmsStatus",
+              "displayName": "hrmsStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "originalStatus",
+              "displayName": "originalStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processedAt",
+              "displayName": "processedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        980,
+        1120
+      ],
+      "id": "09dfc49a-4c12-4b98-95ae-56764c50b6b7",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "lJdg5HTRN7AAQ0RY",
+          "name": "Google Sheets account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1260,
+        780
+      ],
+      "id": "34a97c23-0669-47c0-8895-553df8257dca",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        940
+      ],
+      "id": "01845f2f-928d-4f7c-b8c3-8a87f3724d3d",
+      "name": "Extract from File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "ATS Webhook": {
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Triggers": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced Status Mapping": {
+      "main": [
+        [
+          {
+            "node": "Filter for Sync",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter for Sync": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        []
+      ]
+    },
+    "Prepare Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Enhanced Status Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9c0f1f4f-82b5-49e0-ba7b-f154a5fe21e8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "Jbf2RlBtWZ4dKhYW",
+  "tags": []
+}

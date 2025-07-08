@@ -71,4 +71,4 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
   );
 };
 
-export default CoverScreen; 
+export default CoverScreen;

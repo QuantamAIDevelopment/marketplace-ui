@@ -1,6 +1,6 @@
 import React from 'react';
 import PdfSummarizer from '../components/workflows/PdfSummarizer';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const PdfSummarizerPage = () => (
   <PageRevealWrapper
