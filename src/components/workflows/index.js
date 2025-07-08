@@ -17,7 +17,13 @@ export { default as ContractRedFlagDetectorCard } from './ContractRedFlagDetecto
 export { default as SalesForecasting } from './SalesForecasting';
 export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot'; 
 export { default as AIBackroundVerificationCard } from './AIBackroundVerificationCard.jsx'; 
+<<<<<<< HEAD
+export { default as ProjectCoastReports } from './ProjectCoastReports.jsx';
+
+// export { default as FraudDetection } from './FraudDetection';
+=======
 export { default as FraudDetection } from './FraudDetection';
+>>>>>>> fac30f89350fdb02909dc82426e7b12d8a088480
 export { default as BackgroundVerificationAgent } from './BackgroundVerificationAgent'; 
 export { default as TestGenerator } from './TestGenerator';
 

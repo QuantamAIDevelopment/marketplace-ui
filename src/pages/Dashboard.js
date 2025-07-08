@@ -1,10 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserPlus, FaUserCheck, FaBook, FaDatabase, FaVial, FaEnvelopeOpenText, FaFilePdf, FaCalendarCheck,FaSync } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
 
 import { useNavigate } from 'react-router-dom';
-
-import { AmazonWebScrapeCard,AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -210,7 +209,6 @@ const workflowData = [
     summary: 'Migrate tables between databases with AI-powered automation.'
   },
   {
-
     title: 'ATS to HRMS Candidate Status Sync',
     icon: FaSync,
     path: '/workflows/ats-to-hrms-candidate-status-sync',
@@ -263,6 +261,12 @@ const workflowData = [
     icon: FaCalendarCheck,
     path: '/leave-balance-chatbot',
     summary: 'Get instant leave balance information through AI-powered HR assistant.'
+  },
+  {
+    title: 'Project Coast Reports',
+    icon: FaTable,
+    path: '/project-coast-reports',
+    summary: 'Upload project data and get a detailed cost report for your projects.'
   },
   {
     title: 'Automate Candidate Acceptance',

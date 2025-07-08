@@ -56,11 +56,14 @@ import AIBackroundVerificationPage from './pages/AIBackroundVerificationPage';
 
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
+import Navbar from './components/Navbar';
 import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <ErrorBoundary>
         <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
           <main className="flex-1 flex flex-col items-center justify-center p-4">
@@ -112,9 +115,8 @@ function App() {
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
 
               <Route path="/background-verification-agent" element={<BackgroundVerificationAgentPage />} />
-
+              <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
-
             </Routes>
           </main>
         </div>
