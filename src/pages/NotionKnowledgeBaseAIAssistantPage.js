@@ -1,5 +1,5 @@
 import React from 'react';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import NotionKnowledgeBaseAIAssistant from '../components/workflows/NotionKnowledgeBaseAIAssistant';
 
 const NotionKnowledgeBaseAIAssistantPage = () => (

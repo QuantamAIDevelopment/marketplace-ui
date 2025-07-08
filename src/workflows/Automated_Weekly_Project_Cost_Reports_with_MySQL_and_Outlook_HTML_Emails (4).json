@@ -1,0 +1,429 @@
+{
+  "name": "Automated_Weekly_Project_Cost_Reports_with_MySQL_and_Outlook_HTML_Emails",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        200
+      ],
+      "id": "f57dc373-9942-464c-a19e-8584c23b7943",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "sendTo": "Pardhasaradhisiripuram@gmail.com",
+        "subject": "project cost report",
+        "emailType": "text",
+        "message": "=project report",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          },
+          "bccList": ""
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3260,
+        0
+      ],
+      "id": "c08218b4-15d0-4c25-9547-c6671659f790",
+      "name": "Gmail",
+      "webhookId": "9b964779-29fe-4b21-965e-47c9b6926251",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iemYv1gI6F7vH1uV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": " const rawData = `\nWebsite Redesign\\t40\\t50\\t2025-06-17\\tRakesh\\tDesign\\tInitial layout done\nMobile App Dev\\t32\\t65\\t2025-06-17\\tPriya\\tDevelopment\\tWaiting on UI review\nMarketing Sprint\\t20\\t45\\t2025-06-18\\tAnusha\\tMarketing\\tCampaign live\nWebsite Redesign\\t35\\t50\\t2025-06-24\\tRakesh\\tDesign\\tResponsive fixes completed\nMobile App Dev\\t40\\t65\\t2025-06-24\\tPriya\\tDevelopment\\tFinal build submitted\n`;\n\n// Step 1: Define headers\nconst headers = [\n  \"project_name\",\n  \"hours\",\n  \"rate\",\n  \"report_date\",\n  \"team_member\",\n  \"category\",\n  \"notes\"\n];\n\n// Step 2: Parse each line\nconst rows = rawData.trim().split('\\n');\n\nconst output = rows.map(line => {\n  const values = line.split('\\t');\n  const entry = {};\n\n  headers.forEach((key, i) => {\n    const val = values[i];\n    if (key === 'hours' || key === 'rate') {\n      entry[key] = Number(val);\n    } else {\n      entry[key] = val;\n    }\n  });\n\n  // Step 3: Add calculated total cost\n  entry.total_cost = entry.hours * entry.rate;\n\n  return { json: entry }; // 👈 Required by n8n\n});\n\n// Step 4: Return array of items\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        -20
+      ],
+      "id": "5ca0d7b2-6b31-4429-acc9-c4c4d6d2ce4b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "html": " <!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Weekly Project Cost Report</title>\n  <style>\n    body {\n      font-family: Arial, sans-serif;\n      padding: 20px;\n    }\n    h2 {\n      color: #333;\n    }\n    table {\n      border-collapse: collapse;\n      width: 100%;\n      margin-top: 16px;\n    }\n    th, td {\n      border: 1px solid #999;\n      padding: 8px 12px;\n      text-align: left;\n    }\n    thead {\n      background-color: #f0f0f0;\n    }\n    tfoot {\n      background-color: #f9f9f9;\n      font-weight: bold;\n    }\n  </style>\n</head>\n<body>\n\n<h2>🧮 Weekly Project Cost Report</h2>\n\n<table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse: collapse; font-family: Arial; width: 100%;\">\n  <thead style=\"background-color: #f0f0f0;\">\n    <tr>\n      <th>Project</th>\n      <th>Total Hours</th>\n      <th>Rate (₹)</th>\n      <th>Report Date</th>\n      <th>Team Member</th>\n      <th>Category</th>\n      <th>Notes</th>\n      <th>Total Cost (₹)</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Website Redesign</td>\n      <td>40</td>\n      <td>₹50</td>\n      <td>2025-06-17</td>\n      <td>Rakesh</td>\n      <td>Design</td>\n      <td>Initial layout done</td>\n      <td>₹2000</td>\n    </tr>\n    <tr>\n      <td>Mobile App Dev</td>\n      <td>32</td>\n      <td>₹65</td>\n      <td>2025-06-17</td>\n      <td>Priya</td>\n      <td>Development</td>\n      <td>Waiting on UI review</td>\n      <td>₹2080</td>\n    </tr>\n    <tr>\n      <td>Marketing Sprint</td>\n      <td>20</td>\n      <td>₹45</td>\n      <td>2025-06-18</td>\n      <td>Anusha</td>\n      <td>Marketing</td>\n      <td>Campaign live</td>\n      <td>₹900</td>\n    </tr>\n    <tr>\n      <td>Website Redesign</td>\n      <td>35</td>\n      <td>₹50</td>\n      <td>2025-06-24</td>\n      <td>Rakesh</td>\n      <td>Design</td>\n      <td>Responsive fixes completed</td>\n      <td>₹1750</td>\n    </tr>\n    <tr>\n      <td>Mobile App Dev</td>\n      <td>40</td>\n      <td>₹65</td>\n      <td>2025-06-24</td>\n      <td>Priya</td>\n      <td>Development</td>\n      <td>Final build submitted</td>\n      <td>₹2600</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <td colspan=\"7\">💰 Total Cost</td>\n      <td>₹9330</td>\n    </tr>\n  </tfoot>\n</table>\n\n<p>✅ Report generated automatically by <strong>QAID Agent</strong>.</p>\n\n</body>\n</html>\n"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1860,
+        -20
+      ],
+      "id": "2aa92711-1bb3-4986-8ce4-3b8a630c8219",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "jsCode": " const html = `\n<h2>🧮 Weekly Project Cost Report</h2>\n<table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse: collapse; font-family: Arial; width: 100%;\">\n  <thead style=\"background-color: #f0f0f0;\">\n    <tr>\n      <th>Project</th>\n      <th>Total Hours</th>\n      <th>Rate (₹)</th>\n      <th>Report Date</th>\n      <th>Team Member</th>\n      <th>Category</th>\n      <th>Notes</th>\n      <th>Total Cost (₹)</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Website Redesign</td>\n      <td>40</td>\n      <td>₹50</td>\n      <td>2025-06-17</td>\n      <td>Rakesh</td>\n      <td>Design</td>\n      <td>Initial layout done</td>\n      <td>₹2000</td>\n    </tr>\n    <tr>\n      <td>Mobile App Dev</td>\n      <td>32</td>\n      <td>₹65</td>\n      <td>2025-06-17</td>\n      <td>Priya</td>\n      <td>Development</td>\n      <td>Waiting on UI review</td>\n      <td>₹2080</td>\n    </tr>\n    <tr>\n      <td>Marketing Sprint</td>\n      <td>20</td>\n      <td>₹45</td>\n      <td>2025-06-18</td>\n      <td>Anusha</td>\n      <td>Marketing</td>\n      <td>Campaign live</td>\n      <td>₹900</td>\n    </tr>\n    <tr>\n      <td>Website Redesign</td>\n      <td>35</td>\n      <td>₹50</td>\n      <td>2025-06-24</td>\n      <td>Rakesh</td>\n      <td>Design</td>\n      <td>Responsive fixes completed</td>\n      <td>₹1750</td>\n    </tr>\n    <tr>\n      <td>Mobile App Dev</td>\n      <td>40</td>\n      <td>₹65</td>\n      <td>2025-06-24</td>\n      <td>Priya</td>\n      <td>Development</td>\n      <td>Final build submitted</td>\n      <td>₹2600</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <td colspan=\"7\"><strong>Total Cost</strong></td>\n      <td><strong>₹9330</strong></td>\n    </tr>\n  </tfoot>\n</table>\n<p>✅ Report generated automatically by <strong>QAID Agent</strong>.</p>\n`;\n\nreturn [\n  {\n    json: {\n      email_body: html\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1580,
+        0
+      ],
+      "id": "8eb78443-c25a-402c-aef2-563f348b1d2e",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "operation": "URL/HTML to PDF",
+        "convertType": "htmlToPDF",
+        "html": "={{ $json.html }}",
+        "advancedOptions": {}
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        2460,
+        0
+      ],
+      "id": "ece3adbf-9643-46ea-bc8b-867ffb027224",
+      "name": "PDFco Api",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "JM72zRRm4yY4m7Pu",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2680,
+        0
+      ],
+      "id": "c90e5687-bb04-48e6-ac7b-b1c09cec6b90",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1kXQlzEfkPFvkvwxb_2boVAQRUpthpwvO_r6OGzrAfrE",
+          "mode": "list",
+          "cachedResultName": " Automated_Weekly_Project_Cost_Reports_with_MySQL_and_Outlook_HTML_Emails",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kXQlzEfkPFvkvwxb_2boVAQRUpthpwvO_r6OGzrAfrE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 872456908,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kXQlzEfkPFvkvwxb_2boVAQRUpthpwvO_r6OGzrAfrE/edit#gid=872456908"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "total_cost": "={{ $json.total_cost }}",
+            "report_date": "={{ $json.report_date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "project_name",
+              "displayName": "project_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hours",
+              "displayName": "hours",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "rate",
+              "displayName": "rate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "report_date",
+              "displayName": "report_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "team_member",
+              "displayName": "team_member",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_cost",
+              "displayName": "total_cost",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1260,
+        0
+      ],
+      "id": "addaeb02-a388-4d2c-a094-40e90c967454",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fQ2nRUOlwgLZ9hlI",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "project report",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        100,
+        -100
+      ],
+      "id": "7b1ced53-540a-48ae-a605-208202cf8b77",
+      "name": "Webhook",
+      "webhookId": "d3a9d970-6ad8-4f91-88c9-c770ef3675b5"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "project",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        500,
+        0
+      ],
+      "id": "5ecbe670-f9f8-4ef5-9967-83cb76946af9",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        -220
+      ],
+      "id": "5748ff12-12f0-422a-a7a3-a6c241257dae",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "PDFco Api",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDFco Api": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "df1933eb-04c2-48e0-af90-c261be27a385",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0161e303ef6fc741f6b076bb1085a697e6bcdffcacd175a635027573ca13b69b"
+  },
+  "id": "sGfeIN3pgKT2c4Mk",
+  "tags": []
+}

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaWarehouse, FaTruckLoading, FaClipboardList, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { triggerInventoryManagementWorkflow } from '../services/workflows/inventoryManagement';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const workflowSteps = [
   { icon: FaClipboardList, label: 'Input Data', color: 'bg-blue-500' },

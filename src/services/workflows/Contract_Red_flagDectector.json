@@ -1,25 +1,6 @@
 {
-  "name": "Contract_Red_Flag_Detector_Agent",
+  "name": "Contract Red flagDectector",
   "nodes": [
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "contract",
-        "responseMode": "responseNode",
-        "options": {
-          "binaryPropertyName": "data"
-        }
-      },
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        -440,
-        200
-      ],
-      "id": "e063e5b9-96d0-4b19-b848-6941796d00e8",
-      "name": "Webhook",
-      "webhookId": "2794b408-e5cb-4395-841f-7c1cd6a46e27"
-    },
     {
       "parameters": {
         "conditions": {
@@ -47,22 +28,22 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -220,
+        -1540,
         200
       ],
-      "id": "ad2dafb4-5031-4f59-9461-5338a9299bbd",
+      "id": "434b75ff-3f34-4d77-b0cd-b4dddb94d0a8",
       "name": "If"
     },
     {
       "parameters": {
         "functionCode": "const rawText = $json.text || $json.data || '';\nconst cleaned = rawText\n  .replace(/\\n{2,}/g, '\\n')\n  .replace(/ {2,}/g, ' ')\n  .replace(/\\t+/g, ' ')\n  .trim();\n\nreturn [{ json: { text: cleaned } }];"
       },
-      "id": "4c481597-f303-440a-ba9f-8f0ccbffc041",
+      "id": "fe8a6657-68e5-47bc-b26e-4c13466be170",
       "name": "Clean Text",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
       "position": [
-        1060,
+        -260,
         200
       ]
     },
@@ -101,10 +82,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2020,
+        700,
         200
       ],
-      "id": "443f4915-ec5b-49c3-ad51-e0c393d14aa6",
+      "id": "f1a57d5b-f98d-4074-a1ba-dfa9b8ade65f",
       "name": "Edit Fields"
     },
     {
@@ -114,11 +95,261 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        2240,
+        920,
         200
       ],
-      "id": "36159802-e380-4361-9a20-6b14730b7945",
+      "id": "fb70c332-0ba6-4537-9012-66587bf63543",
       "name": "HTML"
+    },
+    {
+      "parameters": {
+        "sendTo": "mailhr100@gmail.com",
+        "subject": "contract review",
+        "message": "“Contract couldn't be processed — possible unreadable scan.Retry with alternate parser if available",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -60,
+        -40
+      ],
+      "id": "03e4de76-8646-4b7e-98b0-8fc2d08eab69",
+      "name": "Gmail1",
+      "webhookId": "99185f75-c11d-4502-a5ad-52e07cc8a01f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c82p0rlY3ZjJJ6LF",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dc4a6f95-24e3-4b68-81c0-af2f6a2a68cd",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "  ",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -460,
+        100
+      ],
+      "id": "cd5e1208-b0e1-4151-a239-6e2da4f0f155",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -940,
+        360
+      ],
+      "id": "c37b1d8a-405e-45d1-b279-2b280e5ebeb8",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        -20
+      ],
+      "id": "4276ffd8-97f3-41f2-9629-810e3eedf782",
+      "name": "Extract binary data to pdf"
+    },
+    {
+      "parameters": {
+        "operation": "Upload File to PDF.co",
+        "binaryData": true,
+        "binaryPropertyName": "document",
+        "name": "contract"
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        -1320,
+        360
+      ],
+      "id": "0e2e62a3-ab7c-489e-ba4c-46ae51621225",
+      "name": "Upload a file intlo pdf.co",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "aIxNESnjggg5GPAF",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "Convert to PDF",
+        "url": "={{ $json.url }}",
+        "advancedOptionsCommon": {}
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        220
+      ],
+      "id": "431bfbed-3d56-4e16-af9f-ff22afdb7b13",
+      "name": "convert to pdf",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "aIxNESnjggg5GPAF",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a legal contract analysis AI. Your task is to review the input contract text and perform two tasks:\n1. **Detect and extract the following key clauses**:\n   - Termination\n   - Indemnity\n   - Liability\n   - Confidentiality\n   - Governing Law\n   - Force Majeure\n\n2. **For each clause**, return:\n   - `clause_name`: The type of clause (e.g., Termination)\n   - `text`: The full text of the detected clause\n   - `risks`: A list of any risky or problematic language found (e.g., \"unilateral termination\", \"unlimited liability\", \"ambiguous scope\")\n   - `risk_level`: One of [\"Low\", \"Moderate\", \"High\"], based on how concerning the language is\n\n3. **If a clause is missing**, note it under `missing_clauses`.\n\n4. **If the clause is vague**, note that under `risks`.\n\nRespond ONLY in this structured JSON format:\n\n\n{\n  \"clauses\": {\n    \"Termination\": {\n      \"text\": \"...\",\n      \"risks\": [\"...\"],\n      \"risk_level\": \"Moderate\"\n    },\n    \"Indemnity\": {\n      \"text\": \"...\",\n      \"risks\": [],\n      \"risk_level\": \"Low\"\n    },\n    ...\n  },\n  \"missing_clauses\": [\"Governing Law\", \"Force Majeure\"]\n}{{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        180
+      ],
+      "id": "9cf30756-f4d0-4d5d-a60d-3778b7e4a49b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"clauses\": {\n    \"Termination\": {\n      \"text\": \"[Extracted clause or 'Not found']\",\n      \"risk\": \"[Yes/No]\",\n      \"comments\": \"[If risk is Yes, explain why]\"\n    },\n    \"Indemnity\": {\n      \"text\": \"...\",\n      \"risk\": \"...\",\n      \"comments\": \"...\"\n    }\n  },\n  \"missing_clauses\": [\"Governing Law\", \"Force Majeure\"],\n  \"vague_phrases\": [\n    {\n      \"text\": \"[Quoted text]\",\n      \"issue\": \"[Why it's vague or ambiguous]\"\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        440
+      ],
+      "id": "c465ee4a-354a-46fe-ade2-18fe84d385f0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a legal analyst AI.\n\nAnalyze the following contract analysis and generate a Red Flag Summary:\n{{ $json.output.clauses.Termination.text }}\n\nTasks:\n\n1. **Count how many red flags are present** in the analysis and report that number at the top.\n2. Create a table of all flagged clauses with two columns: \"Clause\" and \"Risk Explanation\".\n3. List any missing or incomplete key sections as bullet points.\n4. Assign an overall risk score (High, Medium, or Low) and explain your reasoning based on the number and severity of red flags.\n5. Suggest 2–4 recommended actions to mitigate the identified risks.\n\nFormat your output clearly using tables and bullet points. Start the summary with:  \n**Total Red Flags Identified: X**\n\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        300,
+        180
+      ],
+      "id": "6742ee78-bd69-41fe-9083-6902cc567c8c",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"totalRedFlags\": 0,\n  \"flaggedClauses\": [\n    {\n      \"clause\": \"\",\n      \"riskExplanation\": \"\"\n    }\n  \n  ],\n  \"missingSections\": [\n   \n  ],\n  \"overallRiskAssessment\": {\n    \"riskScore\": \"\", \n    \"justification\": \"\"\n  },\n  \"recommendations\": [\n   \n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        420
+      ],
+      "id": "38112772-9fbf-4b5f-9367-be734a40ff1f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        300,
+        420
+      ],
+      "id": "27f02075-55cc-47f4-8a14-3d1dec156baa",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "AYarmNiHScqYk6NE",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        440
+      ],
+      "id": "b1f9869f-12c4-4225-a5fd-94aa728523ae",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "rYWr9q9jtGDij1p5",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contract",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1840,
+        180
+      ],
+      "id": "da0440f8-e040-4dc8-9dda-1c5cb1313b6f",
+      "name": "Webhook",
+      "webhookId": "5054067e-77ef-4748-b71b-b42dbb4a8dc8"
     },
     {
       "parameters": {
@@ -159,15 +390,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2480,
+        1140,
         200
       ],
-      "id": "5f5d9bf8-ed0b-415e-827e-8d3756b41791",
+      "id": "9b7c84d9-ef8d-4ff1-aeb3-831dd5959f6d",
       "name": "HTTP Request"
     },
     {
       "parameters": {
-        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "sendTo": "mailhr100@gmail.com",
         "subject": "contract",
         "message": "check this",
         "options": {
@@ -183,152 +414,68 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        2680,
-        200
+        1360,
+        220
       ],
-      "id": "c29eb7d9-bf4a-4405-8559-4ac195a4283d",
+      "id": "34a8fd72-d2ca-419a-8916-fdb350c1060a",
       "name": "Gmail",
       "webhookId": "52234452-2b59-4a49-b0ff-c0bc87d227b5",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "pmvUuAtQBmxsodbx",
+          "name": "Gmail account 3"
         }
       }
     },
     {
       "parameters": {
-        "sendTo": "={{ $('Webhook').item.json.body.email }}",
-        "subject": "contract review",
-        "message": "“Contract couldn't be processed — possible unreadable scan.Retry with alternate parser if available",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [
-        1260,
-        -40
-      ],
-      "id": "10ac38c6-3171-4de8-a980-dc5b518ec2f1",
-      "name": "Gmail1",
-      "webhookId": "99185f75-c11d-4502-a5ad-52e07cc8a01f",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "loose",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "dc4a6f95-24e3-4b68-81c0-af2f6a2a68cd",
-              "leftValue": "={{ $json.text }}",
-              "rightValue": "  ",
-              "operator": {
-                "type": "string",
-                "operation": "empty",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "or"
-        },
-        "looseTypeValidation": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        880,
-        180
-      ],
-      "id": "0af40bed-24e8-429d-9c02-f4d89712bec3",
-      "name": "If1"
-    },
-    {
-      "parameters": {
-        "url": "={{ $json.url }}",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "file"
-            }
-          }
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        380,
-        260
-      ],
-      "id": "1423d206-8dd8-469f-8cb9-0d70d215669c",
-      "name": "HTTP Request1"
-    },
-    {
-      "parameters": {
-        "respondWith": "allIncomingItems",
+        "respondWith": "text",
+        "responseBody": "=Upload time: {{ $now }}\nUser:{{ $('Webhook').item.json.body.mail }}\nDocument Name:{{ $('Webhook').item.json.body['doc id'] }}\nNumber of redflags:{{ $json['Number of Red Flags'] }}\nOverall risk:{{ $json['Risk Score'] }}\nSuggestion to fix:{{ $('AI Agent1').item.json.output.recommendations }}",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        3080,
-        200
+        1800,
+        220
       ],
-      "id": "ab8fe12f-4e7f-4d75-a01c-415e43e61445",
+      "id": "1fa058af-b026-49b3-ba20-f7e5a21577a3",
       "name": "Respond to Webhook"
     },
     {
       "parameters": {
-        "operation": "upsert",
-        "schema": {
+        "operation": "appendOrUpdate",
+        "documentId": {
           "__rl": true,
+          "value": "1cNdYR83rQQTbLnYXjkikm3Y-CizEi0YYJehb0Axe6X0",
           "mode": "list",
-          "value": "public"
+          "cachedResultName": "contract",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cNdYR83rQQTbLnYXjkikm3Y-CizEi0YYJehb0Axe6X0/edit?usp=drivesdk"
         },
-        "table": {
+        "sheetName": {
           "__rl": true,
-          "value": "contract_reviews_dep",
+          "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "contract_reviews_dep"
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cNdYR83rQQTbLnYXjkikm3Y-CizEi0YYJehb0Axe6X0/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "user_email": "={{ $('Webhook').item.json.body.email }}",
-            "document_name": "={{ $('Webhook').item.json.body['document name'] }}",
-            "upload_time": "={{ $now }}",
-            "red_flag_count": "={{ $('AI Agent1').item.json.output.totalRedFlags }}",
-            "risk_score": "={{ $('AI Agent1').item.json.output.overallRiskAssessment.riskScore }}",
-            "status": "={{ $json.labelIds[0] }}"
+            "Upload Time": "={{ $now }}",
+            "User / Source Email": "={{ $('Webhook').item.json.body.mail }}",
+            "Document Name/ Filename": "={{ $('Webhook').item.json.body['doc id'] }}",
+            "Number of Red Flags": "={{ $('AI Agent1').item.json.output.totalRedFlags }}",
+            "Risk Score": "={{ $('AI Agent1').item.json.output.overallRiskAssessment.riskScore }}"
           },
           "matchingColumns": [
-            "user_email"
+            "Upload Time"
           ],
           "schema": [
             {
-              "id": "upload_time",
-              "displayName": "upload_time",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "user_email",
-              "displayName": "user_email",
-              "required": true,
+              "id": "Upload Time",
+              "displayName": "Upload Time",
+              "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
@@ -336,40 +483,49 @@
               "removed": false
             },
             {
-              "id": "document_name",
-              "displayName": "document_name",
-              "required": true,
+              "id": "User / Source Email",
+              "displayName": "User / Source Email",
+              "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": false
+              "canBeUsedToMatch": true
             },
             {
-              "id": "red_flag_count",
-              "displayName": "red_flag_count",
-              "required": true,
+              "id": "Document Name/ Filename",
+              "displayName": "Document Name/ Filename",
+              "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": false
+              "canBeUsedToMatch": true
             },
             {
-              "id": "risk_score",
-              "displayName": "risk_score",
-              "required": true,
+              "id": "Number of Red Flags",
+              "displayName": "Number of Red Flags",
+              "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": false
+              "canBeUsedToMatch": true
             },
             {
-              "id": "status",
-              "displayName": "status",
-              "required": true,
+              "id": "Risk Score",
+              "displayName": "Risk Score",
+              "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": false
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -377,76 +533,18 @@
         },
         "options": {}
       },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
       "position": [
-        2860,
-        200
+        1560,
+        220
       ],
-      "id": "6a8274de-1692-4b5a-9858-86be253c861a",
-      "name": "Postgres1",
+      "id": "9b56a156-c71b-4400-bf40-f70dc9fa2acb",
+      "name": "Google Sheets",
       "credentials": {
-        "postgres": {
-          "id": "ombHCedKDy5YY5fq",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "pdf",
-        "binaryPropertyName": "data0",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1,
-      "position": [
-        280,
-        -100
-      ],
-      "id": "f8590c6a-7c55-44cb-8413-4830907266a8",
-      "name": "Extract binary data to pdf"
-    },
-    {
-      "parameters": {
-        "operation": "Upload File to PDF.co",
-        "binaryData": true,
-        "binaryPropertyName": "data0",
-        "name": "Contract"
-      },
-      "type": "n8n-nodes-pdfco.PDFco Api",
-      "typeVersion": 1,
-      "position": [
-        0,
-        260
-      ],
-      "id": "d905b3bb-f75d-4727-b832-2a9e3ae18374",
-      "name": "Upload a file intlo pdf.co",
-      "credentials": {
-        "pdfcoApi": {
-          "id": "89Y435REJteNHS59",
-          "name": "PDF.co account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "Convert to PDF",
-        "url": "={{ $json.url }}",
-        "advancedOptionsCommon": {}
-      },
-      "type": "n8n-nodes-pdfco.PDFco Api",
-      "typeVersion": 1,
-      "position": [
-        200,
-        260
-      ],
-      "id": "9479f9f1-6c29-4d10-89f5-1140b942a84d",
-      "name": "convert to pdf",
-      "credentials": {
-        "pdfcoApi": {
-          "id": "89Y435REJteNHS59",
-          "name": "PDF.co account"
+        "googleSheetsOAuth2Api": {
+          "id": "7dYPF2QRMDxtFKB9",
+          "name": "Google Sheets account 4"
         }
       }
     },
@@ -458,123 +556,15 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        600,
-        260
+        -660,
+        380
       ],
-      "id": "04fbe150-61e3-4d75-922a-ed704f1daf33",
-      "name": "Extract binary data into pdf 1"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=You are a legal contract analysis AI. Your task is to review the input contract text and perform two tasks:\n1. **Detect and extract the following key clauses**:\n   - Termination\n   - Indemnity\n   - Liability\n   - Confidentiality\n   - Governing Law\n   - Force Majeure\n\n2. **For each clause**, return:\n   - `clause_name`: The type of clause (e.g., Termination)\n   - `text`: The full text of the detected clause\n   - `risks`: A list of any risky or problematic language found (e.g., \"unilateral termination\", \"unlimited liability\", \"ambiguous scope\")\n   - `risk_level`: One of [\"Low\", \"Moderate\", \"High\"], based on how concerning the language is\n\n3. **If a clause is missing**, note it under `missing_clauses`.\n\n4. **If the clause is vague**, note that under `risks`.\n\nRespond ONLY in this structured JSON format:\n\n\n{\n  \"clauses\": {\n    \"Termination\": {\n      \"text\": \"...\",\n      \"risks\": [\"...\"],\n      \"risk_level\": \"Moderate\"\n    },\n    \"Indemnity\": {\n      \"text\": \"...\",\n      \"risks\": [],\n      \"risk_level\": \"Low\"\n    },\n    ...\n  },\n  \"missing_clauses\": [\"Governing Law\", \"Force Majeure\"]\n}{{ $json.text }}",
-        "hasOutputParser": true,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2,
-      "position": [
-        1300,
-        180
-      ],
-      "id": "8b053028-2454-4f8d-b324-78a773debbbe",
-      "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "jsonSchemaExample": "{\n  \"clauses\": {\n    \"Termination\": {\n      \"text\": \"[Extracted clause or 'Not found']\",\n      \"risk\": \"[Yes/No]\",\n      \"comments\": \"[If risk is Yes, explain why]\"\n    },\n    \"Indemnity\": {\n      \"text\": \"...\",\n      \"risk\": \"...\",\n      \"comments\": \"...\"\n    }\n  },\n  \"missing_clauses\": [\"Governing Law\", \"Force Majeure\"],\n  \"vague_phrases\": [\n    {\n      \"text\": \"[Quoted text]\",\n      \"issue\": \"[Why it's vague or ambiguous]\"\n    }\n  ]\n}\n"
-      },
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2,
-      "position": [
-        1440,
-        440
-      ],
-      "id": "bc14ec66-7d33-45fa-a32c-e6b90ecbe9e5",
-      "name": "Structured Output Parser"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "=You are a legal analyst AI.\n\nAnalyze the following contract analysis and generate a Red Flag Summary:\n{{ $json.output.clauses.Termination.text }}\n\nTasks:\n\n1. **Count how many red flags are present** in the analysis and report that number at the top.\n2. Create a table of all flagged clauses with two columns: \"Clause\" and \"Risk Explanation\".\n3. List any missing or incomplete key sections as bullet points.\n4. Assign an overall risk score (High, Medium, or Low) and explain your reasoning based on the number and severity of red flags.\n5. Suggest 2–4 recommended actions to mitigate the identified risks.\n\nFormat your output clearly using tables and bullet points. Start the summary with:  \n**Total Red Flags Identified: X**\n\n\n",
-        "hasOutputParser": true,
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 2,
-      "position": [
-        1620,
-        180
-      ],
-      "id": "b44cd62c-2034-487e-aede-478637a7cbcc",
-      "name": "AI Agent1"
-    },
-    {
-      "parameters": {
-        "jsonSchemaExample": "{\n  \"totalRedFlags\": 0,\n  \"flaggedClauses\": [\n    {\n      \"clause\": \"\",\n      \"riskExplanation\": \"\"\n    }\n  \n  ],\n  \"missingSections\": [\n   \n  ],\n  \"overallRiskAssessment\": {\n    \"riskScore\": \"\", \n    \"justification\": \"\"\n  },\n  \"recommendations\": [\n   \n  ]\n}\n"
-      },
-      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
-      "typeVersion": 1.2,
-      "position": [
-        1780,
-        420
-      ],
-      "id": "25316878-5fd4-4ec4-aa32-a022f7042bf9",
-      "name": "Structured Output Parser1"
-    },
-    {
-      "parameters": {
-        "model": "llama-3.3-70b-versatile",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
-      "typeVersion": 1,
-      "position": [
-        1620,
-        420
-      ],
-      "id": "ffbf78fa-39c6-450d-a659-be8fe180dbea",
-      "name": "Groq Chat Model",
-      "credentials": {
-        "groqApi": {
-          "id": "1E3ZL2vIpcClZdxZ",
-          "name": "Groq account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        1300,
-        440
-      ],
-      "id": "7c4e7bb0-5aeb-44ba-b79d-1d9c0b97c5f5",
-      "name": "OpenRouter Chat Model",
-      "credentials": {
-        "openRouterApi": {
-          "id": "JjMmhLRCLv1lEaa6",
-          "name": "OpenRouter New"
-        }
-      }
+      "id": "9c50ff27-f0e3-4773-a587-6723654cc871",
+      "name": "Extract from File"
     }
   ],
   "pinData": {},
   "connections": {
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If": {
       "main": [
         [
@@ -615,39 +605,6 @@
         ]
       ]
     },
-    "HTML": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Gmail",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gmail": {
-      "main": [
-        [
-          {
-            "node": "Postgres1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If1": {
       "main": [
         [
@@ -670,18 +627,7 @@
       "main": [
         [
           {
-            "node": "Extract binary data into pdf 1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
+            "node": "Extract from File",
             "type": "main",
             "index": 0
           }
@@ -689,39 +635,6 @@
       ]
     },
     "Extract binary data to pdf": {
-      "main": [
-        [
-          {
-            "node": "If1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Upload a file intlo pdf.co": {
-      "main": [
-        [
-          {
-            "node": "convert to pdf",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "convert to pdf": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract binary data into pdf 1": {
       "main": [
         [
           {
@@ -797,17 +710,105 @@
           }
         ]
       ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file intlo pdf.co": {
+      "main": [
+        [
+          {
+            "node": "convert to pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert to pdf": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0bea4c7c-6a05-438c-b7bc-d3da696b85cc",
+  "versionId": "5fed897d-5ffe-4954-a5b9-f501f32dd1df",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+    "instanceId": "f2dcff17879b89aa5e3fb355aaaf4958fa34ba95a48a5522b4d4713479e895f6"
   },
-  "id": "XJhkkPQqt6XGv6kV",
+  "id": "RS3I4Ira7K4IJgHT",
   "tags": []
 }

@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChartBar, FaCheckCircle, FaExclamationTriangle, FaFileCsv } from 'react-icons/fa';
 import { triggerMetricsBusinessAnalyticsWorkflow } from '../services/workflows/metricsBusinessAnalytics';
-import PageRevealWrapper from '../components/PageRevealWrapper';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
+
 
 const workflowSteps = [
   { icon: FaFileCsv, label: 'Upload Quarterly CSVs', color: 'bg-orange-500' },

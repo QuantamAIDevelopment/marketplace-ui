@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaVial } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
@@ -75,14 +75,18 @@ const workflows = [
     icon: FaFileContract,
     path: '/workflows/contract-red-flag',
     description: 'Detect red flags in contracts using AI.',
-    isButton: true,
-    buttonText: 'Go to Detector',
   },
   {
     title: 'Product Recommendation Agent',
     icon: FaBoxOpen,
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
+  },
+  {
+    title: 'Test Case Generator',
+    icon: FaVial,
+    path: '/test-generator',
+    description: 'Generate QA test cases from your feature docs using AI.',
   },
 ];
 
