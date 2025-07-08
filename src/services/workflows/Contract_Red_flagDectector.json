@@ -1,0 +1,814 @@
+{
+  "name": "Contract Red flagDectector",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "cfccdd3f-3240-4425-885a-1c61a9c1e7b3",
+              "leftValue": "={{ $json.body['document type'] }}",
+              "rightValue": "pdf",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1540,
+        200
+      ],
+      "id": "434b75ff-3f34-4d77-b0cd-b4dddb94d0a8",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "functionCode": "const rawText = $json.text || $json.data || '';\nconst cleaned = rawText\n  .replace(/\\n{2,}/g, '\\n')\n  .replace(/ {2,}/g, ' ')\n  .replace(/\\t+/g, ' ')\n  .trim();\n\nreturn [{ json: { text: cleaned } }];"
+      },
+      "id": "fe8a6657-68e5-47bc-b26e-4c13466be170",
+      "name": "Clean Text",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fd11dff8-3e16-4dbc-aff6-645fde37a439",
+              "name": "Flagged  clauses",
+              "value": "={{ $json.output.flaggedClauses }}",
+              "type": "string"
+            },
+            {
+              "id": "cf189a0b-3ec3-4e94-9e68-7bb380d17f32",
+              "name": "Overallrisk score",
+              "value": "={{ $json.output.overallRiskAssessment.riskScore }}",
+              "type": "string"
+            },
+            {
+              "id": "35468928-a75f-4d28-af9b-c69b639bc7d0",
+              "name": "Missing section",
+              "value": "={{ $json.output.missingSections }}",
+              "type": "string"
+            },
+            {
+              "id": "30625618-b776-4ab1-a552-964a355744f8",
+              "name": "Suggestion to fix",
+              "value": "={{ $json.output.recommendations }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        700,
+        200
+      ],
+      "id": "f1a57d5b-f98d-4074-a1ba-dfa9b8ade65f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "html": "<html>\n  <body style=\"font-family: Arial, sans-serif; padding: 20px;\">\n    <h2>Contract Risk Assessment Report</h2>\n\n    <h3>🔒 Overall Risk Score:</h3>\n    <ul>\n{{ $json['Overallrisk score'] }}\n    </ul>\n\n    <h3>🚩 Flagged Clauses</h3>\n<ul>\n{{ $json['Flagged  clauses'] }}\n     </ul>\n\n    <h3>📌 Suggestion to fix </h3>\n    <ul>\n    \n    {{ $json['Suggestion to fix'] }}\n    </ul>\n\n    <h3>📄 Missing Sections</h3>\n    <ul>\n {{ $json['Missing section'] }}    \n    </ul>\n  </body>\n</html>\n"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        920,
+        200
+      ],
+      "id": "fb70c332-0ba6-4537-9012-66587bf63543",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "sendTo": "mailhr100@gmail.com",
+        "subject": "contract review",
+        "message": "“Contract couldn't be processed — possible unreadable scan.Retry with alternate parser if available",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -60,
+        -40
+      ],
+      "id": "03e4de76-8646-4b7e-98b0-8fc2d08eab69",
+      "name": "Gmail1",
+      "webhookId": "99185f75-c11d-4502-a5ad-52e07cc8a01f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c82p0rlY3ZjJJ6LF",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dc4a6f95-24e3-4b68-81c0-af2f6a2a68cd",
+              "leftValue": "={{ $json.text }}",
+              "rightValue": "  ",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -460,
+        100
+      ],
+      "id": "cd5e1208-b0e1-4151-a239-6e2da4f0f155",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -940,
+        360
+      ],
+      "id": "c37b1d8a-405e-45d1-b279-2b280e5ebeb8",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "data0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1080,
+        -20
+      ],
+      "id": "4276ffd8-97f3-41f2-9629-810e3eedf782",
+      "name": "Extract binary data to pdf"
+    },
+    {
+      "parameters": {
+        "operation": "Upload File to PDF.co",
+        "binaryData": true,
+        "binaryPropertyName": "document",
+        "name": "contract"
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        -1320,
+        360
+      ],
+      "id": "0e2e62a3-ab7c-489e-ba4c-46ae51621225",
+      "name": "Upload a file intlo pdf.co",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "aIxNESnjggg5GPAF",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "Convert to PDF",
+        "url": "={{ $json.url }}",
+        "advancedOptionsCommon": {}
+      },
+      "type": "n8n-nodes-pdfco.PDFco Api",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        220
+      ],
+      "id": "431bfbed-3d56-4e16-af9f-ff22afdb7b13",
+      "name": "convert to pdf",
+      "credentials": {
+        "pdfcoApi": {
+          "id": "aIxNESnjggg5GPAF",
+          "name": "PDF.co account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a legal contract analysis AI. Your task is to review the input contract text and perform two tasks:\n1. **Detect and extract the following key clauses**:\n   - Termination\n   - Indemnity\n   - Liability\n   - Confidentiality\n   - Governing Law\n   - Force Majeure\n\n2. **For each clause**, return:\n   - `clause_name`: The type of clause (e.g., Termination)\n   - `text`: The full text of the detected clause\n   - `risks`: A list of any risky or problematic language found (e.g., \"unilateral termination\", \"unlimited liability\", \"ambiguous scope\")\n   - `risk_level`: One of [\"Low\", \"Moderate\", \"High\"], based on how concerning the language is\n\n3. **If a clause is missing**, note it under `missing_clauses`.\n\n4. **If the clause is vague**, note that under `risks`.\n\nRespond ONLY in this structured JSON format:\n\n\n{\n  \"clauses\": {\n    \"Termination\": {\n      \"text\": \"...\",\n      \"risks\": [\"...\"],\n      \"risk_level\": \"Moderate\"\n    },\n    \"Indemnity\": {\n      \"text\": \"...\",\n      \"risks\": [],\n      \"risk_level\": \"Low\"\n    },\n    ...\n  },\n  \"missing_clauses\": [\"Governing Law\", \"Force Majeure\"]\n}{{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        180
+      ],
+      "id": "9cf30756-f4d0-4d5d-a60d-3778b7e4a49b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"clauses\": {\n    \"Termination\": {\n      \"text\": \"[Extracted clause or 'Not found']\",\n      \"risk\": \"[Yes/No]\",\n      \"comments\": \"[If risk is Yes, explain why]\"\n    },\n    \"Indemnity\": {\n      \"text\": \"...\",\n      \"risk\": \"...\",\n      \"comments\": \"...\"\n    }\n  },\n  \"missing_clauses\": [\"Governing Law\", \"Force Majeure\"],\n  \"vague_phrases\": [\n    {\n      \"text\": \"[Quoted text]\",\n      \"issue\": \"[Why it's vague or ambiguous]\"\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        440
+      ],
+      "id": "c465ee4a-354a-46fe-ade2-18fe84d385f0",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a legal analyst AI.\n\nAnalyze the following contract analysis and generate a Red Flag Summary:\n{{ $json.output.clauses.Termination.text }}\n\nTasks:\n\n1. **Count how many red flags are present** in the analysis and report that number at the top.\n2. Create a table of all flagged clauses with two columns: \"Clause\" and \"Risk Explanation\".\n3. List any missing or incomplete key sections as bullet points.\n4. Assign an overall risk score (High, Medium, or Low) and explain your reasoning based on the number and severity of red flags.\n5. Suggest 2–4 recommended actions to mitigate the identified risks.\n\nFormat your output clearly using tables and bullet points. Start the summary with:  \n**Total Red Flags Identified: X**\n\n\n",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        300,
+        180
+      ],
+      "id": "6742ee78-bd69-41fe-9083-6902cc567c8c",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"totalRedFlags\": 0,\n  \"flaggedClauses\": [\n    {\n      \"clause\": \"\",\n      \"riskExplanation\": \"\"\n    }\n  \n  ],\n  \"missingSections\": [\n   \n  ],\n  \"overallRiskAssessment\": {\n    \"riskScore\": \"\", \n    \"justification\": \"\"\n  },\n  \"recommendations\": [\n   \n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        420
+      ],
+      "id": "38112772-9fbf-4b5f-9367-be734a40ff1f",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        300,
+        420
+      ],
+      "id": "27f02075-55cc-47f4-8a14-3d1dec156baa",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "AYarmNiHScqYk6NE",
+          "name": "Groq account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        440
+      ],
+      "id": "b1f9869f-12c4-4225-a5fd-94aa728523ae",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "rYWr9q9jtGDij1p5",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "contract",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1840,
+        180
+      ],
+      "id": "da0440f8-e040-4dc8-9dda-1c5cb1313b6f",
+      "name": "Webhook",
+      "webhookId": "5054067e-77ef-4748-b71b-b42dbb4a8dc8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pdfcrowd.com/convert/24.04",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "authorization",
+              "value": "Basic ZGVtbzpjZTU0NGI2ZWE1MmE1NjIxZmI5ZDU1ZjhiNTQyZDE0ZA=="
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content_viewport_width",
+              "value": "balanced"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.html }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "HelloWorld.pdf"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1140,
+        200
+      ],
+      "id": "9b7c84d9-ef8d-4ff1-aeb3-831dd5959f6d",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "mailhr100@gmail.com",
+        "subject": "contract",
+        "message": "check this",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "HelloWorld.pdf"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1360,
+        220
+      ],
+      "id": "34a8fd72-d2ca-419a-8916-fdb350c1060a",
+      "name": "Gmail",
+      "webhookId": "52234452-2b59-4a49-b0ff-c0bc87d227b5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "pmvUuAtQBmxsodbx",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Upload time: {{ $now }}\nUser:{{ $('Webhook').item.json.body.mail }}\nDocument Name:{{ $('Webhook').item.json.body['doc id'] }}\nNumber of redflags:{{ $json['Number of Red Flags'] }}\nOverall risk:{{ $json['Risk Score'] }}\nSuggestion to fix:{{ $('AI Agent1').item.json.output.recommendations }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1800,
+        220
+      ],
+      "id": "1fa058af-b026-49b3-ba20-f7e5a21577a3",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1cNdYR83rQQTbLnYXjkikm3Y-CizEi0YYJehb0Axe6X0",
+          "mode": "list",
+          "cachedResultName": "contract",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cNdYR83rQQTbLnYXjkikm3Y-CizEi0YYJehb0Axe6X0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1cNdYR83rQQTbLnYXjkikm3Y-CizEi0YYJehb0Axe6X0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Upload Time": "={{ $now }}",
+            "User / Source Email": "={{ $('Webhook').item.json.body.mail }}",
+            "Document Name/ Filename": "={{ $('Webhook').item.json.body['doc id'] }}",
+            "Number of Red Flags": "={{ $('AI Agent1').item.json.output.totalRedFlags }}",
+            "Risk Score": "={{ $('AI Agent1').item.json.output.overallRiskAssessment.riskScore }}"
+          },
+          "matchingColumns": [
+            "Upload Time"
+          ],
+          "schema": [
+            {
+              "id": "Upload Time",
+              "displayName": "Upload Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "User / Source Email",
+              "displayName": "User / Source Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Document Name/ Filename",
+              "displayName": "Document Name/ Filename",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Number of Red Flags",
+              "displayName": "Number of Red Flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Risk Score",
+              "displayName": "Risk Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1560,
+        220
+      ],
+      "id": "9b56a156-c71b-4400-bf40-f70dc9fa2acb",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7dYPF2QRMDxtFKB9",
+          "name": "Google Sheets account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        380
+      ],
+      "id": "9c50ff27-f0e3-4773-a587-6723654cc871",
+      "name": "Extract from File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Extract binary data to pdf",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload a file intlo pdf.co",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Text": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Clean Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract binary data to pdf": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file intlo pdf.co": {
+      "main": [
+        [
+          {
+            "node": "convert to pdf",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "convert to pdf": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5fed897d-5ffe-4954-a5b9-f501f32dd1df",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f2dcff17879b89aa5e3fb355aaaf4958fa34ba95a48a5522b4d4713479e895f6"
+  },
+  "id": "RS3I4Ira7K4IJgHT",
+  "tags": []
+}

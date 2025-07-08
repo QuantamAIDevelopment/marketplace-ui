@@ -12,7 +12,7 @@ import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
 import AICustomerSupport from './pages/AICustomerSupport';
 import ProductRecommendationPage from './pages/ProductRecommendationPage';
-import ContractRedFlagDectectorPage from './pages/ContractRedFlagDectectorPage';
+import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
 import SalesForecastingPage from './pages/SalesForecastingPage';
@@ -26,7 +26,7 @@ import FraudDetectionPage from './pages/FraudDetectionPage';
 import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
 
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
-import TestCaseGeneratorPage from './pages/TestCaseGeneratorPage';
+import TestGeneratorPage from './pages/TestGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
 
@@ -67,13 +67,14 @@ function App() {
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
               <Route path="/workflows/product-recommendation" element={<ProductRecommendationPage />} />
-              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDectectorPage />} />
+              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
+              <Route path="/contract-red-flag-detector" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
 
               <Route path="/workflows/testmonial-extractor" element={React.createElement(require('./pages/TestmonialExtractorPage.jsx').default)} />
               <Route path="/workflows/dynamic-model-selector" element={React.createElement(require('./pages/DynamicModelSelectorPage.jsx').default)} />
-              <Route path="/test-case-generator" element={<TestCaseGeneratorPage />} />
+              <Route path="/test-generator" element={<TestGeneratorPage />} />
               <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
               <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
               <Route path="/workflows/product-feedback-summarizer" element={<ProductFeedbackSummarizerPage />} />

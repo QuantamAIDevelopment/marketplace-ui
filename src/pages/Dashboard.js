@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf, FaUserCheck } from 'react-icons/fa'
 
 import { useNavigate } from 'react-router-dom';
+
+import { AmazonWebScrapeCard, ContractRedFlagDetectorCard } from '../components/workflows';
 import { AmazonWebScrapeCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 
@@ -188,8 +190,8 @@ const workflowData = [
   {
     title: 'Test Case Generator',
     icon: FaVial,
-    path: '/test-case-generator',
-    summary: 'Generate QA test cases from your feature docs using Evenmind AI.'
+    path: '/test-generator',
+    summary: 'Generate QA test cases from your feature docs using AI.'
   },
   {
     title: 'Gmail Categorization',
