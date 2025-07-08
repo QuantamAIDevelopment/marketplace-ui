@@ -1,5 +1,5 @@
 import React from 'react';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import InventoryPredictAI from '../components/workflows/InventoryPredictAI';
 import { uploadInventoryAndGetForecast } from '../services/workflows/inventoryPredictAI';
 
