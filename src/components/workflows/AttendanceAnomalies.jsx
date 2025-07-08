@@ -5,7 +5,7 @@ import ResponseResult from '../common/ResponseResult';
 import PageRevealWrapper from './PageRevealWrapper';
 
 // Updated endpoint to match your cURL command, URL-encoded
-const API_URL ='https://bhanubhavani.app.n8n.cloud/webhook/attandance%20anomiles%20-%20Sheet1%20(1).csv';
+const API_URL ='https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/attandance%20anomiles%20-%20Sheet1%20(1).csv';
 const AttendanceAnomalies = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);

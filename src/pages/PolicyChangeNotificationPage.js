@@ -5,11 +5,6 @@ import axios from 'axios';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const PolicyChangeNotificationPageContent = () => {
-  const [stats, setStats] = useState({
-    acknowledgedPolicies: 0,
-    pendingAcknowledgments: 0,
-    totalPolicies: 0
-  });
   const [notifications, setNotifications] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +17,6 @@ const PolicyChangeNotificationPageContent = () => {
     const storedData = localStorage.getItem('policyData');
     if (storedData) {
       const data = JSON.parse(storedData);
-      setStats(data.stats);
       setNotifications(data.recentNotifications);
     }
   }, []);
@@ -76,7 +70,6 @@ const PolicyChangeNotificationPageContent = () => {
       localStorage.setItem('policyData', JSON.stringify(response.data));
       
       // Update the local state with new data
-      setStats(response.data.stats);
       setNotifications(response.data.recentNotifications);
       setSelectedFile(null);
       setUploadProgress(0);
@@ -277,4 +270,4 @@ const PolicyChangeNotificationPage = () => {
   );
 };
 
-export default PolicyChangeNotificationPage; 
+export default PolicyChangeNotificationPage;

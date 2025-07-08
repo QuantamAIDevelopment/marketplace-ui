@@ -1,5 +1,5 @@
 {
-  "name": "Contract_Red_Flag_Detector_Agent",
+  "name": "ContractRedFlagDectector",
   "nodes": [
     {
       "parameters": {
@@ -13,10 +13,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -440,
-        200
+        -940,
+        240
       ],
-      "id": "e063e5b9-96d0-4b19-b848-6941796d00e8",
+      "id": "d28d5012-7aa9-4a97-ac24-8377a68c53a4",
       "name": "Webhook",
       "webhookId": "2794b408-e5cb-4395-841f-7c1cd6a46e27"
     },
@@ -47,23 +47,23 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -220,
-        200
+        -720,
+        240
       ],
-      "id": "ad2dafb4-5031-4f59-9461-5338a9299bbd",
+      "id": "69f5fe8e-0175-40e0-a292-e63f13425ca7",
       "name": "If"
     },
     {
       "parameters": {
         "functionCode": "const rawText = $json.text || $json.data || '';\nconst cleaned = rawText\n  .replace(/\\n{2,}/g, '\\n')\n  .replace(/ {2,}/g, ' ')\n  .replace(/\\t+/g, ' ')\n  .trim();\n\nreturn [{ json: { text: cleaned } }];"
       },
-      "id": "4c481597-f303-440a-ba9f-8f0ccbffc041",
+      "id": "f299a77d-b224-4431-9878-31c3f8836851",
       "name": "Clean Text",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
       "position": [
-        1060,
-        200
+        560,
+        240
       ]
     },
     {
@@ -101,10 +101,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2020,
-        200
+        1520,
+        240
       ],
-      "id": "443f4915-ec5b-49c3-ad51-e0c393d14aa6",
+      "id": "578ff53f-d96f-4618-9720-414988d74eb4",
       "name": "Edit Fields"
     },
     {
@@ -114,10 +114,10 @@
       "type": "n8n-nodes-base.html",
       "typeVersion": 1.2,
       "position": [
-        2240,
-        200
+        1740,
+        240
       ],
-      "id": "36159802-e380-4361-9a20-6b14730b7945",
+      "id": "303ba092-1fa2-45b3-b58a-da16b2ea0f5a",
       "name": "HTML"
     },
     {
@@ -159,15 +159,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        2480,
-        200
+        1980,
+        240
       ],
-      "id": "5f5d9bf8-ed0b-415e-827e-8d3756b41791",
+      "id": "f48eb30a-2f4f-4409-89af-6cd71b97d084",
       "name": "HTTP Request"
     },
     {
       "parameters": {
-        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "sendTo": "mailhr100@gmail.com",
         "subject": "contract",
         "message": "check this",
         "options": {
@@ -183,22 +183,22 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        2680,
-        200
+        2180,
+        240
       ],
-      "id": "c29eb7d9-bf4a-4405-8559-4ac195a4283d",
+      "id": "1c0affc9-8489-4e4a-a251-fa12971d5758",
       "name": "Gmail",
       "webhookId": "52234452-2b59-4a49-b0ff-c0bc87d227b5",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "3EkL7v0Op6Dkojd6",
+          "name": "Gmail account 13"
         }
       }
     },
     {
       "parameters": {
-        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "sendTo": "mailhr100@gmail.com",
         "subject": "contract review",
         "message": "“Contract couldn't be processed — possible unreadable scan.Retry with alternate parser if available",
         "options": {}
@@ -206,16 +206,16 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        1260,
-        -40
+        760,
+        0
       ],
-      "id": "10ac38c6-3171-4de8-a980-dc5b518ec2f1",
+      "id": "2ce81b61-625e-4bcc-9b53-8fe8ac8e66c9",
       "name": "Gmail1",
       "webhookId": "99185f75-c11d-4502-a5ad-52e07cc8a01f",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "3EkL7v0Op6Dkojd6",
+          "name": "Gmail account 13"
         }
       }
     },
@@ -248,10 +248,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        880,
-        180
+        380,
+        220
       ],
-      "id": "0af40bed-24e8-429d-9c02-f4d89712bec3",
+      "id": "1f199e3e-7a31-496e-8f31-10f6025b08f0",
       "name": "If1"
     },
     {
@@ -268,10 +268,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        380,
-        260
+        -120,
+        300
       ],
-      "id": "1423d206-8dd8-469f-8cb9-0d70d215669c",
+      "id": "3699d2bc-4d71-445f-95dd-fdadcc2eb94b",
       "name": "HTTP Request1"
     },
     {
@@ -282,115 +282,11 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        3080,
-        200
+        2580,
+        240
       ],
-      "id": "ab8fe12f-4e7f-4d75-a01c-415e43e61445",
+      "id": "f26bdf17-4286-48cd-9305-16e3fc21a9f2",
       "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
-        "operation": "upsert",
-        "schema": {
-          "__rl": true,
-          "mode": "list",
-          "value": "public"
-        },
-        "table": {
-          "__rl": true,
-          "value": "contract_reviews_dep",
-          "mode": "list",
-          "cachedResultName": "contract_reviews_dep"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "user_email": "={{ $('Webhook').item.json.body.email }}",
-            "document_name": "={{ $('Webhook').item.json.body['document name'] }}",
-            "upload_time": "={{ $now }}",
-            "red_flag_count": "={{ $('AI Agent1').item.json.output.totalRedFlags }}",
-            "risk_score": "={{ $('AI Agent1').item.json.output.overallRiskAssessment.riskScore }}",
-            "status": "={{ $json.labelIds[0] }}"
-          },
-          "matchingColumns": [
-            "user_email"
-          ],
-          "schema": [
-            {
-              "id": "upload_time",
-              "displayName": "upload_time",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "dateTime",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "user_email",
-              "displayName": "user_email",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "document_name",
-              "displayName": "document_name",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "red_flag_count",
-              "displayName": "red_flag_count",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "risk_score",
-              "displayName": "risk_score",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "status",
-              "displayName": "status",
-              "required": true,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        2860,
-        200
-      ],
-      "id": "6a8274de-1692-4b5a-9858-86be253c861a",
-      "name": "Postgres1",
-      "credentials": {
-        "postgres": {
-          "id": "ombHCedKDy5YY5fq",
-          "name": "Postgres account"
-        }
-      }
     },
     {
       "parameters": {
@@ -401,10 +297,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        280,
-        -100
+        -220,
+        -60
       ],
-      "id": "f8590c6a-7c55-44cb-8413-4830907266a8",
+      "id": "e381d75d-9610-4766-bf63-ff8a60c39909",
       "name": "Extract binary data to pdf"
     },
     {
@@ -417,15 +313,15 @@
       "type": "n8n-nodes-pdfco.PDFco Api",
       "typeVersion": 1,
       "position": [
-        0,
-        260
+        -500,
+        300
       ],
-      "id": "d905b3bb-f75d-4727-b832-2a9e3ae18374",
+      "id": "06270f58-429c-4bd8-88e7-f6e53c674dbb",
       "name": "Upload a file intlo pdf.co",
       "credentials": {
         "pdfcoApi": {
-          "id": "89Y435REJteNHS59",
-          "name": "PDF.co account"
+          "id": "GrBhTNLmVWQTSeUa",
+          "name": "PDF.co account 3"
         }
       }
     },
@@ -438,15 +334,15 @@
       "type": "n8n-nodes-pdfco.PDFco Api",
       "typeVersion": 1,
       "position": [
-        200,
-        260
+        -300,
+        300
       ],
-      "id": "9479f9f1-6c29-4d10-89f5-1140b942a84d",
+      "id": "b2145f14-c7c1-4607-b11f-4fe7f2c38fa9",
       "name": "convert to pdf",
       "credentials": {
         "pdfcoApi": {
-          "id": "89Y435REJteNHS59",
-          "name": "PDF.co account"
+          "id": "GrBhTNLmVWQTSeUa",
+          "name": "PDF.co account 3"
         }
       }
     },
@@ -458,10 +354,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        600,
-        260
+        100,
+        300
       ],
-      "id": "04fbe150-61e3-4d75-922a-ed704f1daf33",
+      "id": "9a3bf735-687d-4320-bf91-9807b37543e1",
       "name": "Extract binary data into pdf 1"
     },
     {
@@ -474,10 +370,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        1300,
-        180
+        800,
+        220
       ],
-      "id": "8b053028-2454-4f8d-b324-78a773debbbe",
+      "id": "3cb83cca-c1fe-4929-bcfd-aa1cbd811197",
       "name": "AI Agent"
     },
     {
@@ -487,10 +383,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        1440,
-        440
+        940,
+        480
       ],
-      "id": "bc14ec66-7d33-45fa-a32c-e6b90ecbe9e5",
+      "id": "23a387b7-93df-4c4b-aea9-77407178cb07",
       "name": "Structured Output Parser"
     },
     {
@@ -503,10 +399,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        1620,
-        180
+        1120,
+        220
       ],
-      "id": "b44cd62c-2034-487e-aede-478637a7cbcc",
+      "id": "05d7edb9-c6b0-4f1f-9fc7-81ad951cf048",
       "name": "AI Agent1"
     },
     {
@@ -516,10 +412,10 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.2,
       "position": [
-        1780,
-        420
+        1280,
+        460
       ],
-      "id": "25316878-5fd4-4ec4-aa32-a022f7042bf9",
+      "id": "ce4e0b5a-3339-4002-aa76-d6e30860d032",
       "name": "Structured Output Parser1"
     },
     {
@@ -530,15 +426,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        1620,
-        420
+        1120,
+        460
       ],
-      "id": "ffbf78fa-39c6-450d-a659-be8fe180dbea",
+      "id": "d566bc50-e9af-4d62-b02b-f560eaf9a392",
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "1E3ZL2vIpcClZdxZ",
-          "name": "Groq account"
+          "id": "T3JSWp24iw5DKNUK",
+          "name": "Groq account 17"
         }
       }
     },
@@ -549,15 +445,102 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
       "typeVersion": 1,
       "position": [
-        1300,
-        440
+        800,
+        480
       ],
-      "id": "7c4e7bb0-5aeb-44ba-b79d-1d9c0b97c5f5",
+      "id": "098cbce3-3847-4aa0-9bc2-8d9b710c2db6",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "JjMmhLRCLv1lEaa6",
-          "name": "OpenRouter New"
+          "id": "4d1JBt6FLQ2im99O",
+          "name": "OpenRouter account 15"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Q-YZYc48KDwJkx0I9h6uIDKo4_lBZ2QkpUFILfJZl74",
+          "mode": "list",
+          "cachedResultName": "Contract red flag",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q-YZYc48KDwJkx0I9h6uIDKo4_lBZ2QkpUFILfJZl74/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Q-YZYc48KDwJkx0I9h6uIDKo4_lBZ2QkpUFILfJZl74/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Document id": "={{ $('Webhook').item.json.body['doc id'] }}",
+            "Upload time": "={{ $now }}",
+            "User": "={{ $('Webhook').item.json.body.mail }}",
+            "Number of red flags": "={{ $('AI Agent1').item.json.output.totalRedFlags }}"
+          },
+          "matchingColumns": [
+            "Document id"
+          ],
+          "schema": [
+            {
+              "id": "Upload time",
+              "displayName": "Upload time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Number of red flags",
+              "displayName": "Number of red flags",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User",
+              "displayName": "User",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Document id",
+              "displayName": "Document id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2400,
+        240
+      ],
+      "id": "8fa3c5dd-40b9-406a-b51d-d557707b7d40",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PlxPPnnNjyQv8Pvk",
+          "name": "Google Sheets account 17"
         }
       }
     }
@@ -641,7 +624,7 @@
       "main": [
         [
           {
-            "node": "Postgres1",
+            "node": "Google Sheets",
             "type": "main",
             "index": 0
           }
@@ -671,17 +654,6 @@
         [
           {
             "node": "Extract binary data into pdf 1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Postgres1": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
@@ -797,17 +769,28 @@
           }
         ]
       ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "0bea4c7c-6a05-438c-b7bc-d3da696b85cc",
+  "versionId": "8cce3473-6a96-4217-bf05-7877986b3f4d",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "XJhkkPQqt6XGv6kV",
+  "id": "beEl9vaA5pD3hCNt",
   "tags": []
 }

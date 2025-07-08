@@ -306,4 +306,4 @@ const MCQGeneratorPage = () => (
     </PageRevealWrapper>
 );
 
-export default MCQGeneratorPage; 
+export default MCQGeneratorPage;

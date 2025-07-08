@@ -4,16 +4,17 @@ import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFile
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
-import LeavesClassifier from './LeavesClassifier';
-import BirthdayWorkAnniversary from './BirthdayWorkAnniversary';
-import DocumentUploadReminder from './DocumentUploadReminder';
+import LeavesClassifier from './workflows/LeavesClassifier';
+import BirthdayWorkAnniversary from './workflows/BirthdayWorkAnniversary';
+import DocumentUploadReminder from './workflows/DocumentUploadReminder';
 import CandidateDetailsSync from './workflows/CandidateDetailsSync';
-import PayslipAutoEncrypted from './PayslipAutoEncrypted';
-import EmailAttachmentProcessing from './EmailAttachmentProcessing';
-import PolicyChangeNotification from './PolicyChangeNotification';
-import ResumeToProfileExtractor from './ResumeToProfileExtractor';
-import AICustomerSupport from './AICustomerSupport';
-import ProductRecommendation from './ProductRecommendation';
+import PayslipAutoEncrypted from './workflows/PayslipAutoEncrypted';
+import EmailAttachmentProcessing from './workflows/EmailAttachmentProcessing';
+import PolicyChangeNotification from './workflows/PolicyChangeNotification';
+import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
+import AICustomerSupport from './workflows/AICustomerSupport';
+import ProductRecommendation from './workflows/ProductRecommendation';
+import SentimentAgentWorkflowPage from '../pages/SentimentAgentWorkflowPage';
 
 const workflows = [
   {
@@ -84,6 +85,30 @@ const workflows = [
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
   },
+  {
+    title: 'Resume Analyzer',
+    icon: FaUserAlt,
+    path: '/resume-analyzer',
+    description: 'Analyze and extract insights from resumes using AI.',
+    isButton: true,
+    buttonText: 'Open Resume Analyzer',
+  },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/sentiment-agent-report',
+    description: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.',
+    isButton: true,
+    buttonText: 'Open Sentiment Agent',
+  },
+  {
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    description: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.',
+    isButton: true,
+    buttonText: 'Open Support Agent',
+  },
 ];
 
 const WorkflowCard = ({ title, icon: Icon, description, onClick, isButton, buttonText }) => (
@@ -139,4 +164,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

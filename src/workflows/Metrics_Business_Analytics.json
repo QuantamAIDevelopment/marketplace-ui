@@ -1,5 +1,5 @@
 {
-  "name": "Analytics_Business_Insights_Agent",
+  "name": "Metrics Business Analytics",
   "nodes": [
     {
       "parameters": {
@@ -13,10 +13,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -220,
-        -200
+        -760,
+        620
       ],
-      "id": "6d8062fe-91f8-464a-bad0-41841adffc4c",
+      "id": "1f8cae3b-632d-4d8e-b770-38dd8fa1e5fe",
       "name": "Webhook",
       "webhookId": "e80986d2-fcc2-4ca8-b5a3-9f9cde6657d6"
     },
@@ -29,30 +29,11 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        2140,
-        -260
+        1600,
+        560
       ],
-      "id": "5e1c2454-f2a7-4684-b3f7-0d389fc442ff",
+      "id": "c0fbb8c1-1efd-44af-b386-e77eab74aa85",
       "name": "AI Agent"
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        2100,
-        -40
-      ],
-      "id": "bfc04a90-66d8-444d-ab1d-cd1352f9d227",
-      "name": "OpenRouter Chat Model",
-      "credentials": {
-        "openRouterApi": {
-          "id": "JjMmhLRCLv1lEaa6",
-          "name": "OpenRouter New"
-        }
-      }
     },
     {
       "parameters": {
@@ -65,16 +46,16 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        2540,
-        -260
+        2020,
+        560
       ],
-      "id": "167ae1ec-904c-410c-bd73-5cd6b8cb79dc",
+      "id": "ec9af890-1a5d-4a40-aadf-ac9ed150f43b",
       "name": "Gmail",
       "webhookId": "e0fd9a08-6332-4d48-b07d-4071a66f31e7",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "numWNC8Xk79WdTCK",
+          "name": "Gmail account 12"
         }
       }
     },
@@ -88,16 +69,16 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        2800,
-        -260
+        2260,
+        560
       ],
-      "id": "fc4ec5d5-6f81-4968-b917-d68e99e1ca4e",
+      "id": "a281df2e-541e-4348-936c-55daddb4aa9a",
       "name": "Gmail1",
       "webhookId": "d0f033ea-f989-44f1-828c-825f4cccfac4",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "numWNC8Xk79WdTCK",
+          "name": "Gmail account 12"
         }
       }
     },
@@ -110,10 +91,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        3040,
-        -260
+        2500,
+        560
       ],
-      "id": "ea5000dc-7c2a-466a-b158-ffda76826770",
+      "id": "e358c3c4-83ea-4deb-8b5a-f8bbceca2570",
       "name": "Respond to Webhook"
     },
     {
@@ -124,10 +105,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        520,
-        -420
+        -20,
+        400
       ],
-      "id": "b734d3cb-3309-43da-9db5-ea0b0369d1f9",
+      "id": "7e06cdec-d346-4c5f-8896-1dd580f4fa7f",
       "name": "Quaterly Orders pdf"
     },
     {
@@ -138,10 +119,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        520,
-        -220
+        -20,
+        600
       ],
-      "id": "a579dfa6-197d-45f2-be8b-b529937ab67e",
+      "id": "716ae342-3ed1-481c-bf5d-57b735953533",
       "name": "Quaterly Website traffic data"
     },
     {
@@ -152,10 +133,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        540,
-        220
+        0,
+        1040
       ],
-      "id": "c189a0c7-5789-42b2-9dfd-895383bb18fe",
+      "id": "09d7c8a4-e2f0-4ed3-b77e-1083c3222104",
       "name": "Quarterly Customers database"
     },
     {
@@ -166,10 +147,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        520,
-        -20
+        -20,
+        800
       ],
-      "id": "9c3c0502-9b2c-46bd-bb22-b293d339dd3f",
+      "id": "ab04b1f1-9c84-41e5-8f87-17f784647222",
       "name": "Quarterly marketing data"
     },
     {
@@ -180,10 +161,10 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        540,
-        -820
+        0,
+        0
       ],
-      "id": "08b445ac-8963-4556-9163-7dd720ff7084",
+      "id": "88c83f14-690d-4c29-a6b5-2c8583ae47b3",
       "name": "Quarterly Inventory data"
     },
     {
@@ -193,10 +174,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        800,
-        -20
+        260,
+        800
       ],
-      "id": "e5adcbf6-3143-4f8a-a6d8-be0df56eeb0b",
+      "id": "aba785c6-abfb-4eba-a814-f435c44d5fe5",
       "name": "RFM,Top CTR and RAOS"
     },
     {
@@ -206,10 +187,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1140,
-        -660
+        600,
+        160
       ],
-      "id": "5994fa1d-565e-406b-8b39-c4ed799c4de3",
+      "id": "05c98d50-8877-4a88-9a0c-83ab308899c9",
       "name": "Top selling Products,Low stock warnings"
     },
     {
@@ -219,10 +200,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        820,
-        -440
+        280,
+        380
       ],
-      "id": "760a06e1-cdf3-4d86-8ac7-5edd1193b4a6",
+      "id": "80d8e779-a282-4f23-8eb8-de0702259296",
       "name": "total orders,Revenue,AOV,Sales,margins,returns"
     },
     {
@@ -230,10 +211,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        860,
-        -660
+        320,
+        160
       ],
-      "id": "ab4f7df3-963a-4e20-8cdc-94b1863bef68",
+      "id": "8260589b-2129-4064-af59-20a185ab37cb",
       "name": "Merge"
     },
     {
@@ -243,10 +224,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
-        -260
+        1380,
+        560
       ],
-      "id": "00542024-3a29-4d7e-bd15-e87f4fd2b7ac",
+      "id": "25b19987-6fd5-43ef-b531-cbe3c04357db",
       "name": "Code"
     },
     {
@@ -254,10 +235,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1420,
-        -500
+        880,
+        320
       ],
-      "id": "6444d914-c3c1-4958-8f4c-20cadaaefa9c",
+      "id": "f7353b91-3230-435d-8eaa-8718418c685e",
       "name": "Merge1"
     },
     {
@@ -267,10 +248,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        820,
-        -220
+        280,
+        600
       ],
-      "id": "efb84315-a84f-4487-b2b3-4865648ddfd0",
+      "id": "8c76b538-d50f-4255-b4a0-ed48abd5094a",
       "name": "funnel insights"
     },
     {
@@ -280,10 +261,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        800,
-        220
+        260,
+        1040
       ],
-      "id": "92569cf8-147a-4393-9aac-45bde9cc6849",
+      "id": "e7b6f220-bade-4f36-b160-ba99e22431da",
       "name": "customer performace"
     },
     {
@@ -293,10 +274,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1380,
-        -120
+        840,
+        700
       ],
-      "id": "8419a115-77d6-4b77-a911-defee9142f14",
+      "id": "6932d714-9703-4381-a0bc-89d1a88bb671",
       "name": "Merge2"
     },
     {
@@ -304,10 +285,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1660,
-        -260
+        1120,
+        560
       ],
-      "id": "38c9712a-058f-4f51-9fb5-cff7af277674",
+      "id": "9651e4fa-123f-4b5c-b16b-c81faec19297",
       "name": "Merge3"
     },
     {
@@ -317,10 +298,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -20,
-        -200
+        -560,
+        620
       ],
-      "id": "42eea455-14f8-4ae5-8624-99a995737ab6",
+      "id": "ec887fab-20fa-4441-99df-7895ae7791bc",
       "name": "Code1"
     },
     {
@@ -445,11 +426,30 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        160,
-        -240
+        -380,
+        580
       ],
-      "id": "193c8a6e-ea93-4de0-b025-60b24352ea1b",
+      "id": "dc54f5c8-3585-498f-8bda-e2d04576cc01",
       "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        780
+      ],
+      "id": "321c13fc-861c-4cbb-a305-87230e6aeb40",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "MprnkZ7SjIAJL6n8",
+          "name": "OpenRouter account 9"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -460,17 +460,6 @@
           {
             "node": "Code1",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenRouter Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "AI Agent",
-            "type": "ai_languageModel",
             "index": 0
           }
         ]
@@ -728,17 +717,28 @@
           }
         ]
       ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "93c4eaeb-8967-4354-a31e-b27dfc891105",
+  "versionId": "bbfe47c0-0f95-498a-a055-6ee416a3c1cd",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "0gClncEXCTbC4rUS",
+  "id": "G8ine76bhmzmOpyy",
   "tags": []
 }

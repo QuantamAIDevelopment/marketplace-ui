@@ -4,7 +4,7 @@ import ErrorMessage from '../common/ErrorMessage';
 import ResponseResult from '../common/ResponseResult';
 import PageRevealWrapper from './PageRevealWrapper';
 
-const API_URL = 'https://bhanubhavani.app.n8n.cloud/webhook/fetch-data';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/fetch-data';
 
 const FetchLeads = () => {
     
