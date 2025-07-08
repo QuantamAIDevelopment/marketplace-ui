@@ -1,7 +1,6 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaBook } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaBook, FaSync } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -49,12 +48,6 @@ const workflowData = [
     icon: FaFileAlt,
     path: '/workflows/document-upload',
     summary: 'Remind employees to upload documents.'
-  },
-  {
-    title: 'Candidate Hiring Status',
-    icon: FaUserAlt,
-    path: '/workflows/candidate-hiring-status',
-    summary: 'Sync candidate hiring status automatically.'
   },
   {
     title: 'Payslip Auto Encrypted',
@@ -158,7 +151,6 @@ const workflowData = [
     path: '/workflows/dynamic-model-selector',
     summary: 'Ask any question and let the agent route it to the best AI model for the job.'
   },
-  // ...existing code...
   {
     title: 'Notion Knowledge Base AI Assistant',
     icon: FaBook,
@@ -170,6 +162,12 @@ const workflowData = [
     icon: FaDatabase,
     path: '/workflows/database-migration-ai',
     summary: 'Migrate tables between databases with AI-powered automation.'
+  },
+  {
+    title: 'ATS to HRMS Candidate Status Sync',
+    icon: FaSync,
+    path: '/workflows/ats-to-hrms-candidate-status-sync',
+    summary: 'Sync and view candidate status between ATS and HRMS.'
   }
 ];
 
@@ -189,7 +187,7 @@ const Dashboard = () => {
             Explore our comprehensive suite of AI-powered automation tools designed to streamline your business processes.
           </p>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {workflowData.map((workflow, index) => (
             <WorkflowCard
@@ -201,7 +199,6 @@ const Dashboard = () => {
             />
           ))}
         </div>
-        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

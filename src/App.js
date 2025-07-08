@@ -6,7 +6,6 @@ import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
-import CandidateHiringStatusPage from './pages/CandidateHiringStatusPage';
 import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
 import AICustomerSupport from './pages/AICustomerSupport';
@@ -22,8 +21,8 @@ import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
 import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
-
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
+import ATS_TO_HRMS_CANDIDATE_StatusSyncPage from './pages/ATS_TO_HRMS_CANDIDATE_StatusSyncPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -41,7 +40,6 @@ function App() {
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
-              <Route path="/workflows/candidate-hiring-status" element={<CandidateHiringStatusPage />} />
               <Route path="/workflows/payslip-encryption" element={<PayslipAutoEncryptedPage />} />
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
@@ -60,6 +58,7 @@ function App() {
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
               <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
+              <Route path="/workflows/ats-to-hrms-candidate-status-sync" element={<ATS_TO_HRMS_CANDIDATE_StatusSyncPage />} />
             </Routes>
           </main>
         </div>
