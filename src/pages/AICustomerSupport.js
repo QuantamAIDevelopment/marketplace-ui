@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FaRobot, FaArrowRight, FaUser } from 'react-icons/fa';
 import axios from 'axios';
 import CoverScreen from '../components/CoverScreen';
-import AICustomerSupportWorkflowSVG from '../components/AICustomerSupportWorkflowSVG';
+import AICustomerSupportWorkflowSVG from '../components/workflows/AICustomerSupportWorkflowSVG';
 
 // Workflow node icons
 const workflowNodes = [

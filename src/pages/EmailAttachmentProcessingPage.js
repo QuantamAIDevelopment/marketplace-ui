@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaEnvelope, FaUpload, FaSpinner, FaCheckCircle } from 'react-icons/fa';
 import axios from 'axios';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const EmailAttachmentProcessingPageContent = () => {
   const [formData, setFormData] = useState({
