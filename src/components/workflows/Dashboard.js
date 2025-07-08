@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaUserShield } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
@@ -108,6 +108,12 @@ const workflows = [
     description: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.',
     isButton: true,
     buttonText: 'Open Support Agent',
+  },
+  {
+    title: 'AI Background Verification Agent',
+    icon: FaUserShield,
+    path: '/background-verification-agent',
+    description: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.',
   },
 ];
 

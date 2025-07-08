@@ -23,12 +23,15 @@ import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+
 import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
 
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
 import TestGeneratorPage from './pages/TestGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
+
+import BackgroundVerificationAgentPage from './pages/BackgroundVerificationAgentPage';
 
 import './App.css';
 import './index.css';
@@ -41,6 +44,7 @@ import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
 import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
+import AIBackroundVerificationPage from './pages/AIBackroundVerificationPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
@@ -71,7 +75,6 @@ function App() {
               <Route path="/contract-red-flag-detector" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
-
               <Route path="/workflows/testmonial-extractor" element={React.createElement(require('./pages/TestmonialExtractorPage.jsx').default)} />
               <Route path="/workflows/dynamic-model-selector" element={React.createElement(require('./pages/DynamicModelSelectorPage.jsx').default)} />
               <Route path="/test-generator" element={<TestGeneratorPage />} />
@@ -83,7 +86,6 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
-
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
               <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
               <Route path="/automate-candidate-acceptance/cover" element={<AutomateCandidateAcceptanceCoverPage />} />
@@ -92,11 +94,16 @@ function App() {
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
+              <Route path="/ai-background-verification" element={<AIBackroundVerificationPage />} />
               <Route path="/sentiment-agent-report" element={<SentimentAgentPage />} />
               <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
+
+              <Route path="/background-verification-agent" element={<BackgroundVerificationAgentPage />} />
+
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
+
             </Routes>
           </main>
         </div>
