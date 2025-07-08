@@ -35,6 +35,10 @@ import './App.css';
 import './index.css';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+import PRSummaryAgentPage from './pages/PRSummaryAgentPage';
+import PRReviewerAIAgentPage from './pages/PRReviewerAIAgentPage';
+import PRSummaryAgentFormPage from './pages/PRSummaryAgentFormPage';
+import PRReviewerAIAgentFormPage from './pages/PRReviewerAIAgentFormPage';
 
 function App() {
   return (
@@ -73,6 +77,11 @@ function App() {
               <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
+              <Route path="/pr-summary-agent" element={<PRSummaryAgentPage />} />
+              <Route path="/pr-summary-agent/form" element={<PRSummaryAgentFormPage />} />
+              <Route path="/pr-reviewer-ai-agent" element={<PRReviewerAIAgentPage />} />
+              <Route path="/pr-reviewer-ai-agent/form" element={<PRReviewerAIAgentFormPage />} />
+              <Route path="/pr-reviewer-agent" element={<PRReviewerAIAgentPage />} />
             </Routes>
           </main>
         </div>

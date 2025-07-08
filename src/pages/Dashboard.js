@@ -194,6 +194,18 @@ const workflowData = [
     path: '/leave-balance-chatbot',
     summary: 'Get instant leave balance information through AI-powered HR assistant.'
   },
+  {
+    title: 'PR Summary Agent',
+    icon: FaRobot,
+    path: '/pr-summary-agent',
+    summary: 'Summarize GitHub PRs and get AI-powered summaries and notifications.'
+  },
+  {
+    title: 'PR Reviewer AI Agent',
+    icon: FaRobot,
+    path: '/pr-reviewer-agent',
+    summary: 'Automated code review and actionable suggestions for your GitHub PRs.'
+  },
 ];
 
 const Dashboard = () => {

@@ -42,7 +42,7 @@ const EmailAttachmentProcessingPageContent = () => {
         formDataToSend.append('id', formData.id);
       }
 
-      const response = await axios.post('http://localhost:5678/webhook/upload-files', formDataToSend, {
+      const response = await axios.post('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/upload-files', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -252,6 +252,38 @@ const EmailAttachmentProcessingPageContent = () => {
                     </ul>
                   </div>
                 </div>
+                {/* Processing Status Table */}
+                {Array.isArray(response.processingStatus) && response.processingStatus.length > 0 && (
+                  <div className="mt-8">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-4">Attachment Processing Status</h3>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+                        <thead>
+                          <tr>
+                            <th className="px-4 py-2 border-b text-left">File Name</th>
+                            <th className="px-4 py-2 border-b text-left">File Type</th>
+                            <th className="px-4 py-2 border-b text-left">Status</th>
+                            <th className="px-4 py-2 border-b text-left">Start Time</th>
+                            <th className="px-4 py-2 border-b text-left">End Time</th>
+                            <th className="px-4 py-2 border-b text-left">Error</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {response.processingStatus.map((item) => (
+                            <tr key={item.id} className="border-b last:border-b-0">
+                              <td className="px-4 py-2">{item.fileName}</td>
+                              <td className="px-4 py-2">{item.fileType}</td>
+                              <td className="px-4 py-2">{item.status}</td>
+                              <td className="px-4 py-2">{item.startTime ? new Date(item.startTime).toLocaleString() : '-'}</td>
+                              <td className="px-4 py-2">{item.endTime ? new Date(item.endTime).toLocaleString() : '-'}</td>
+                              <td className="px-4 py-2 text-red-600">{item.error || '-'}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

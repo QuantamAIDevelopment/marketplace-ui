@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+/cursor
+/src/workflows/PR_Reviewer_Ai_agent.json
+/src/workflows/PR_summary_agent(1).json

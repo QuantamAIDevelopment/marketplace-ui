@@ -9,4 +9,6 @@ export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
 // export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx'; 
 // export { default as FraudDetection } from './FraudDetection'; 
 export { default as SalesForecasting } from './SalesForecasting';
-export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot'; 
+export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot';
+export { default as PRSummaryAgent } from './PRSummaryAgent.jsx';
+export { default as PRReviewerAIAgent } from './PRReviewerAIAgent.jsx';
