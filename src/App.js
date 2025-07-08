@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import InventoryPredictAIPage from './pages/InventoryPredictAIPage';
-import OnBoardingPage from './pages/OnBoardingPage';
 import LeavesClassifierPage from './pages/LeavesClassifierPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
@@ -39,7 +38,6 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/inventory-predict-ai" element={<InventoryPredictAIPage />} />
-              <Route path="/onboarding" element={<OnBoardingPage />} />
               <Route path="/onboarding-q" element={<OnBoardingQPage />} />
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />

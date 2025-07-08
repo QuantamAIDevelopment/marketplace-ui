@@ -178,7 +178,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You are a smart personal expense assistant.\n\n## Expense Data:\nfetch the data from the postgres attached to tool\ngive only single output depends on input\nYou receive structured expense data from a database , and a user's question in natural language.\n\nEach expense record includes:\n\n- `amount` (in ₹)\n- `paid_to` (e.g., Fuel, Dining, Groceries)\n\n---\n\n## Your Task:\n\n1. Understand the user's query and determine their intent:\n   - Time filter: (e.g., "May", "last month", "2024")\n   - Category filter: (e.g., "fuel", "dining", "groceries")\n   - Type of question: total spent, trends, top categories, comparisons, etc.\n\n2. Analyze the given data and answer the user's query using:\n   - ✅ Filtered totals (e.g., "You spent ₹4,100 on fuel in May.")\n   - 📊 Category share (e.g., "Food made up 32% of your May expenses.")\n   - 🔁 Trend insights (e.g., "Up 8% from April.")\n   - 🏆 Top categories or vendors\n   - 📉 If spending dropped or increased\n\n3. Write a friendly, human-style response, like:\n   - "You spent ₹12,300 in May. Dining and fuel were your top categories. Compared to April, your total expenses increased by 8%."\n\n---\n\n## User Query:\n{{ $('When chat message received').item.json.chatInput }}\n\n\n\n---\n\n## Output Instructions:\n- Write a clear and concise summary of the spending behavior.\n- Use ₹ with numbers.\n- Mention key insights (totals, category share, trends).\n- End with a helpful offer, like:\n  _"Want to see this as a chart or grouped by vendor?"_\n",
+        "text": "=You are a smart personal expense assistant.\n\n## Expense Data:\nfetch the data from the postgres attached to tool\ngive only single output depends on input\nYou receive structured expense data from a database , and a user’s question in natural language.\n\nEach expense record includes:\n\n- `amount` (in ₹)\n- `paid_to` (e.g., Fuel, Dining, Groceries)\n\n---\n\n## Your Task:\n\n1. Understand the user's query and determine their intent:\n   - Time filter: (e.g., “May”, “last month”, “2024”)\n   - Category filter: (e.g., “fuel”, “dining”, “groceries”)\n   - Type of question: total spent, trends, top categories, comparisons, etc.\n\n2. Analyze the given data and answer the user’s query using:\n   - ✅ Filtered totals (e.g., “You spent ₹4,100 on fuel in May.”)\n   - 📊 Category share (e.g., “Food made up 32% of your May expenses.”)\n   - 🔁 Trend insights (e.g., “Up 8% from April.”)\n   - 🏆 Top categories or vendors\n   - 📉 If spending dropped or increased\n\n3. Write a friendly, human-style response, like:\n   - “You spent ₹12,300 in May. Dining and fuel were your top categories. Compared to April, your total expenses increased by 8%.”\n\n---\n\n## User Query:\n{{ $('When chat message received').item.json.chatInput }}\n\n\n\n---\n\n## Output Instructions:\n- Write a clear and concise summary of the spending behavior.\n- Use ₹ with numbers.\n- Mention key insights (totals, category share, trends).\n- End with a helpful offer, like:\n  _“Want to see this as a chart or grouped by vendor?”_",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -287,8 +287,9 @@
       "parameters": {
         "model": {
           "__rl": true,
+          "value": "gpt-4.1-mini",
           "mode": "list",
-          "value": "gpt-4o-mini"
+          "cachedResultName": "gpt-4.1-mini"
         },
         "options": {}
       },
@@ -781,11 +782,11 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "eda78574-fa3c-4e86-9570-10927866f569",
+  "versionId": "666b22d5-d1c9-4282-ad8d-89bcad08fa86",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
