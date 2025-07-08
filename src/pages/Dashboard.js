@@ -182,7 +182,6 @@ const Dashboard = () => {
             />
           ))}
           <AmazonWebScrapeCard compact />
-          <ContractRedFlagDetectorCard compact />
         </div>
         
         <motion.div

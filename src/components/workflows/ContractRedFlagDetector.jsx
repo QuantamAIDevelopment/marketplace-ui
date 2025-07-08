@@ -106,14 +106,40 @@ const ContractRedFlagDetector = ({ compact = false }) => {
       </form>
       {error && <div className="text-red-500 mt-4">{error}</div>}
       {result && (
-        <div className="mt-6 bg-white rounded-lg shadow p-4 border space-y-2">
-          <div><b>Upload time:</b> {result['Upload time']}</div>
-          <div><b>User:</b> {result['User']}</div>
-          <div><b>Document Name:</b> {result['Document Name']}</div>
-          <div><b>Number of redflags:</b> {result['Number of redflags']}</div>
-          <div><b>Overall risk:</b> {result['Overall risk']}</div>
-          <div><b>Suggestion to fix:</b> <span className="whitespace-pre-line">{result['Suggestion to fix']}</span></div>
-        </div>
+        (() => {
+          // Calculate number of red flags if not present
+          let numRedFlags = result['Number of redflags'];
+          if (!numRedFlags && result['Suggestion to fix']) {
+            numRedFlags = result['Suggestion to fix'].split(',').filter(s => s.trim()).length;
+          }
+          // Calculate overall risk score (simple logic: >3 = High, 2-3 = Medium, 1 = Low, 0 = None)
+          let riskScore = result['Overall risk'];
+          if (!riskScore && numRedFlags) {
+            const n = parseInt(numRedFlags, 10);
+            if (!isNaN(n)) {
+              if (n > 3) riskScore = 'High';
+              else if (n >= 2) riskScore = 'Medium';
+              else if (n === 1) riskScore = 'Low';
+              else riskScore = 'None';
+            } else {
+              riskScore = 'N/A';
+            }
+          }
+          return (
+            <div className="mt-6 bg-white rounded-lg shadow p-4 border space-y-2">
+              <div><b>Upload time:</b> {result['Upload time'] ? new Date(result['Upload time']).toLocaleString() : 'N/A'}</div>
+              <div><b>User:</b> {result['User'] || 'N/A'}</div>
+              <div><b>Document Name:</b> {result['Document Name'] || 'N/A'}</div>
+              <div><b>Number of redflags:</b> {numRedFlags || 'N/A'}</div>
+              <div><b>Overall risk:</b> {riskScore || 'N/A'}</div>
+              <div><b>Suggestion to fix:</b> {result['Suggestion to fix'] ? (
+                <ul className="list-disc ml-6">
+                  {result['Suggestion to fix'].split(',').map((s, i) => <li key={i}>{s.trim()}</li>)}
+                </ul>
+              ) : 'N/A'}</div>
+            </div>
+          );
+        })()
       )}
     </div>
   );
