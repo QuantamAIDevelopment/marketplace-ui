@@ -41,12 +41,25 @@ const ResumeToProfileExtractorPageContent = () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      const response = await axios.post('http://localhost:5678/webhook/upload-resume', formData, {
+      const response = await axios.post('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/upload-resume', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setResponse(response.data);
+      // Transform the response to expected format
+      const data = response.data || {};
+      setResponse({
+        name: data.Name || '',
+        email: data.Email || '',
+        phone: data.Number || '',
+        skills: data.Skills ? data.Skills.split(',').map(s => s.trim()).filter(Boolean) : [],
+        education: data.Education ? data.Education.split(',').map(s => s.trim()).filter(Boolean) : [],
+        work_experience: data.Experience ? data.Experience.split(',').map(s => s.trim()).filter(Boolean) : [],
+        projects: data.Projects ? data.Projects.split(',').map(s => s.trim()).filter(Boolean) : [],
+        resume_link: data['Resume link'] || '',
+        status: data.Status || 'Completed',
+        last_updated_at: data.last_updated_at || new Date().toISOString(),
+      });
     } catch (error) {
       console.error('Error executing workflow:', error);
     } finally {
@@ -131,7 +144,7 @@ const ResumeToProfileExtractorPageContent = () => {
                 <div className="p-4 bg-white rounded-lg shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-700 mb-2">Skills</h3>
                   <div className="flex flex-wrap gap-2">
-                    {response.skills.map((skill, index) => (
+                    {(response.skills || []).map((skill, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium"
@@ -146,7 +159,7 @@ const ResumeToProfileExtractorPageContent = () => {
                 <div className="p-4 bg-white rounded-lg shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-700 mb-2">Education</h3>
                   <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {response.education.map((edu, index) => <li key={index}>{edu}</li>)}
+                    {(response.education || []).map((edu, index) => <li key={index}>{edu}</li>)}
                   </ul>
                 </div>
 
@@ -154,7 +167,7 @@ const ResumeToProfileExtractorPageContent = () => {
                 <div className="p-4 bg-white rounded-lg shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-700 mb-2">Work Experience</h3>
                   <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {response.work_experience.map((exp, index) => <li key={index}>{exp}</li>)}
+                    {(response.work_experience || []).map((exp, index) => <li key={index}>{exp}</li>)}
                   </ul>
                 </div>
 
@@ -162,7 +175,7 @@ const ResumeToProfileExtractorPageContent = () => {
                 <div className="md:col-span-2 p-4 bg-white rounded-lg shadow-sm">
                   <h3 className="text-lg font-semibold text-gray-700 mb-2">Projects</h3>
                   <ul className="list-disc list-inside text-gray-600 space-y-1">
-                    {response.projects.map((project, index) => <li key={index}>{project}</li>)}
+                    {(response.projects || []).map((project, index) => <li key={index}>{project}</li>)}
                   </ul>
                 </div>
 
