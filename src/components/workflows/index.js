@@ -9,11 +9,9 @@ export { default as MonthlyExpenditure } from './MonthlyExpenditure';
 export { default as AutomateCandidateAcceptance } from './AutomateCandidateAcceptance';
 export { default as TestmonialExtractor } from './TestmonialExtractor';
 export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
-<<<<<<< HEAD
 // export { default as AmazonWebScrape } from './AmazonWebScrape.jsx';
 // export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
-export { default as ContractRedFlagDetectorCard } from './ContractRedFlagDetectorCard'; 
-=======
+export { default as ContractRedFlagDetectorCard } from './ContractRedFlagDetectorCard';
 export { default as SalesForecasting } from './SalesForecasting';
-export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot'; 
->>>>>>> 8e6000ccebe4fdab872dc0097ef767f3b2dbc97a
+export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot';
+export { default as TestGenerator } from './TestGenerator';

@@ -25,7 +25,7 @@ import FraudDetectionPage from './pages/FraudDetectionPage';
 import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
 
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
-import TestCaseGeneratorPage from './pages/TestCaseGeneratorPage';
+import TestGeneratorPage from './pages/TestGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
 
@@ -70,7 +70,7 @@ function App() {
 
               <Route path="/workflows/testmonial-extractor" element={React.createElement(require('./pages/TestmonialExtractorPage.jsx').default)} />
               <Route path="/workflows/dynamic-model-selector" element={React.createElement(require('./pages/DynamicModelSelectorPage.jsx').default)} />
-              <Route path="/test-case-generator" element={<TestCaseGeneratorPage />} />
+              <Route path="/test-generator" element={<TestGeneratorPage />} />
               <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
               <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
               <Route path="/workflows/product-feedback-summarizer" element={<ProductFeedbackSummarizerPage />} />

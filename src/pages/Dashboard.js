@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 
@@ -189,8 +188,8 @@ const workflowData = [
   {
     title: 'Test Case Generator',
     icon: FaVial,
-    path: '/test-case-generator',
-    summary: 'Generate QA test cases from your feature docs using Evenmind AI.'
+    path: '/test-generator',
+    summary: 'Generate QA test cases from your feature docs using AI.'
   },
   {
     title: 'Gmail Categorization',
