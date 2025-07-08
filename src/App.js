@@ -15,6 +15,7 @@ import ProductRecommendationPage from './pages/ProductRecommendationPage';
 import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
+import SalesForecastingPage from './pages/SalesForecastingPage';
 import AppointmentSchedulerPage from './pages/AppointmentSchedulerPage';
 import ProductFeedbackSummarizerPage from './pages/ProductFeedbackSummarizerPage';
 import DynamicPricingAgentPage from './pages/DynamicPricingAgentPage';
@@ -22,9 +23,11 @@ import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
+import PdfSummarizerPage from './pages/PdfSummarizerPage';
 
 function App() {
   return (
@@ -48,6 +51,7 @@ function App() {
               <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
+              <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
               <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
               <Route path="/workflows/product-feedback-summarizer" element={<ProductFeedbackSummarizerPage />} />
               <Route path="/workflows/dynamic-pricing" element={<DynamicPricingAgentPage />} />
@@ -55,6 +59,8 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
+              <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
             </Routes>
           </main>
         </div>

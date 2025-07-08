@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaFileUpload, FaGlobe, FaQuestionCircle, FaPaperPlane, FaBook, FaBrain } from 'react-icons/fa';
+import { FaBook, FaBrain } from 'react-icons/fa';
 import PageRevealWrapper from '../components/PageRevealWrapper';
 import { uploadFileAndGetMCQs, getWebMCQs, startQuiz, submitAnswer, getTopics } from '../services/workflows/mcqGenerator';
 
