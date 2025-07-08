@@ -8,10 +8,12 @@ export { default as MonthlyExpenditure } from './MonthlyExpenditure';
 export { default as AutomateCandidateAcceptance } from './AutomateCandidateAcceptance';
 export { default as TestmonialExtractor } from './TestmonialExtractor';
 export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
+// export { default as AmazonWebScrape } from './AmazonWebScrape.jsx';
+// export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
+export { default as ContractRedFlagDetectorCard } from './ContractRedFlagDetectorCard';
 export { default as SalesForecasting } from './SalesForecasting';
 export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot'; 
 export { default as AIBackroundVerificationCard } from './AIBackroundVerificationCard.jsx'; 
-
 export { default as FraudDetection } from './FraudDetection';
 export { default as BackgroundVerificationAgent } from './BackgroundVerificationAgent'; 
-
+export { default as TestGenerator } from './TestGenerator';
