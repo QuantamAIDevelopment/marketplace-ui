@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
 const CoverScreen = ({ onStart, heading, description, details, workflowSVG: WorkflowSVG }) => {
   return (
@@ -51,4 +50,4 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
   );
 };
 
-export default CoverScreen; 
+export default CoverScreen;

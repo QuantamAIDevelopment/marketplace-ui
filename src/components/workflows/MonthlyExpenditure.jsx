@@ -1,232 +1,328 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaRupeeSign, FaFileUpload, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
-import axios from 'axios';
+import { FaRupeeSign, FaFileUpload, FaRobot, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { submitManualBill, uploadBillFile, chatExpenditure } from '../../services/workflows/monthlyExpenditure';
 
-const MANUAL_BILL_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/c411e19d-03d4-4c49-9e86-10a44edf5f16';
-const FILE_UPLOAD_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/ee0c9efc-9d9b-4af0-af24-f7c147e52ee7';
+const tabs = [
+  { label: 'Manual Bill Entry', icon: FaRupeeSign },
+  { label: 'Upload Bill File', icon: FaFileUpload },
+  { label: 'Chatbot', icon: FaRobot },
+];
+
+const workflowSteps = [
+  { icon: FaRupeeSign, label: 'Input', color: 'bg-teal-500' },
+  { icon: FaCheckCircle, label: 'Processing', color: 'bg-blue-500' },
+  { icon: FaCheckCircle, label: 'Complete', color: 'bg-green-500' },
+];
 
 const MonthlyExpenditure = () => {
-  // Manual bill entry state
-  const [amount, setAmount] = useState('');
-  const [paidTo, setPaidTo] = useState('');
-  const [date, setDate] = useState('');
-  const [manualResponse, setManualResponse] = useState(null);
-  const [manualLoading, setManualLoading] = useState(false);
-  const [manualError, setManualError] = useState(null);
+  const [activeTab, setActiveTab] = useState(0);
+  // Manual Bill Entry
+  const [manualForm, setManualForm] = useState({ amount: '', merchant: '', transaction: '' });
+  // Upload Bill File
+  const [billFile, setBillFile] = useState(null);
+  // Chatbot
+  const [chatInput, setChatInput] = useState('');
 
-  // File upload state
-  const [file, setFile] = useState(null);
-  const [fileResponse, setFileResponse] = useState(null);
-  const [fileLoading, setFileLoading] = useState(false);
-  const [fileError, setFileError] = useState(null);
+  const [isExecuting, setIsExecuting] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [response, setResponse] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Manual bill submit handler
+  React.useEffect(() => {
+    let interval;
+    if (isExecuting) {
+      interval = setInterval(() => {
+        setCurrentStep((prev) => (prev + 1) % workflowSteps.length);
+      }, 900);
+    }
+    return () => clearInterval(interval);
+  }, [isExecuting]);
+
+  // Handlers for each tab
+  const handleManualChange = (e) => {
+    const { name, value } = e.target;
+    setManualForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleManualSubmit = async (e) => {
     e.preventDefault();
-    setManualLoading(true);
-    setManualError(null);
-    setManualResponse(null);
-    try {
-      const formData = new FormData();
-      formData.append('Amount', amount);
-      formData.append('Paid to', paidTo);
-      formData.append('Date', date);
-      const res = await axios.post(MANUAL_BILL_URL, formData);
-      setManualResponse(res.data);
-      setAmount('');
-      setPaidTo('');
-      setDate('');
-    } catch (err) {
-      setManualError('Failed to submit bill. Please check your input and try again.');
-    } finally {
-      setManualLoading(false);
-    }
-  };
-
-  // File upload submit handler
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-    setFileError(null);
-    setFileResponse(null);
-  };
-
-  const handleFileSubmit = async (e) => {
-    e.preventDefault();
-    if (!file) {
-      setFileError('Please select a file to upload.');
+    setError(null);
+    setIsExecuting(true);
+    setCurrentStep(0);
+    setResponse(null);
+    if (!manualForm.amount || !manualForm.merchant || !manualForm.transaction) {
+      setError('All fields are required.');
+      setIsExecuting(false);
       return;
     }
-    setFileLoading(true);
-    setFileError(null);
-    setFileResponse(null);
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      const res = await axios.post(FILE_UPLOAD_URL, formData);
-      setFileResponse(res.data);
-      setFile(null);
+      const result = await submitManualBill(manualForm);
+      setResponse(result);
     } catch (err) {
-      setFileError('Failed to upload file. Please try again.');
+      setError('Failed to submit bill. Check the console for more details.');
+      setResponse(null);
     } finally {
-      setFileLoading(false);
+      setIsExecuting(false);
+      setCurrentStep(0);
     }
   };
 
-  // Helper to render response array
-  const renderResponseTable = (data) => {
-    if (!Array.isArray(data) || data.length === 0) return null;
-    const keys = Object.keys(data[0]);
-    return (
-      <div className="overflow-x-auto mt-4">
-        <table className="min-w-full border rounded-lg">
-          <thead>
-            <tr>
-              {keys.map((key) => (
-                <th key={key} className="px-4 py-2 border-b bg-gray-100 text-left text-sm font-semibold text-gray-700">{key}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, idx) => (
-              <tr key={idx} className="bg-white hover:bg-gray-50">
-                {keys.map((key) => (
-                  <td key={key} className="px-4 py-2 border-b text-sm text-gray-800">{row[key]}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
+  const handleBillFileChange = (e) => {
+    setBillFile(e.target.files[0]);
+  };
+
+  const handleBillFileSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsExecuting(true);
+    setCurrentStep(0);
+    setResponse(null);
+    if (!billFile) {
+      setError('Please select a bill file to upload.');
+      setIsExecuting(false);
+      return;
+    }
+    try {
+      const result = await uploadBillFile(billFile);
+      setResponse(result);
+    } catch (err) {
+      setError('Failed to upload bill file. Check the console for more details.');
+      setResponse(null);
+    } finally {
+      setIsExecuting(false);
+      setCurrentStep(0);
+    }
+  };
+
+  const handleChatSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsExecuting(true);
+    setCurrentStep(0);
+    setResponse(null);
+    if (!chatInput) {
+      setError('Please enter a message.');
+      setIsExecuting(false);
+      return;
+    }
+    try {
+      const result = await chatExpenditure(chatInput);
+      setResponse(result);
+    } catch (err) {
+      setError('Failed to chat with expenditure bot. Check the console for more details.');
+      setResponse(null);
+    } finally {
+      setIsExecuting(false);
+      setCurrentStep(0);
+    }
   };
 
   return (
-    <div className="space-y-10">
-      {/* Manual Bill Entry */}
-      <div className="bg-gradient-to-r from-teal-50 to-blue-50 p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2"><FaRupeeSign className="text-teal-500" /> Manual Bill Entry</h3>
-        <form onSubmit={handleManualSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Amount (₹)"
-              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 text-base"
-              required
-              disabled={manualLoading}
-            />
-            <input
-              type="text"
-              value={paidTo}
-              onChange={(e) => setPaidTo(e.target.value)}
-              placeholder="Paid to"
-              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 text-base"
-              required
-              disabled={manualLoading}
-            />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-400 text-base"
-              required
-              disabled={manualLoading}
-            />
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            type="submit"
-            disabled={manualLoading}
-            className="w-full bg-gradient-to-r from-teal-500 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-teal-600 hover:to-blue-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200"
-          >
-            {manualLoading ? 'Submitting...' : 'Submit Bill'}
-          </motion.button>
-        </form>
-        {manualError && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
+    <div className="flex items-center justify-center min-h-[70vh]">
+      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-3xl mx-auto">
+        <div className="relative z-10 w-full max-w-2xl mx-auto">
+          <motion.h1
+            initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4"
+            className="text-3xl md:text-4xl font-extrabold text-center mb-8 text-anthropic-dark drop-shadow-lg"
           >
-            <div className="flex items-center space-x-2">
-              <FaExclamationTriangle />
-              <span>{manualError}</span>
-            </div>
-          </motion.div>
-        )}
-        <AnimatePresence>
-          {manualResponse && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-green-50 p-4 rounded-lg shadow-lg border border-green-200 mt-4"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <FaCheckCircle className="text-green-500" />
-                <span className="font-semibold text-green-700">Response</span>
-              </div>
-              {renderResponseTable(manualResponse)}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            Monthly Expenditure
+          </motion.h1>
+          <div className="flex gap-2 mb-6 justify-center">
+            {tabs.map((tab, idx) => (
+              <button
+                key={tab.label}
+                onClick={() => { setActiveTab(idx); setResponse(null); setError(null); }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold transition-colors ${activeTab === idx ? 'bg-teal-500 text-white' : 'bg-gray-100 text-anthropic-dark hover:bg-teal-100'}`}
+              >
+                <tab.icon className="w-5 h-5" /> {tab.label}
+              </button>
+            ))}
+          </div>
 
-      {/* File Upload */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg border">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2 flex items-center gap-2"><FaFileUpload className="text-purple-500" /> Upload Bill File</h3>
-        <form onSubmit={handleFileSubmit} className="space-y-4">
-          <div className="flex flex-col md:flex-row gap-2 items-stretch">
-            <input
-              type="file"
-              accept="image/*,application/pdf"
-              onChange={handleFileChange}
-              className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 text-base"
-              disabled={fileLoading}
-            />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              type="submit"
-              disabled={fileLoading || !file}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white px-5 py-3 rounded-lg font-semibold shadow hover:from-purple-600 hover:to-blue-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all duration-200"
-            >
-              <FaFileUpload />
-              {fileLoading ? 'Uploading...' : 'Upload'}
-            </motion.button>
-          </div>
-        </form>
-        {fileError && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mt-4"
-          >
-            <div className="flex items-center space-x-2">
-              <FaExclamationTriangle />
-              <span>{fileError}</span>
-            </div>
-          </motion.div>
-        )}
-        <AnimatePresence>
-          {fileResponse && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-green-50 p-4 rounded-lg shadow-lg border border-green-200 mt-4"
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <FaCheckCircle className="text-green-500" />
-                <span className="font-semibold text-green-700">Response</span>
-              </div>
-              {renderResponseTable(fileResponse)}
-            </motion.div>
-          )}
-        </AnimatePresence>
+          {/* Tab Content */}
+          <AnimatePresence mode="wait">
+            {activeTab === 0 && (
+              <motion.form
+                key="manual"
+                onSubmit={handleManualSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold">Amount (₹)</label>
+                    <input
+                      type="number"
+                      name="amount"
+                      value={manualForm.amount}
+                      onChange={handleManualChange}
+                      className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-teal-400 w-full"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold">Merchant / Paid To</label>
+                    <input
+                      type="text"
+                      name="merchant"
+                      value={manualForm.merchant}
+                      onChange={handleManualChange}
+                      className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-teal-400 w-full"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold">Transaction Date</label>
+                    <input
+                      type="date"
+                      name="transaction"
+                      value={manualForm.transaction}
+                      onChange={handleManualChange}
+                      className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-teal-400 w-full"
+                      required
+                    />
+                  </div>
+                </div>
+                {error && <div className="bg-red-500 text-white p-3 rounded-lg flex items-center gap-2"><FaExclamationTriangle /> {error}</div>}
+                <motion.button
+                  whileHover={{ scale: 1.02, boxShadow: '0 8px 32px 0 #14b8a633' }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={isExecuting}
+                  className="w-full bg-gradient-to-r from-teal-500 via-blue-500 to-green-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-teal-600 hover:to-blue-600 transition-colors disabled:opacity-50"
+                >
+                  {isExecuting ? 'Processing...' : 'Submit Bill'}
+                </motion.button>
+              </motion.form>
+            )}
+            {activeTab === 1 && (
+              <motion.form
+                key="file"
+                onSubmit={handleBillFileSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <div className="flex flex-col gap-2">
+                  <label className="font-semibold">Upload Bill File (Image/PDF)</label>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={handleBillFileChange}
+                    className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-teal-400 w-full"
+                    required
+                  />
+                </div>
+                {error && <div className="bg-red-500 text-white p-3 rounded-lg flex items-center gap-2"><FaExclamationTriangle /> {error}</div>}
+                <motion.button
+                  whileHover={{ scale: 1.02, boxShadow: '0 8px 32px 0 #14b8a633' }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={isExecuting}
+                  className="w-full bg-gradient-to-r from-teal-500 via-blue-500 to-green-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-teal-600 hover:to-blue-600 transition-colors disabled:opacity-50"
+                >
+                  {isExecuting ? 'Processing...' : 'Upload Bill'}
+                </motion.button>
+              </motion.form>
+            )}
+            {activeTab === 2 && (
+              <motion.form
+                key="chat"
+                onSubmit={handleChatSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
+                <div className="flex flex-col gap-2">
+                  <label className="font-semibold">Ask a Question</label>
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={e => setChatInput(e.target.value)}
+                    className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-teal-400 w-full"
+                    placeholder="e.g. How much did I spend on Groceries in May?"
+                    required
+                  />
+                </div>
+                {error && <div className="bg-red-500 text-white p-3 rounded-lg flex items-center gap-2"><FaExclamationTriangle /> {error}</div>}
+                <motion.button
+                  whileHover={{ scale: 1.02, boxShadow: '0 8px 32px 0 #14b8a633' }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={isExecuting}
+                  className="w-full bg-gradient-to-r from-teal-500 via-blue-500 to-green-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-teal-600 hover:to-blue-600 transition-colors disabled:opacity-50"
+                >
+                  {isExecuting ? 'Processing...' : 'Ask'}
+                </motion.button>
+              </motion.form>
+            )}
+          </AnimatePresence>
+
+          {/* Workflow Animation */}
+          <AnimatePresence>
+            {isExecuting && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="mt-8 bg-white rounded-2xl p-6 shadow-2xl flex flex-col items-center border border-gray-200"
+              >
+                <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center text-anthropic-dark">Executing Workflow...</h2>
+                <div className="flex flex-wrap justify-center items-center w-full gap-4">
+                  {workflowSteps.map((step, idx) => (
+                    <motion.div
+                      key={idx}
+                      animate={{
+                        scale: currentStep === idx ? 1.2 : 0.95,
+                        opacity: currentStep === idx ? 1 : 0.5
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className="flex flex-col items-center space-y-2"
+                    >
+                      <div className={`p-4 rounded-full shadow-xl border-4 border-gray-200 ${step.color} ${currentStep === idx ? 'ring-4 ring-teal-400' : ''}`}>
+                        <step.icon className="w-8 h-8 text-white drop-shadow-lg" />
+                      </div>
+                      <span className="text-xs md:text-sm text-anthropic-dark font-semibold">{step.label}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Response Display */}
+          <AnimatePresence>
+            {response && !isExecuting && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                className="mt-10 bg-gray-50 rounded-2xl p-8 shadow-inner border border-gray-200"
+              >
+                <h3 className="text-xl font-bold mb-4 text-center">Response</h3>
+                <div className="mt-4 p-4 bg-gray-100 rounded">
+                  {/* For chat */}
+                  {response.output && <div>{response.output}</div>}
+
+                  {/* For bill or upload-bill */}
+                  {response.Amount && (
+                    <div>
+                      <div><b>Amount:</b> {response.Amount}</div>
+                      <div><b>Paid to:</b> {response['Paid to']}</div>
+                      <div><b>Date:</b> {response.Date}</div>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

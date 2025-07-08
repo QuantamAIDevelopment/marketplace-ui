@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCommentDots, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { triggerProductFeedbackSummarizer } from '../services/workflows/productFeedbackSummarizer';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const workflowSteps = [
   { icon: FaCommentDots, label: 'Input Feedback', color: 'bg-pink-500' },

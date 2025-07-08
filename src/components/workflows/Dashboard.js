@@ -14,6 +14,7 @@ import PolicyChangeNotification from './workflows/PolicyChangeNotification';
 import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
 import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
+import SentimentAgentWorkflowPage from '../pages/SentimentAgentWorkflowPage';
 
 const workflows = [
   {
@@ -97,6 +98,7 @@ const workflows = [
     description: 'Recommend products based on user data.',
   },
   {
+<<<<<<< HEAD:src/components/Dashboard.js
     title: 'Onboarding Email Generator',
     path: '/onboarding-email-generator',
     icon: '📧',
@@ -107,6 +109,30 @@ const workflows = [
     icon: FaBell,
     path: '/leave-approval-remainder',
     description: 'Upload leave requests and trigger automated reminders for pending approvals.',
+=======
+    title: 'Resume Analyzer',
+    icon: FaUserAlt,
+    path: '/resume-analyzer',
+    description: 'Analyze and extract insights from resumes using AI.',
+    isButton: true,
+    buttonText: 'Open Resume Analyzer',
+  },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/sentiment-agent-report',
+    description: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.',
+    isButton: true,
+    buttonText: 'Open Sentiment Agent',
+  },
+  {
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    description: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.',
+    isButton: true,
+    buttonText: 'Open Support Agent',
+>>>>>>> 8e6000ccebe4fdab872dc0097ef767f3b2dbc97a:src/components/workflows/Dashboard.js
   },
 ];
 
@@ -163,4 +189,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

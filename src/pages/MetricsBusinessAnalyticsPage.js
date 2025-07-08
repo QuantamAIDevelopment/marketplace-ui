@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChartBar, FaCheckCircle, FaExclamationTriangle, FaFileCsv } from 'react-icons/fa';
 import { triggerMetricsBusinessAnalyticsWorkflow } from '../services/workflows/metricsBusinessAnalytics';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import { Bar, Pie, Line } from 'react-chartjs-2';
+import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement } from 'chart.js';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+
+Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
+
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
+
 
 const workflowSteps = [
   { icon: FaFileCsv, label: 'Upload Quarterly CSVs', color: 'bg-orange-500' },
@@ -10,12 +18,23 @@ const workflowSteps = [
   { icon: FaCheckCircle, label: 'Complete', color: 'bg-green-500' },
 ];
 
+function parseSummary(summary) {
+  if (typeof summary !== 'string') return null;
+  const lines = summary.split('\n').filter(l => l.trim().startsWith('-'));
+  return lines.map(l => {
+    const match = l.match(/^-\s*([\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1F680}-\u{1F6FF}])\s*(.*)$/u);
+    if (match) return { icon: match[1], text: match[2] };
+    return { icon: '', text: l.replace(/^-\s*/, '') };
+  });
+}
+
 const MetricsBusinessAnalyticsPageContent = () => {
   const [files, setFiles] = useState([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
+  const [uploadedFileNames, setUploadedFileNames] = useState([]);
 
   React.useEffect(() => {
     let interval;
@@ -28,7 +47,9 @@ const MetricsBusinessAnalyticsPageContent = () => {
   }, [isExecuting]);
 
   const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files));
+    const filesArr = Array.from(e.target.files);
+    setFiles(filesArr);
+    setUploadedFileNames(filesArr.map(f => f.name));
   };
 
   const handleSubmit = async (e) => {
@@ -52,6 +73,17 @@ const MetricsBusinessAnalyticsPageContent = () => {
       setIsExecuting(false);
       setCurrentStep(0);
     }
+  };
+
+  const downloadSummaryAsPDF = () => {
+    const input = document.getElementById('mba-summary-section');
+    if (!input) return;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+      pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
+      pdf.save('Quarterly_Business_Summary.pdf');
+    });
   };
 
   return (
@@ -78,6 +110,13 @@ const MetricsBusinessAnalyticsPageContent = () => {
                 required
               />
               <div className="text-xs text-gray-500 mt-1">Select all 5 required CSVs at once for best results.</div>
+              {uploadedFileNames.length > 0 && (
+                <ul className="text-xs text-gray-700 mt-2 flex flex-wrap gap-2">
+                  {uploadedFileNames.map((name, idx) => (
+                    <li key={idx} className="bg-gray-200 rounded px-2 py-1">{name}</li>
+                  ))}
+                </ul>
+              )}
             </div>
             {error && <div className="bg-red-500 text-white p-3 rounded-lg flex items-center gap-2"><FaExclamationTriangle /> {error}</div>}
             <motion.button
@@ -129,9 +168,55 @@ const MetricsBusinessAnalyticsPageContent = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
                 className="mt-10 bg-gray-50 rounded-2xl p-8 shadow-inner border border-gray-200"
+                id="mba-summary-section"
               >
                 <h3 className="text-xl font-bold mb-4 text-center">Quarterly Business Summary</h3>
-                <div className="prose prose-sm md:prose-base max-w-none text-anthropic-dark whitespace-pre-line bg-white rounded-xl p-6 border border-orange-200 shadow">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  {parseSummary(response)?.map((insight, idx) => (
+                    <div key={idx} className="flex items-start gap-3 bg-white rounded-xl shadow p-4 border-l-4 border-orange-400">
+                      <span className="text-2xl md:text-3xl">{insight.icon}</span>
+                      <span className="text-sm md:text-base text-anthropic-dark">{insight.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                  <div className="bg-white rounded-xl shadow p-4">
+                    <h4 className="font-semibold mb-2">Top Selling SKUs</h4>
+                    <Bar data={{
+                      labels: ['SKU1', 'SKU2', 'SKU3', 'SKU4', 'SKU5'],
+                      datasets: [{
+                        label: 'Units Sold',
+                        data: [120, 95, 80, 60, 45],
+                        backgroundColor: 'rgba(255, 159, 64, 0.7)'
+                      }]
+                    }} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+                  </div>
+                  <div className="bg-white rounded-xl shadow p-4">
+                    <h4 className="font-semibold mb-2">Marketing Campaign Performance</h4>
+                    <Pie data={{
+                      labels: ['Campaign A', 'Campaign B', 'Campaign C'],
+                      datasets: [{
+                        label: 'Spend',
+                        data: [30000, 20000, 15000],
+                        backgroundColor: ['#f59e42', '#ec4899', '#10b981']
+                      }]
+                    }} options={{ responsive: true, plugins: { legend: { position: 'bottom' } } }} />
+                  </div>
+                  <div className="bg-white rounded-xl shadow p-4 col-span-1 md:col-span-2">
+                    <h4 className="font-semibold mb-2">Website Traffic & Conversion Trends</h4>
+                    <Line data={{
+                      labels: ['Mar', 'Apr', 'May'],
+                      datasets: [
+                        { label: 'Visits', data: [12000, 15000, 17000], borderColor: '#f59e42', backgroundColor: 'rgba(245,158,66,0.2)', tension: 0.4 },
+                        { label: 'Conversions', data: [300, 400, 500], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.2)', tension: 0.4 }
+                      ]
+                    }} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-4 justify-center mt-6">
+                  <button onClick={downloadSummaryAsPDF} className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg font-semibold shadow">Download as PDF</button>
+                </div>
+                <div className="prose prose-sm md:prose-base max-w-none text-anthropic-dark whitespace-pre-line bg-white rounded-xl p-6 border border-orange-200 shadow mt-8">
                   {typeof response === 'string' ? response : Array.isArray(response) ? response.join('\n') : JSON.stringify(response)}
                 </div>
               </motion.div>
