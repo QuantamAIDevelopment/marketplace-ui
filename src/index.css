@@ -1,0 +1,224 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS Variables */
+:root {
+  --color-primary: #4436F8;
+  --color-primary-light: #7C3AED;
+  --color-background: #FFD6E8;
+  --color-background-secondary: #BFD4FF;
+  --color-background-tertiary: #D8E3FF;
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #555555;
+  --color-text-tertiary: #666666;
+  --color-text-muted: #888888;
+  
+  --font-primary: 'Inter', 'Poppins', 'DM Sans', system-ui, sans-serif;
+  --font-heading: 'Inter', 'Poppins', system-ui, sans-serif;
+  --font-body: 'Inter', 'DM Sans', system-ui, sans-serif;
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-gradient-to-br from-background via-background-secondary to-background-tertiary;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-attachment: fixed;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+h1 {
+  @apply text-hero font-bold;
+}
+
+h2 {
+  @apply text-display font-semibold;
+}
+
+h3 {
+  @apply text-h1 font-semibold;
+}
+
+h4 {
+  @apply text-h2 font-semibold;
+}
+
+h5 {
+  @apply text-h3 font-semibold;
+}
+
+h6 {
+  @apply text-h4 font-semibold;
+}
+
+p {
+  @apply text-body text-text-secondary leading-relaxed;
+}
+
+/* Custom Components */
+@layer components {
+  /* Button Styles */
+  .btn-primary {
+    @apply bg-gradient-button text-white font-semibold px-8 py-4 rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary/20;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-primary font-semibold px-8 py-4 rounded-2xl shadow-soft hover:shadow-medium transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-primary/20 border-2 border-primary/10;
+  }
+  
+  .btn-ghost {
+    @apply text-primary font-semibold px-6 py-3 rounded-xl hover:bg-primary/5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/20;
+  }
+  
+  /* Card Styles */
+  .card {
+    @apply bg-white/80 backdrop-blur-sm rounded-2xl shadow-card p-8 border border-white/20;
+  }
+  
+  .card-hover {
+    @apply card hover:shadow-large hover:scale-105 transition-all duration-300;
+  }
+  
+  /* Link Styles */
+  .link-primary {
+    @apply text-primary font-medium hover:underline decoration-primary/60 underline-offset-4 transition-all duration-300;
+  }
+  
+  .link-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent font-medium hover:underline decoration-primary/60 underline-offset-4 transition-all duration-300;
+  }
+  
+  /* Section Styles */
+  .section {
+    @apply py-20 px-4;
+  }
+  
+  .section-content {
+    @apply max-w-7xl mx-auto;
+  }
+  
+  /* Container Styles */
+  .container-clean {
+    @apply max-w-6xl mx-auto px-6;
+  }
+  
+  /* Gradient Text */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent;
+  }
+  
+  /* Glass Effect */
+  .glass {
+    @apply bg-white/20 backdrop-blur-md border border-white/30;
+  }
+  
+  /* 3D Container for Three.js */
+  .three-container {
+    @apply bg-white/10 backdrop-blur-sm rounded-2xl shadow-card border border-white/20 overflow-hidden;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-background/20;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/30 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/50;
+}
+
+/* Smooth Transitions */
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Focus Styles */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  @apply ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+}
+
+/* Selection */
+::selection {
+  @apply bg-primary/20 text-primary;
+}
+
+/* Animation Classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  animation: gradient-shift 8s ease infinite;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  h1 {
+    @apply text-4xl;
+  }
+  
+  h2 {
+    @apply text-3xl;
+  }
+  
+  h3 {
+    @apply text-2xl;
+  }
+  
+  .section {
+    @apply py-16 px-4;
+  }
+  
+  .card {
+    @apply p-6;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    @apply bg-white text-black border border-gray-300 shadow-none;
+  }
+  
+  .card {
+    @apply bg-white shadow-none border border-gray-200;
+  }
+}
