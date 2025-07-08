@@ -23,12 +23,15 @@ import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+
 import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
 
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
 import TestCaseGeneratorPage from './pages/TestCaseGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
+
+import BackgroundVerificationAgentPage from './pages/BackgroundVerificationAgentPage';
 
 import './App.css';
 import './index.css';
@@ -69,7 +72,6 @@ function App() {
               <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDectectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
-
               <Route path="/workflows/testmonial-extractor" element={React.createElement(require('./pages/TestmonialExtractorPage.jsx').default)} />
               <Route path="/workflows/dynamic-model-selector" element={React.createElement(require('./pages/DynamicModelSelectorPage.jsx').default)} />
               <Route path="/test-case-generator" element={<TestCaseGeneratorPage />} />
@@ -81,7 +83,6 @@ function App() {
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
-
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
               <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
@@ -94,6 +95,7 @@ function App() {
               <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
+              <Route path="/background-verification-agent" element={<BackgroundVerificationAgentPage />} />
             </Routes>
           </main>
         </div>
