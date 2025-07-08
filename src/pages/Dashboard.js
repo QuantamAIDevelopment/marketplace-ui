@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
+
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
@@ -28,10 +29,28 @@ const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
 
 const workflowData = [
   {
+    title: 'OnBoarding Q Email Generator',
+    icon: FaUserCheck,
+    path: '/onboarding-q',
+    summary: 'Generate onboarding emails from ODS files using the On_Boarding.Q workflow.'
+  },
+  {
+    title: 'OnBoarding Email Generator',
+    icon: FaUserPlus,
+    path: '/onboarding',
+    summary: 'Generate onboarding emails from client files with AI.'
+  },
+  {
     title: 'AI Customer Support',
     icon: FaRobot,
     path: '/ai-customer-support',
     summary: 'Chat with AI for customer support queries.'
+  },
+  {
+    title: 'Inventory Predict AI',
+    icon: FaChartLine,
+    path: '/inventory-predict-ai',
+    summary: 'Forecast inventory, detect stock risks, and get AI-powered suggestions.'
   },
   {
     title: 'Leaves Classifier',
@@ -50,12 +69,6 @@ const workflowData = [
     icon: FaFileAlt,
     path: '/workflows/document-upload',
     summary: 'Remind employees to upload documents.'
-  },
-  {
-    title: 'Candidate Hiring Status',
-    icon: FaUserAlt,
-    path: '/workflows/candidate-hiring-status',
-    summary: 'Sync candidate hiring status automatically.'
   },
   {
     title: 'Payslip Auto Encrypted',
@@ -120,7 +133,7 @@ const workflowData = [
   {
     title: 'Monthly Expenditure',
     icon: FaRupeeSign,
-    path: '/workflows/monthly-expenditure',
+    path: '/monthly-expenditure',
     summary: 'Track, upload, and chat about your monthly expenses.'
   },
   {
@@ -194,6 +207,12 @@ const workflowData = [
     icon: FaDatabase,
     path: '/workflows/database-migration-ai',
     summary: 'Migrate tables between databases with AI-powered automation.'
+  },
+  {
+    title: 'ATS to HRMS Candidate Status Sync',
+    icon: FaSync,
+    path: '/workflows/ats-to-hrms-candidate-status-sync',
+    summary: 'Sync and view candidate status between ATS and HRMS.'
   },
   {
     title: 'Test Case Generator',
@@ -273,7 +292,7 @@ const Dashboard = () => {
             Explore our comprehensive suite of AI-powered automation tools designed to streamline your business processes.
           </p>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {workflowData.map((workflow, index) => (
             <WorkflowCard
@@ -286,7 +305,6 @@ const Dashboard = () => {
           ))}
           <AmazonWebScrapeCard compact />
         </div>
-        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
