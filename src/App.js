@@ -48,11 +48,14 @@ import './App.css';
 import './index.css';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
+import Navbar from './components/Navbar';
 
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <ErrorBoundary>
         <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
           <main className="flex-1 flex flex-col items-center justify-center p-4">
@@ -96,6 +99,7 @@ function App() {
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
               <Route path="/background-verification-agent" element={<BackgroundVerificationAgentPage />} />
+              <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
             </Routes>
           </main>
         </div>

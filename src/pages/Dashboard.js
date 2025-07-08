@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase,FaUserShield, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase,FaUserShield, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf, FaTable } from 'react-icons/fa'
 
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard, AIBackroundVerificationCard } from '../components/workflows';
@@ -244,6 +244,12 @@ const workflowData = [
     icon: FaCalendarCheck,
     path: '/leave-balance-chatbot',
     summary: 'Get instant leave balance information through AI-powered HR assistant.'
+  },
+  {
+    title: 'Project Coast Reports',
+    icon: FaTable,
+    path: '/project-coast-reports',
+    summary: 'Upload project data and get a detailed cost report for your projects.'
   },
 ];
 
