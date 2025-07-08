@@ -1,5 +1,5 @@
 import React from 'react';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import AIPoweredBookPriceTracker from '../components/workflows/AI_Powered_Book_Price_Tracker';
 
 const AI_Powered_Book_Price_TrackerPage = () => {

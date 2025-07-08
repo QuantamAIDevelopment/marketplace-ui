@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import LeavesClassifierPage from './pages/LeavesClassifierPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
+import DocumentUploadReminderDetailsPage from './pages/DocumentUploadReminderDetailsPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
 import CandidateHiringStatusPage from './pages/CandidateHiringStatusPage';
@@ -34,6 +35,7 @@ import './index.css';
 
 import SmartInvoiceAIPage from './pages/SmartInvoiceAIPage';
 import AutomateCandidateAcceptancePage from './pages/AutomateCandidateAcceptancePage';
+import AutomateCandidateAcceptanceCoverPage from './pages/AutomateCandidateAcceptanceCoverPage';
 
 import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
@@ -43,6 +45,7 @@ import './App.css';
 import './index.css';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
 
 
 function App() {
@@ -56,6 +59,7 @@ function App() {
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
+              <Route path="/workflows/document-upload-details" element={<DocumentUploadReminderDetailsPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
               <Route path="/workflows/candidate-hiring-status" element={<CandidateHiringStatusPage />} />
@@ -82,6 +86,7 @@ function App() {
 
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
               <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
+              <Route path="/automate-candidate-acceptance/cover" element={<AutomateCandidateAcceptanceCoverPage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
               <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
@@ -91,6 +96,7 @@ function App() {
               <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
+              <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
             </Routes>
           </main>
         </div>
