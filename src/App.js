@@ -23,7 +23,13 @@ import DynamicPricingAgentPage from './pages/DynamicPricingAgentPage';
 import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
-import FraudDetectionPage from './pages/FraudDetectionPage';
+
+import FraudDetectionPage from './pages/FraudDetectionSystemPage';
+
+import OnBoardingQPage from './pages/OnBoardingQPage';
+import LeaveApprovalReminderPage from './pages/LeaveApprovalReminderPage';
+import AIPoweredRestaurantOrderChatbotPage from './pages/AIPoweredRestaurantOrderChatbotPage';
+
 import PerformanceReviewSummaryPage from './pages/PerformanceReviewSummaryPage';
 
 import OnBoardingQPage from './pages/OnBoardingQPage';
@@ -38,7 +44,6 @@ import ATS_TO_HRMS_CANDIDATE_StatusSyncPage from './pages/ATS_TO_HRMS_CANDIDATE_
 import TestGeneratorPage from './pages/TestGeneratorPage';
 import AmazonWebScrapePage from './pages/AmazonWebScrapePage';
 import SentimentAgentPage from './pages/SentimentAgentPage';
-
 
 import BackgroundVerificationAgentPage from './pages/BackgroundVerificationAgentPage';
 
@@ -65,8 +70,8 @@ import PRSummaryAgentFormPage from './pages/PRSummaryAgentFormPage';
 import PRReviewerAIAgentFormPage from './pages/PRReviewerAIAgentFormPage';
 
 import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
-
 import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
+import FraudDetectionSystemPage from './pages/FraudDetectionSystemPage.jsx';
 
 function App() {
   return (
@@ -78,6 +83,10 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/inventory-predict-ai" element={<InventoryPredictAIPage />} />
               <Route path="/onboarding-q" element={<OnBoardingQPage />} />
+
+              <Route path="/inventory-predict-ai" element={<InventoryPredictAIPage />} />
+              <Route path="/onboarding-q" element={<OnBoardingQPage />} />
+
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
@@ -99,17 +108,25 @@ function App() {
               <Route path="/workflows/business-insights" element={<BusinessInsightsAgentPage />} />
               <Route path="/workflows/metrics-business-analytics" element={<MetricsBusinessAnalyticsPage />} />
               <Route path="/monthly-expenditure" element={<MonthlyExpenditurePage />} />
+              <Route path="/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
               <Route path="/workflows/performance-review-summary" element={<PerformanceReviewSummaryPage />} />
               <Route path="/workflows/leave-approval-reminder" element={<LeaveApprovalReminderPage />} />
               <Route path="/workflows/restaurant-order-chatbot" element={<AIPoweredRestaurantOrderChatbotPage />} />
+
+              <Route path="/workflows/leave-approval-reminder" element={<LeaveApprovalReminderPage />} />
+              <Route path="/workflows/restaurant-order-chatbot" element={<AIPoweredRestaurantOrderChatbotPage />} />
+
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
               <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
               <Route path="/automate-candidate-acceptance/cover" element={<AutomateCandidateAcceptanceCoverPage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
               <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
               <Route path="/workflows/ats-to-hrms-candidate-status-sync" element={<ATS_TO_HRMS_CANDIDATE_StatusSyncPage />} />
+
+              <Route path="/workflows/ats-to-hrms-candidate-status-sync" element={<ATS_TO_HRMS_CANDIDATE_StatusSyncPage />} />
+
               <Route path="/amazon-web-scrape" element={<AmazonWebScrapePage />} />
               <Route path="/gmail-categorization" element={<GmailCategorizationPage />} />
               <Route path="/resume-analyzer" element={<ResumeAnalyzerPage />} />
@@ -127,6 +144,7 @@ function App() {
               <Route path="/background-verification-agent" element={<BackgroundVerificationAgentPage />} />
               <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
+              <Route path="/fraud-detection-system" element={<FraudDetectionSystemPage />} />
             </Routes>
           </main>
         </div>

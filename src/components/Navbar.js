@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 const navLinks = [
   { to: '/', label: 'Dashboard' },
-  { to: '/project-coast-reports', label: 'Project Coast Reports' },
+  { to: '/fraud-detection-system', label: 'Fraud Detection System' },
 ];
 
 const Navbar = () => {

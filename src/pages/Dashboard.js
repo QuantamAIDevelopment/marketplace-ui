@@ -5,7 +5,8 @@ import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFile
 
 
 import { useNavigate } from 'react-router-dom';
-import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard, FraudDetectionSystemCard } from '../components/workflows';
 
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 import AutomatedResearch from '../components/workflows/AutomatedResearch';
@@ -141,12 +142,6 @@ const workflowData = [
     icon: FaRupeeSign,
     path: '/monthly-expenditure',
     summary: 'Track, upload, and chat about your monthly expenses.'
-  },
-  {
-    title: 'Fraud Detection',
-    icon: FaShieldAlt,
-    path: '/workflows/fraud-detection',
-    summary: 'Upload transaction CSVs to detect fraud, risk scores, and AI notes.'
   },
   {
     title: 'Inventory Management',
@@ -292,6 +287,12 @@ const workflowData = [
     path: '/automate-candidate-acceptance/cover',
     summary: 'Automate candidate acceptance and onboarding notifications.'
 
+  },
+  {
+    title: 'Fraud Detection System',
+    icon: FaShieldAlt,
+    path: '/fraud-detection-system',
+    summary: 'Upload transaction data to detect fraud, get AI risk scores, and see triggered rules for each order.'
   },
 ];
 
