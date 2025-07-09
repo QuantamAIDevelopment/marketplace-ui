@@ -32,10 +32,6 @@ import AIPoweredRestaurantOrderChatbotPage from './pages/AIPoweredRestaurantOrde
 
 import PerformanceReviewSummaryPage from './pages/PerformanceReviewSummaryPage';
 
-import OnBoardingQPage from './pages/OnBoardingQPage';
-import LeaveApprovalReminderPage from './pages/LeaveApprovalReminderPage';
-import AIPoweredRestaurantOrderChatbotPage from './pages/AIPoweredRestaurantOrderChatbotPage';
-
 import DatabaseMigrationAIPage from './pages/DatabaseMigrationAIPage';
 import NotionKnowledgeBaseAIAssistantPage from './pages/NotionKnowledgeBaseAIAssistantPage';
 
@@ -83,10 +79,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/inventory-predict-ai" element={<InventoryPredictAIPage />} />
               <Route path="/onboarding-q" element={<OnBoardingQPage />} />
-
               <Route path="/inventory-predict-ai" element={<InventoryPredictAIPage />} />
-              <Route path="/onboarding-q" element={<OnBoardingQPage />} />
-
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
