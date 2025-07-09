@@ -1,4 +1,5 @@
 import api from '../api';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 export const getDocumentStatus = async () => {
   try {

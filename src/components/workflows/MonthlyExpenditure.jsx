@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRupeeSign, FaFileUpload, FaRobot, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
-import { submitManualBill, uploadBillFile, chatExpenditure } from '../services/workflows/monthlyExpenditure';
-import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
+import { submitManualBill, uploadBillFile, chatExpenditure } from '../../services/workflows/monthlyExpenditure';
 
 const tabs = [
   { label: 'Manual Bill Entry', icon: FaRupeeSign },
@@ -16,7 +15,7 @@ const workflowSteps = [
   { icon: FaCheckCircle, label: 'Complete', color: 'bg-green-500' },
 ];
 
-const MonthlyExpenditurePageContent = () => {
+const MonthlyExpenditure = () => {
   const [activeTab, setActiveTab] = useState(0);
   // Manual Bill Entry
   const [manualForm, setManualForm] = useState({ amount: '', merchant: '', transaction: '' });
@@ -122,7 +121,6 @@ const MonthlyExpenditurePageContent = () => {
   return (
     <div className="flex items-center justify-center min-h-[70vh]">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-3xl mx-auto">
-        {/* <h2 className="text-2xl font-bold mb-4 text-gray-900">Monthly Expenditure</h2> */}
         <div className="relative z-10 w-full max-w-2xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: -30 }}
@@ -144,9 +142,16 @@ const MonthlyExpenditurePageContent = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="bg-white rounded-2xl shadow-2xl p-4 md:p-8 space-y-6 border border-gray-200 w-full">
+          <AnimatePresence mode="wait">
             {activeTab === 0 && (
-              <form onSubmit={handleManualSubmit} className="space-y-4">
+              <motion.form
+                key="manual"
+                onSubmit={handleManualSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-2">
                     <label className="font-semibold">Amount (₹)</label>
@@ -170,7 +175,7 @@ const MonthlyExpenditurePageContent = () => {
                       required
                     />
                   </div>
-                  <div className="flex flex-col gap-2 md:col-span-2">
+                  <div className="flex flex-col gap-2">
                     <label className="font-semibold">Transaction Date</label>
                     <input
                       type="date"
@@ -192,10 +197,17 @@ const MonthlyExpenditurePageContent = () => {
                 >
                   {isExecuting ? 'Processing...' : 'Submit Bill'}
                 </motion.button>
-              </form>
+              </motion.form>
             )}
             {activeTab === 1 && (
-              <form onSubmit={handleBillFileSubmit} className="space-y-4">
+              <motion.form
+                key="file"
+                onSubmit={handleBillFileSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
                 <div className="flex flex-col gap-2">
                   <label className="font-semibold">Upload Bill File (Image/PDF)</label>
                   <input
@@ -216,10 +228,17 @@ const MonthlyExpenditurePageContent = () => {
                 >
                   {isExecuting ? 'Processing...' : 'Upload Bill'}
                 </motion.button>
-              </form>
+              </motion.form>
             )}
             {activeTab === 2 && (
-              <form onSubmit={handleChatSubmit} className="space-y-4">
+              <motion.form
+                key="chat"
+                onSubmit={handleChatSubmit}
+                className="space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+              >
                 <div className="flex flex-col gap-2">
                   <label className="font-semibold">Ask a Question</label>
                   <input
@@ -241,9 +260,9 @@ const MonthlyExpenditurePageContent = () => {
                 >
                   {isExecuting ? 'Processing...' : 'Ask'}
                 </motion.button>
-              </form>
+              </motion.form>
             )}
-          </div>
+          </AnimatePresence>
 
           {/* Workflow Animation */}
           <AnimatePresence>
@@ -287,13 +306,17 @@ const MonthlyExpenditurePageContent = () => {
                 className="mt-10 bg-gray-50 rounded-2xl p-8 shadow-inner border border-gray-200"
               >
                 <h3 className="text-xl font-bold mb-4 text-center">Response</h3>
-                <div className="prose prose-sm md:prose-base max-w-none text-anthropic-dark whitespace-pre-line bg-white rounded-xl p-6 border border-teal-200 shadow">
-                  {typeof response === 'string' ? response : response.output ? response.output : (
-                    <ul>
-                      {Object.entries(response).map(([key, value]) => (
-                        <li key={key}><b>{key}:</b> {String(value)}</li>
-                      ))}
-                    </ul>
+                <div className="mt-4 p-4 bg-gray-100 rounded">
+                  {/* For chat */}
+                  {response.output && <div>{response.output}</div>}
+
+                  {/* For bill or upload-bill */}
+                  {response.Amount && (
+                    <div>
+                      <div><b>Amount:</b> {response.Amount}</div>
+                      <div><b>Paid to:</b> {response['Paid to']}</div>
+                      <div><b>Date:</b> {response.Date}</div>
+                    </div>
                   )}
                 </div>
               </motion.div>
@@ -305,43 +328,4 @@ const MonthlyExpenditurePageContent = () => {
   );
 };
 
-const MonthlyExpenditurePage = () => (
-  <PageRevealWrapper
-    heading="Monthly Expenditure Summarization Agent"
-    description="Monitor, categorize, and summarize your monthly spending—effortlessly and intelligently. Our AI-powered Smart Monthly Expense Tracker collects expenses from emails, web forms, and chat, classifies them using large language models, and sends out clear monthly summaries with actionable insights. Whether it's a food delivery bill or a fuel refill SMS, this assistant extracts the transaction, tags it, stores it in a database, and keeps you informed with personalized reports—without spreadsheets or manual logging. Built for individuals, professionals, and small businesses, it's your always-on personal finance analyst. The system automates everything from capturing and categorizing expenses to answering real-time queries like 'How much did I spend on groceries last month?'"
-    details={
-      <div className="space-y-6">
-        <div>
-          <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
-          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-            <li>Inbox Expense Monitoring: Automatically read transactional emails and log expenses to a database.</li>
-            <li>Bill Form Submission: Allow staff or users to upload bill details manually via form and store structured data instantly.</li>
-            <li>Monthly Spend Report: Automatically email a monthly categorized expense summary.</li>
-            <li>Expense Query Chatbot: Ask questions like 'What\'s my top expense category in May?' and get a natural reply.</li>
-            <li>Semantic Categorization: AI understands and labels transactions based on vendor names and bill context.</li>
-          </ul>
-        </div>
-        <div>
-          <h2 className="font-semibold text-purple-700 mb-2">⚡ Why This Stands Out</h2>
-          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-            <li>Multi-channel Intake: Accepts inputs from Gmail, webhook submissions, form inputs, and chat.</li>
-            <li>LLM-Powered Categorization: Uses OpenRouter and Groq LLMs to parse, extract, and label expense entries intelligently.</li>
-            <li>PostgreSQL Logging: Saves all expenses into a structured database (expensess table), ready for reporting and querying.</li>
-            <li>Monthly Reporting Engine: Automatically runs every month, calculates totals by category, and sends a plain-text summary via email.</li>
-            <li>Category Breakdown Generator: Aggregates spending per category (food, fuel, rent, etc.) using code logic inside n8n.</li>
-            <li>Conversational Agent: Use chat interface to ask expense-related questions, and the agent provides AI-driven summaries.</li>
-            <li>Structured & Parsed Output: Resumes, invoices, or texts are transformed into schema-based records.</li>
-            <li>Webhooks + Manual Entry Forms: Capture bills via external systems or manual entry without disrupting flow.</li>
-          </ul>
-        </div>
-        <div className="mt-6 text-center">
-          <span className="inline-block bg-gradient-to-r from-teal-500 via-blue-500 to-green-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Let this AI-powered assistant manage your expenses. Automate your monthly reports and ask financial questions in plain English—zero spreadsheets needed.</span>
-        </div>
-      </div>
-    }
-  >
-    <MonthlyExpenditurePageContent />
-  </PageRevealWrapper>
-);
-
-export default MonthlyExpenditurePage; 
+export default MonthlyExpenditure; 

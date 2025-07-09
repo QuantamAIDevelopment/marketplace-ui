@@ -10,7 +10,6 @@ import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 Chart.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement, PointElement, LineElement);
 
-
 const workflowSteps = [
   { icon: FaFileCsv, label: 'Upload Quarterly CSVs', color: 'bg-orange-500' },
   { icon: FaChartBar, label: 'Processing', color: 'bg-pink-500' },

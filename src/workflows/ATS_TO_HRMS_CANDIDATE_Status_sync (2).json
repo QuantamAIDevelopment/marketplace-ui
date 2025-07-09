@@ -1,21 +1,23 @@
 {
-  "name": "ATS TO HRMS CANDIDATES Status sync",
+  "name": "ATS TO HRMS CANDIDATE Status sync",
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "/details-sync",
         "responseMode": "responseNode",
         "options": {
+          "allowedOrigins": "*",
           "binaryPropertyName": "data"
         }
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -960,
-        1140
+        -620,
+        1120
       ],
-      "id": "cf16e8b0-36c5-4577-acec-8bbfa0a0e9f1",
+      "id": "1a92ad60-a6b9-4cf2-b304-89a0e5063237",
       "name": "ATS Webhook",
       "webhookId": "485e7845-9675-428f-887e-287628503eda"
     },
@@ -24,23 +26,23 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3,
       "position": [
-        -540,
-        940
+        -180,
+        1020
       ],
-      "id": "8c6902d9-1103-441b-b8c3-df8ba70023cd",
+      "id": "b72d41c0-59b6-44e0-b082-292c4b0868d0",
       "name": "Merge Triggers"
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst processedIds = new Set();\nconst results = [];\nconst syncStatus = [];\n\nlet skippedCount = 0;\nlet successCount = 0;\nlet pendingCount = 0;\nlet failedCount = 0;\n\nconst statusMap = {\n  \"offer accepted\": \"Ready for Onboarding\",\n  \"offer extended\": \"Pending Offer Response\",\n  \"rejected\": \"Disqualified\",\n  \"withdrawn\": \"Withdrawn\",\n  \"application received\": \"Under Review\",\n  \"phone screening\": \"Phone Screen\",\n  \"interview scheduled\": \"Interview Scheduled\",\n  \"interview completed\": \"Interview Completed\",\n  \"reference check\": \"Reference Check\",\n  \"background check\": \"Background Check\",\n  \"final review\": \"Final Review\",\n  \"hired\": \"Hired\",\n  \"on hold\": \"On Hold\"\n};\n\nconst pendingKeywords = [\"pending\", \"onboarding\", \"scheduled\", \"in progress\"];\n\nfor (const item of items) {\n  const data = item.json;\n  const id = data[\"Candidate ID\"];\n  const name = data[\"Name\"];\n  const atsStatusRaw = data[\"ATS Status\"] || \"\";\n  const atsStatus = atsStatusRaw.toLowerCase().trim();\n\n  if (processedIds.has(id)) {\n    data.action = \"skip\";\n    data.reason = \"Duplicate\";\n    data.processedAt = new Date().toISOString();\n    skippedCount++;\n    results.push({ json: data });\n    continue;\n  }\n\n  if (!id || !name || name === \"—\") {\n    data.action = \"error\";\n    data.reason = \"Missing Candidate ID or Name\";\n    data.processedAt = new Date().toISOString();\n    failedCount++;\n    results.push({ json: data });\n    continue;\n  }\n\n  processedIds.add(id);\n\n  const hrmsStatus = statusMap[atsStatus] || \"Unknown\";\n  data.hrmsStatus = hrmsStatus;\n  data.originalStatus = atsStatusRaw;\n  data.processedAt = new Date().toISOString();\n\n  if (hrmsStatus === \"Unknown\") {\n    data.action = \"review\";\n    data.reason = `Unmapped ATS status: ${atsStatusRaw}`;\n    failedCount++;\n  } else {\n    data.action = \"sync\";\n\n    if (pendingKeywords.some(word => hrmsStatus.toLowerCase().includes(word))) {\n      pendingCount++;\n    } else {\n      successCount++;\n    }\n\n    syncStatus.push({\n      profileId: id,\n      message: data.Notes || \"\",\n      status: hrmsStatus,\n      type: \"sync\"\n    });\n  }\n\n  results.push({ json: data });\n}\n\n// Add stats summary as first item\nresults.unshift({\n  json: {\n    stats: {\n      syncedProfiles: successCount,\n      pendingSync: pendingCount,\n      failedSync: failedCount,\n      skippedRecords: skippedCount\n    },\n    syncStatus: syncStatus\n  }\n});\n\nreturn results;\n\n\n"
+        "jsCode": "const items = $input.all();\nconst processedIds = new Set();\nconst results = [];\nconst syncStatus = [];\n\nlet skippedCount = 0;\nlet successCount = 0;\nlet pendingCount = 0;\nlet failedCount = 0;\n\nconst statusMap = {\n  \"offer accepted\": \"Ready for Onboarding\",\n  \"offer extended\": \"Pending Offer Response\",\n  \"rejected\": \"Disqualified\",\n  \"withdrawn\": \"Withdrawn\",\n  \"application received\": \"Under Review\",\n  \"phone screening\": \"Phone Screen\",\n  \"interview scheduled\": \"Interview Scheduled\",\n  \"interview completed\": \"Interview Completed\",\n  \"reference check\": \"Reference Check\",\n  \"background check\": \"Background Check\",\n  \"final review\": \"Final Review\",\n  \"hired\": \"Hired\",\n  \"on hold\": \"On Hold\"\n};\n\nconst pendingKeywords = [\"pending\", \"onboarding\", \"scheduled\", \"in progress\"];\n\nfor (const item of items) {\n  const data = item.json;\n  const id = data[\"Candidate ID\"];\n  const name = data[\"Name\"];\n  const atsStatusRaw = data[\"ATS Status\"] || \"\";\n  const atsStatus = atsStatusRaw.toLowerCase().trim();\n\n  if (processedIds.has(id)) {\n    data.action = \"skip\";\n    data.reason = \"Duplicate\";\n    data.processedAt = new Date().toISOString();\n    skippedCount++;\n    results.push({ json: data });\n    continue;\n  }\n\n  if (!id || !name || name === \"—\") {\n    data.action = \"error\";\n    data.reason = \"Missing Candidate ID or Name\";\n    data.processedAt = new Date().toISOString();\n    failedCount++;\n    results.push({ json: data });\n    continue;\n  }\n\n  processedIds.add(id);\n\n  const hrmsStatus = statusMap[atsStatus] || \"Unknown\";\n  data.hrmsStatus = hrmsStatus;\n  data.originalStatus = atsStatusRaw;\n  data.processedAt = new Date().toISOString();\n\n  if (hrmsStatus === \"Unknown\") {\n    data.action = \"review\";\n    data.reason = `Unmapped ATS status: ${atsStatusRaw}`;\n    failedCount++;\n  } else {\n    data.action = \"sync\";\n\n    if (pendingKeywords.some(word => hrmsStatus.toLowerCase().includes(word))) {\n      pendingCount++;\n    } else {\n      successCount++;\n    }\n\n    syncStatus.push({\n      profileId: id,\n      message: data.Notes || \"\",\n      status: hrmsStatus,\n      type: \"sync\"\n    });\n  }\n\n  results.push({ json: data });\n}\n\n// Add stats summary as first item\nresults.unshift({\n  json: {\n    stats: {\n      syncedProfiles: successCount,\n      pendingSync: pendingCount,\n      failedSync: failedCount,\n      skippedRecords: skippedCount\n    },\n    syncStatus: syncStatus\n  }\n});\n\nreturn results;\n\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        20,
-        920
+        440,
+        1020
       ],
-      "id": "e5e16077-0ce9-4638-a43d-9dfb2e26754b",
+      "id": "10b7ca96-2a23-4b74-91bf-c83ad04b0b8a",
       "name": "Enhanced Status Mapping"
     },
     {
@@ -61,16 +63,6 @@
                 "type": "string",
                 "operation": "equals"
               }
-            },
-            {
-              "id": "252432ab-a572-45ed-9cd8-4673a0dc183e",
-              "leftValue": "",
-              "rightValue": "",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
             }
           ],
           "combinator": "and"
@@ -80,55 +72,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        340,
-        920
+        700,
+        1020
       ],
-      "id": "e7da22f4-ede8-4f7e-ab58-ce7172157356",
+      "id": "0f8fbe1f-66d6-4a86-aed7-43d81b5aa9e3",
       "name": "Filter for Sync"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Collect all syncable records\nconst candidates = $input.all().map(item => item.json);\n\n// Build a short summary message\nconst summary = {\n  totalSynced: candidates.length,\n  syncedCandidates: candidates.map(c => ({\n    id: c[\"Candidate ID\"],\n    name: c[\"Name\"],\n    hrmsStatus: c.hrmsStatus,\n    notes: c.Notes || \"\",\n    processedAt: c.processedAt\n  }))\n};\n\n// Return this to the webhook\nreturn [\n  {\n    json: summary\n  }\n];\n\n\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        960,
-        800
-      ],
-      "id": "fd7acadf-4704-499a-94ce-ecebbf48127d",
-      "name": "Prepare Response"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Collect all syncable records\nconst candidates = $input.all().map(item => item.json);\n\n// Build a short summary message\nconst summary = {\n  totalSynced: candidates.length,\n  syncedCandidates: candidates.map(c => ({\n    id: c[\"Candidate ID\"],\n    name: c[\"Name\"],\n    hrmsStatus: c.hrmsStatus,\n    notes: c.Notes || \"\",\n    processedAt: c.processedAt\n  }))\n};\n\n// Return this to the webhook\nreturn [\n  {\n    json: summary\n  }\n];\n\n"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        760,
-        1120
-      ],
-      "id": "b744ef94-e32f-4b19-99ec-060c571babe7",
-      "name": "Code",
-      "alwaysOutputData": true
-    },
-    {
-      "parameters": {
-        "rule": {
-          "interval": [
-            {}
-          ]
-        }
-      },
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        -900,
-        840
-      ],
-      "id": "c445d8b2-e1a1-40e9-9bfd-d3b2e53351c6",
-      "name": "Schedule Trigger"
     },
     {
       "parameters": {
@@ -142,10 +90,10 @@
         },
         "sheetName": {
           "__rl": true,
-          "value": 1329501232,
+          "value": 1898537120,
           "mode": "list",
-          "cachedResultName": "Sheet3",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc/edit#gid=1329501232"
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc/edit#gid=1898537120"
         },
         "columns": {
           "mappingMode": "autoMapInputData",
@@ -159,8 +107,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "Name",
@@ -169,8 +116,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "Email",
@@ -179,8 +125,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "ATS Status",
@@ -189,8 +134,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "Notes",
@@ -199,8 +143,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "Last Updated",
@@ -209,8 +152,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "hrmsStatus",
@@ -219,18 +161,7 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "action",
-              "displayName": "action",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "originalStatus",
@@ -239,12 +170,49 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
+              "canBeUsedToMatch": true
             },
             {
               "id": "processedAt",
               "displayName": "processedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "stats",
+              "displayName": "stats",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "syncStatus",
+              "displayName": "syncStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -261,17 +229,61 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        740,
-        820
+        1200,
+        1180
       ],
-      "id": "67bdd76e-e260-432d-927f-e0c51dd809a2",
-      "name": "Google Sheets1",
+      "id": "a9ff3d8a-a316-4375-8b39-ae370cda9fa1",
+      "name": "Log Skipped Records",
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "lJdg5HTRN7AAQ0RY",
           "name": "Google Sheets account 13"
         }
       }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nlet totalProcessed = 0;\nlet synced = 0;\nlet review = 0;\nlet error = 0;\nlet skipped = 0;\n\nfor (const item of items) {\n  totalProcessed++;\n\n  const action = item.json.action;\n\n  if (action === \"sync\") synced++;\n  else if (action === \"review\") review++;\n  else if (action === \"error\") error++;\n  else if (action === \"skip\") skipped++;\n}\n\nreturn [\n  {\n    json: {\n      success: true,\n      message: \"ATS to HRMS sync completed\",\n      timestamp: new Date().toISOString(),\n      data: {\n        totalProcessed,\n        synced,\n        review,\n        error,\n        skipped\n      }\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1880,
+        980
+      ],
+      "id": "ccf5de19-5640-41c9-91d3-2c66b60522b9",
+      "name": "Prepare Response"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -620,
+        880
+      ],
+      "id": "9a8582a5-1545-42fd-b52d-b1dec8242b27",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        2260,
+        980
+      ],
+      "id": "6778fc7c-ef8a-4aff-99f3-430e332a4aff",
+      "name": "Respond to Webhook"
     },
     {
       "parameters": {
@@ -291,9 +303,22 @@
           "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1z-2_cNgvwPdovEu3MxoehBfPSgM21icKEToC77LX8Qc/edit#gid=1329501232"
         },
         "columns": {
-          "mappingMode": "autoMapInputData",
-          "value": {},
-          "matchingColumns": [],
+          "mappingMode": "defineBelow",
+          "value": {
+            "Candidate ID": "={{ $json['Candidate ID'] }}",
+            "Name": "={{ $json.Name }}",
+            "Email": "={{ $json.Email }}",
+            "ATS Status": "={{ $json['ATS Status'] }}",
+            "Notes": "={{ $json.Notes }}",
+            "Last Updated": "={{ $json['Last Updated'] }}",
+            "hrmsStatus": "={{ $json.hrmsStatus }}",
+            "originalStatus": "={{ $json.originalStatus }}",
+            "processedAt": "={{ $json.processedAt }}",
+            "action": "={{ $json.action }}"
+          },
+          "matchingColumns": [
+            "Candidate ID"
+          ],
           "schema": [
             {
               "id": "Candidate ID",
@@ -302,7 +327,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "Name",
@@ -359,15 +385,6 @@
               "canBeUsedToMatch": true
             },
             {
-              "id": "action",
-              "displayName": "action",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
               "id": "originalStatus",
               "displayName": "originalStatus",
               "required": false,
@@ -384,6 +401,15 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "action",
+              "displayName": "action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -394,11 +420,11 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        980,
-        1120
+        1200,
+        820
       ],
-      "id": "09dfc49a-4c12-4b98-95ae-56764c50b6b7",
-      "name": "Google Sheets2",
+      "id": "0dd16811-8027-4332-9341-0f36424d27df",
+      "name": "Google Sheets1",
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "lJdg5HTRN7AAQ0RY",
@@ -408,31 +434,28 @@
     },
     {
       "parameters": {
-        "respondWith": "allIncomingItems",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        1260,
-        780
-      ],
-      "id": "34a97c23-0669-47c0-8895-553df8257dca",
-      "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
         "binaryPropertyName": "data0",
         "options": {}
       },
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1,
       "position": [
-        -320,
-        940
+        100,
+        1020
       ],
-      "id": "01845f2f-928d-4f7c-b8c3-8a87f3724d3d",
+      "id": "e130fdcb-4215-4a3e-ba92-8c7a22891769",
       "name": "Extract from File"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1580,
+        980
+      ],
+      "id": "0dfb19d1-74e7-48d6-82f1-6e824f168fba",
+      "name": "Merge"
     }
   ],
   "pinData": {},
@@ -481,18 +504,7 @@
         ],
         [
           {
-            "node": "Code",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code": {
-      "main": [
-        [
-          {
-            "node": "Google Sheets2",
+            "node": "Log Skipped Records",
             "type": "main",
             "index": 0
           }
@@ -510,20 +522,15 @@
         ]
       ]
     },
-    "Google Sheets1": {
+    "Log Skipped Records": {
       "main": [
         [
           {
-            "node": "Prepare Response",
+            "node": "Merge",
             "type": "main",
-            "index": 0
+            "index": 1
           }
         ]
-      ]
-    },
-    "Google Sheets2": {
-      "main": [
-        []
       ]
     },
     "Prepare Response": {
@@ -531,6 +538,22 @@
         [
           {
             "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -547,17 +570,28 @@
           }
         ]
       ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Prepare Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "9c0f1f4f-82b5-49e0-ba7b-f154a5fe21e8",
+  "versionId": "aa3506cf-9d4c-4652-9516-b1944ca73f93",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "Jbf2RlBtWZ4dKhYW",
+  "id": "zFdsfNwijRiqrVIr",
   "tags": []
 }

@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf, FaUserCheck, FaUserShield } from 'react-icons/fa'
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
 
 import { useNavigate } from 'react-router-dom';
-// import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 import AutomatedResearch from '../components/workflows/AutomatedResearch';
 import InterviewPanelAutoAssignment from '../components/workflows/InterviewPanelAutoAssignment';
@@ -33,10 +34,28 @@ const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
 
 const workflowData = [
   {
+    title: 'OnBoarding Q Email Generator',
+    icon: FaUserCheck,
+    path: '/onboarding-q',
+    summary: 'Generate onboarding emails from ODS files using the On_Boarding.Q workflow.'
+  },
+  {
+    title: 'OnBoarding Email Generator',
+    icon: FaUserPlus,
+    path: '/onboarding',
+    summary: 'Generate onboarding emails from client files with AI.'
+  },
+  {
     title: 'AI Customer Support',
     icon: FaRobot,
     path: '/ai-customer-support',
     summary: 'Chat with AI for customer support queries.'
+  },
+  {
+    title: 'Inventory Predict AI',
+    icon: FaChartLine,
+    path: '/inventory-predict-ai',
+    summary: 'Forecast inventory, detect stock risks, and get AI-powered suggestions.'
   },
   {
     title: 'Leaves Classifier',
@@ -55,12 +74,6 @@ const workflowData = [
     icon: FaFileAlt,
     path: '/workflows/document-upload',
     summary: 'Remind employees to upload documents.'
-  },
-  {
-    title: 'Candidate Hiring Status',
-    icon: FaUserAlt,
-    path: '/workflows/candidate-hiring-status',
-    summary: 'Sync candidate hiring status automatically.'
   },
   {
     title: 'Payslip Auto Encrypted',
@@ -125,7 +138,7 @@ const workflowData = [
   {
     title: 'Monthly Expenditure',
     icon: FaRupeeSign,
-    path: '/workflows/monthly-expenditure',
+    path: '/monthly-expenditure',
     summary: 'Track, upload, and chat about your monthly expenses.'
   },
   {
@@ -201,6 +214,12 @@ const workflowData = [
     summary: 'Migrate tables between databases with AI-powered automation.'
   },
   {
+    title: 'ATS to HRMS Candidate Status Sync',
+    icon: FaSync,
+    path: '/workflows/ats-to-hrms-candidate-status-sync',
+    summary: 'Sync and view candidate status between ATS and HRMS.'
+  },
+  {
     title: 'Test Case Generator',
     icon: FaVial,
     path: '/test-generator',
@@ -249,6 +268,12 @@ const workflowData = [
     summary: 'Get instant leave balance information through AI-powered HR assistant.'
   },
   {
+    title: 'Project Coast Reports',
+    icon: FaTable,
+    path: '/project-coast-reports',
+    summary: 'Upload project data and get a detailed cost report for your projects.'
+  },
+  {
     title: 'Automate Candidate Acceptance',
     icon: FaUserCheck,
     path: '/automate-candidate-acceptance/cover',
@@ -272,7 +297,7 @@ const Dashboard = () => {
             Explore our comprehensive suite of AI-powered automation tools designed to streamline your business processes.
           </p>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {workflowData.map((workflow, index) => (
             <WorkflowCard
@@ -288,7 +313,6 @@ const Dashboard = () => {
           <InterviewPanelAutoAssignment compact />
           <PerformanceReviewSummary compact />
         </div>
-        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
