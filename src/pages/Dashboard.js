@@ -1,8 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
+import AutomatedResearch from '../components/workflows/AutomatedResearch';
+import InterviewPanelAutoAssignment from '../components/workflows/InterviewPanelAutoAssignment';
+import PerformanceReviewSummary from '../components/workflows/PerformanceReviewSummary';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -27,16 +31,28 @@ const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
 
 const workflowData = [
   {
-    title: 'Business Intelligence BOT',
-    icon: FaChartBar,
-    path: '/business-intelligence-bot',
-    summary: 'Upload sales data and get instant KPI summaries, suggestions, and issue detection.'
+    title: 'OnBoarding Q Email Generator',
+    icon: FaUserCheck,
+    path: '/onboarding-q',
+    summary: 'Generate onboarding emails from ODS files using the On_Boarding.Q workflow.'
+  },
+  {
+    title: 'OnBoarding Email Generator',
+    icon: FaUserPlus,
+    path: '/onboarding',
+    summary: 'Generate onboarding emails from client files with AI.'
   },
   {
     title: 'AI Customer Support',
     icon: FaRobot,
     path: '/ai-customer-support',
     summary: 'Chat with AI for customer support queries.'
+  },
+  {
+    title: 'Inventory Predict AI',
+    icon: FaChartLine,
+    path: '/inventory-predict-ai',
+    summary: 'Forecast inventory, detect stock risks, and get AI-powered suggestions.'
   },
   {
     title: 'Leaves Classifier',
@@ -55,12 +71,6 @@ const workflowData = [
     icon: FaFileAlt,
     path: '/workflows/document-upload',
     summary: 'Remind employees to upload documents.'
-  },
-  {
-    title: 'Candidate Hiring Status',
-    icon: FaUserAlt,
-    path: '/workflows/candidate-hiring-status',
-    summary: 'Sync candidate hiring status automatically.'
   },
   {
     title: 'Payslip Auto Encrypted',
@@ -119,14 +129,8 @@ const workflowData = [
   {
     title: 'Monthly Expenditure',
     icon: FaRupeeSign,
-    path: '/workflows/monthly-expenditure',
+    path: '/monthly-expenditure',
     summary: 'Track, upload, and chat about your monthly expenses.'
-  },
-  {
-    title: 'Fraud Detection',
-    icon: FaShieldAlt,
-    path: '/workflows/fraud-detection',
-    summary: 'Upload transaction CSVs to detect fraud, risk scores, and AI notes.'
   },
   {
     title: 'Inventory Management',
@@ -140,13 +144,144 @@ const workflowData = [
     path: '/appointment-scheduler',
     summary: 'Book and manage appointments with ease.'
   },
-{
+  {
+    title: 'AI Background Verification Agent',
+    icon: FaUserShield,
+    path: '/background-verification-agent',
+    summary: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.'
+  },
+  {
     title: 'MCQ Generator & Trainer',
     icon: FaBrain,
     path: '/mcq-generator',
     summary: 'Generate quizzes and train with our AI agent.'
   },
-  
+  {
+    title: 'SmartInvoice AI',
+    icon: FaFileInvoiceDollar,
+    path: '/smart-invoice-ai',
+    summary: 'Upload and validate invoices with AI. Get instant feedback and Google Sheets integration.'
+  },
+  {
+    title: 'AI-Powered Book Price Tracker',
+    icon: FaBook,
+    path: '/ai-book-price-tracker',
+    summary: 'Track book prices, availability, and details using AI-powered extraction.'
+  },
+  {
+    title: 'AI Testmonial Extractor',
+    icon: FaCommentDots,
+    path: '/workflows/testmonial-extractor',
+    summary: 'Extract testimonials, sentiment, tags, and product from marketing feedback files.'
+  },
+  {
+    title: 'Dynamic Model Selector',
+    icon: FaRobot,
+    path: '/workflows/dynamic-model-selector',
+    summary: 'Ask any question and let the agent route it to the best AI model for the job.'
+  },
+  {
+    title: 'AI Background Verification',
+    icon: FaUserShield,
+    path: '/ai-background-verification',
+    summary: 'Automate candidate background checks with AI. Instantly analyze resumes and public data for risk, discrepancies, and red flags.'
+  },
+  {
+    title: 'Notion Knowledge Base AI Assistant',
+    icon: FaBook,
+    path: '/workflows/notion-knowledge-base-ai',
+    summary: 'Ask questions and get instant answers from your Notion workspace knowledge base.'
+  },
+  {
+    title: 'Database Migration AI Agent',
+    icon: FaDatabase,
+    path: '/workflows/database-migration-ai',
+    summary: 'Migrate tables between databases with AI-powered automation.'
+  },
+  {
+    title: 'ATS to HRMS Candidate Status Sync',
+    icon: FaSync,
+    path: '/workflows/ats-to-hrms-candidate-status-sync',
+    summary: 'Sync and view candidate status between ATS and HRMS.'
+  },
+  {
+    title: 'Test Case Generator',
+    icon: FaVial,
+    path: '/test-generator',
+    summary: 'Generate QA test cases from your feature docs using AI.'
+  },
+  {
+    title: 'Gmail Categorization',
+    icon: FaEnvelopeOpenText,
+    path: '/gmail-categorization',
+    summary: 'Automatically categorize and label your emails using AI and Google Sheets integration.'
+  },
+  {
+    title: 'Resume Analyzer',
+    icon: FaFileAlt,
+    path: '/resume-analyzer',
+    summary: 'AI-powered resume screening, scoring, and skill extraction.'
+  },
+  {
+    title: 'Sentiment Agent',
+    icon: FaRobot,
+    path: '/sentiment-agent-report',
+    summary: 'Smart customer support analyst assistant. Processes feedback and returns structured summaries for automation.'
+  },
+  {
+    title: 'Customer Support Agent',
+    icon: FaRobot,
+    path: '/customer-support-agent',
+    summary: 'Chat with an AI-powered customer support agent for order tracking, refunds, and more.'
+  },
+  {
+    title: 'PDF Summarizer',
+    icon: FaFilePdf,
+    path: '/pdf-summarizer',
+    summary: 'Upload a PDF to extract key points, executive summary, entities, and topics using AI.'
+  },
+  {
+    title: 'Sales Forecasting Agent',
+    icon: FaChartLine,
+    path: '/sales-forecasting',
+    summary: 'AI-powered sales forecasting with pipeline analysis and revenue predictions.'
+  },
+  {
+    title: 'Leave Balance Chatbot',
+    icon: FaCalendarCheck,
+    path: '/leave-balance-chatbot',
+    summary: 'Get instant leave balance information through AI-powered HR assistant.'
+  },
+  {
+    title: 'PR Summary Agent',
+    icon: FaRobot,
+    path: '/pr-summary-agent',
+    summary: 'Summarize GitHub PRs and get AI-powered summaries and notifications.'
+  },
+  {
+    title: 'PR Reviewer AI Agent',
+    icon: FaRobot,
+    path: '/pr-reviewer-agent',
+    summary: 'Automated code review and actionable suggestions for your GitHub PRs.'
+  },
+  {
+    title: 'Project Coast Reports',
+    icon: FaTable,
+    path: '/project-coast-reports',
+    summary: 'Upload project data and get a detailed cost report for your projects.'
+  },
+  {
+    title: 'Automate Candidate Acceptance',
+    icon: FaUserCheck,
+    path: '/automate-candidate-acceptance/cover',
+    summary: 'Automate candidate acceptance and onboarding notifications.'
+  },
+  {
+    title: 'Fraud Detection System',
+    icon: FaShieldAlt,
+    path: '/fraud-detection-system',
+    summary: 'Upload transaction data to detect fraud, get AI risk scores, and see triggered rules for each order.'
+  },
 ];
 
 const Dashboard = () => {
@@ -165,7 +300,7 @@ const Dashboard = () => {
             Explore our comprehensive suite of AI-powered automation tools designed to streamline your business processes.
           </p>
         </motion.div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {workflowData.map((workflow, index) => (
             <WorkflowCard
@@ -176,8 +311,11 @@ const Dashboard = () => {
               summary={workflow.summary}
             />
           ))}
+          {/* <AmazonWebScrapeCard compact /> */}
+          <AutomatedResearch compact />
+          <InterviewPanelAutoAssignment compact />
+          <PerformanceReviewSummary compact />
         </div>
-        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

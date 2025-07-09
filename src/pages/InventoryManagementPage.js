@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaWarehouse, FaTruckLoading, FaClipboardList, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
-import { triggerInventoryManagementWorkflow } from '../services/workflows/inventoryManagement';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import { FaTruckLoading, FaClipboardList, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const workflowSteps = [
   { icon: FaClipboardList, label: 'Input Data', color: 'bg-blue-500' },
   { icon: FaTruckLoading, label: 'Processing', color: 'bg-yellow-500' },
-  { icon: FaWarehouse, label: 'Checking Stock', color: 'bg-pink-500' },
   { icon: FaCheckCircle, label: 'Complete', color: 'bg-green-500' },
 ];
 
@@ -24,19 +22,36 @@ const parseProductEffected = (str) => {
     return product;
 };
 
+const INVENTORY_API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/inventory-check';
+
+const triggerInventoryManagementWorkflow = async (formData) => {
+    // Only add params that are non-empty
+    const params = new URLSearchParams();
+    if (formData.productName) params.append('Product Name', formData.productName);
+    if (formData.SKU) params.append('SKU', formData.SKU);
+    if (formData.Returnstock) params.append('returnstock', formData.Returnstock);
+    const url = params.toString()
+      ? `${INVENTORY_API_URL}?${params.toString()}`
+      : INVENTORY_API_URL;
+    const response = await fetch(url, {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        let msg = 'API error';
+        try {
+            const err = await response.json();
+            msg = err.message || msg;
+        } catch {}
+        throw new Error(msg);
+    }
+    return await response.json();
+};
 
 const InventoryManagementPageContent = () => {
     const [formData, setFormData] = useState({
-        STATUS: '',
         SKU: '',
-        Returnstock: '',
         productName: '',
-        CurrentStock: '',
-        Threshold: '',
-        reorderQuantity: '',
-        Warehouse: '',
-        supplierName: '',
-        supplierContact: '',
+        Returnstock: '',
     });
     const [isExecuting, setIsExecuting] = useState(false);
     const [currentStep, setCurrentStep] = useState(0);
@@ -65,7 +80,11 @@ const InventoryManagementPageContent = () => {
         setResponse(null);
 
         try {
-            const result = await triggerInventoryManagementWorkflow(formData);
+            // Allow empty input: send only filled fields
+            const filteredFormData = Object.fromEntries(
+                Object.entries(formData).filter(([_, v]) => v !== undefined && v !== null && v !== '')
+            );
+            const result = await triggerInventoryManagementWorkflow(filteredFormData);
             setResponse(result);
         } catch (err) {
             setError('Failed to run workflow. Check the console for more details.');
@@ -79,7 +98,6 @@ const InventoryManagementPageContent = () => {
   return (
     <div className="flex items-center justify-center min-h-[70vh]">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-4xl mx-auto">
-        {/* <h2 className="text-2xl font-bold mb-4 text-gray-900">Inventory Management</h2> */}
         <div className="relative z-10 w-full max-w-3xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: -30 }}
@@ -89,20 +107,43 @@ const InventoryManagementPageContent = () => {
             Inventory Management
           </motion.h1>
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-2xl p-4 md:p-8 space-y-6 border border-gray-200 w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.keys(formData).map(key => (
-                <div className="flex flex-col gap-2" key={key}>
-                  <label className="font-semibold">{key}</label>
-                  <input
-                    type={key === 'CurrentStock' || key === 'Threshold' || key === 'reorderQuantity' || key === 'Returnstock' ? "number" : "text"}
-                    name={key}
-                    value={formData[key]}
-                    onChange={handleChange}
-                    className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
-                    placeholder={`Enter ${key}`}
-                  />
-                </div>
-              ))}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="font-semibold text-anthropic-dark text-lg">SKU</label>
+                <input
+                  type="text"
+                  name="SKU"
+                  value={formData.SKU}
+                  onChange={handleChange}
+                  className="bg-gray-100 rounded-xl px-4 py-3 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-base shadow-sm border border-gray-300 focus:border-blue-400 transition"
+                  placeholder="Enter SKU"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="font-semibold text-anthropic-dark text-lg">Product Name</label>
+                <input
+                  type="text"
+                  name="productName"
+                  value={formData.productName}
+                  onChange={handleChange}
+                  className="bg-gray-100 rounded-xl px-4 py-3 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-base shadow-sm border border-gray-300 focus:border-blue-400 transition"
+                  placeholder="Enter Product Name"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="font-semibold text-anthropic-dark text-lg">Return Stock</label>
+                <input
+                  type="number"
+                  name="Returnstock"
+                  value={formData.Returnstock}
+                  onChange={handleChange}
+                  className="bg-gray-100 rounded-xl px-4 py-3 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-blue-400 w-full text-base shadow-sm border border-gray-300 focus:border-blue-400 transition"
+                  placeholder="Enter Return Stock"
+                  min="0"
+                />
+              </div>
             </div>
             {error && <div className="bg-red-500 text-white p-3 rounded-lg flex items-center gap-2"><FaExclamationTriangle /> {error}</div>}
             <motion.button
@@ -110,7 +151,7 @@ const InventoryManagementPageContent = () => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={isExecuting}
-              className="w-full bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-colors disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white py-4 rounded-2xl font-bold text-xl shadow-lg hover:from-blue-600 hover:to-purple-600 transition-colors disabled:opacity-50 mt-4"
             >
               {isExecuting ? 'Processing...' : 'Run Workflow'}
             </motion.button>
@@ -146,7 +187,6 @@ const InventoryManagementPageContent = () => {
               </motion.div>
             )}
           </AnimatePresence>
-          
           <AnimatePresence>
             {response && !isExecuting && (
               <motion.div
@@ -258,4 +298,4 @@ const InventoryManagementPage = () => (
   </PageRevealWrapper>
 );
   
-export default InventoryManagementPage; 
+export default InventoryManagementPage;

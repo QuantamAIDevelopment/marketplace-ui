@@ -1,0 +1,800 @@
+{
+  "name": "document upload reminder",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "documents-status",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "c3faf92e-8669-41eb-9d6c-8881002fec33",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -3080,
+        20
+      ],
+      "typeVersion": 1,
+      "webhookId": "e1a9cab2-cceb-40ab-809f-99e875b3103e"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2940,
+        180
+      ],
+      "id": "ed5475ad-07de-4e61-8b5d-6851b6a78b91",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9cfa022d-755a-4edc-a3fb-ad97c55fb214",
+              "leftValue": "={{ $json[\"missing documents\"].trim() != ''}}",
+              "rightValue": "={{ $json[\"missing documents\"].trim() }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -2080,
+        100
+      ],
+      "id": "66f9a612-b3ed-46cd-beec-01f9782267aa",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "67a044a8-d747-420a-b428-62b3f365e4a9",
+              "name": "missing documents",
+              "value": "= \n{{ (() => {\n  // Get the required and submitted documents from input\n  const required = $json['requried documents'] || '';\n  const submitted = $json['documents submitted ']|| '';\n \n  // Convert to arrays, trim spaces, and lowercase for comparison\n  const reqArr = required.split(',').map(d => d.trim().toLowerCase()).filter(Boolean);\n  const subArr = submitted.split(',').map(d => d.trim().toLowerCase()).filter(Boolean);\n \n  // Find missing documents\n  const missing = reqArr.filter(doc => !subArr.includes(doc));\n \n  return missing;\n})() }}",
+              "type": "string"
+            },
+            {
+              "id": "fa6cce16-4de7-4f8d-9a03-74c35fe81ede",
+              "name": "documents_submitted",
+              "value": "={{ $json['documents submitted '] }}",
+              "type": "string"
+            },
+            {
+              "id": "ba75f13d-2a2d-4ba4-9d1e-8ac41d3a03ed",
+              "name": "required_documents",
+              "value": "={{ $json['requried documents'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2240,
+        100
+      ],
+      "id": "d0e7e928-ce9a-4f61-aad0-e7002226294c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d5b793b2-4baa-4425-8b5d-1130d65507f4",
+              "name": "joiningdate",
+              "value": "={{ $('Google Sheets').item.json['Date of joining'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5a8731ef-e2c3-41d3-a6c2-904e11e468e9",
+              "name": "duedate",
+              "value": "={{ $('Google Sheets').item.json.document_due_date }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1800,
+        80
+      ],
+      "id": "6cfb7c14-5337-4758-9189-f64f63fe0f92",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "e8415209-297e-4025-9946-4e15f711657b",
+                    "leftValue": "={{ $json['remaining days'].toNumber() }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "reminder mail"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9fa53c81-ca4b-4df4-a229-dce63b21b435",
+                    "leftValue": "={{ $json['remaining days'].toNumber() }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "final reminder"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a4c24b86-c4a1-4ee1-83cc-d297f0d15faa",
+                    "leftValue": "={{ $json['remaining days'].toNumber() }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "lt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "escalate to HR "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1440,
+        80
+      ],
+      "id": "2c34109e-3959-47a8-86d4-c69813efb3ca",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8fdb11fb-b731-48b7-a41a-8ff05f249c82",
+              "name": "remaining days",
+              "value": "={{\n(() => {\nlet dueDateStr = $json.duedate;\nif (!dueDateStr) return null;\n\n// Remove extra quotes if present\nif (dueDateStr.startsWith('\"') && dueDateStr.endsWith('\"')) {\n  dueDateStr = dueDateStr.slice(1, -1);\n}\n\nconst dueDate = new Date(dueDateStr);\nconst today = new Date();\n\ndueDate.setHours(0, 0, 0, 0);\ntoday.setHours(0, 0, 0, 0);\n\nconst diff = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));\nreturn diff;\n})()\n}}",
+              "type": "string"
+            },
+            {
+              "id": "7af66b37-203d-4ad9-a325-a9f1c0d150da",
+              "name": "joiningdate",
+              "value": "={{ $json.joiningdate }}",
+              "type": "string"
+            },
+            {
+              "id": "85058f44-0a3d-47ca-92a0-4f20ce9eab40",
+              "name": "duedate",
+              "value": "={{ $json.duedate }}",
+              "type": "string"
+            },
+            {
+              "id": "4b727697-d12c-4def-94ec-ef3e3746aa96",
+              "name": "Name",
+              "value": "={{ $('Google Sheets').item.json.Name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1600,
+        80
+      ],
+      "id": "e3ab0853-5fab-41f2-afaf-680af25afb23",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Postgres').item.json.email }}",
+        "subject": "Missing Onboarding Documents",
+        "message": "=Hi {{ $json.Name }},\nYou still need to submit the following documents:\n{{ $('If').item.json['missing documents'] }}\n\nPlease upload them \n\nRegards,  \nHR Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1120,
+        60
+      ],
+      "id": "1719038f-3ee9-435c-89f4-f235ab085405",
+      "name": "reminder mail",
+      "webhookId": "6898f05e-0e03-4874-95a7-7c2d26ee9e79",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lO0lw8EJICWSyJzF",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Postgres').item.json.email }}",
+        "subject": "📢 Final Reminder: Submit Your Onboarding Documents by Tomorrow",
+        "message": "=Hi {{ $json.Name }},\n\\n You still need to submit the following documents: {{ $('If').item.json['missing documents'] }}  Please upload them   Regards,   HR Team",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -960,
+        80
+      ],
+      "id": "4ea7c818-a160-4ea3-9818-aef1d44767ee",
+      "name": "final reminder",
+      "webhookId": "95e8dbf2-d7eb-4219-8d8f-5e03d3dc4b9d",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lO0lw8EJICWSyJzF",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "srikanthjosh539@gmail.com",
+        "subject": "=⚠️ Escalation: Missing Docs for {{ $json.Name }}",
+        "message": "={{ $json.Name }}\nhas not submitted the following documents even after final reminders:  - {{ $('If').item.json['missing documents'] }}  Please follow up directly.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        100
+      ],
+      "id": "0d067e5b-8061-4862-827a-64e056846bed",
+      "name": "Escalation to HR",
+      "webhookId": "52a61700-12d8-4b77-99e8-196c3343f59f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "lO0lw8EJICWSyJzF",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Workflow Overview 🚀\n\nThis workflow processes employee document status, sends reminders, and escalates to HR if documents are missing. It retrieves data from a PostgreSQL database, calculates remaining days until due, and sends email notifications based on the document status. \n\n### Main Flow:\n1. **Trigger**: Initiates the workflow (Manual or Webhook).\n2. **Data Retrieval**: Fetches employee document details from PostgreSQL.\n3. **Data Processing**: \n   - Calculates missing documents.\n   - Extracts joining and due dates.\n   - Calculates remaining days.\n4. **Conditional Logic**: \n   - Checks for missing documents.\n   - Routes based on remaining days (reminder, final reminder, escalation).\n5. **Communication**: Sends emails via Gmail.\n6. **Database Update**: Updates PostgreSQL with email thread IDs, labels, and missing document status.",
+        "height": 450,
+        "width": 1000,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2380,
+        -780
+      ],
+      "name": "Workflow Overview",
+      "id": "29ce9a0e-4b2f-4bd6-a22f-bd6bc7d6d4db",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Trigger Nodes 🚦\n\n- **Webhook**: Initiates the workflow when an HTTP request is received at the `/documents-status` endpoint. Used for external system integration.\n- **When clicking 'Execute workflow'**: A manual trigger for testing and ad-hoc execution of the workflow.",
+        "height": 600,
+        "width": 400
+      },
+      "position": [
+        -3180,
+        -260
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "name": "Trigger Nodes Explanation",
+      "id": "757e1e5f-8dd1-4baf-9969-efd908c27072",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Data Retrieval & Processing 📊\n\n- **Postgres**: Fetches employee document data from the `employee_documents` table in PostgreSQL.\n- **Edit Fields (Edit Fields)**: Calculates and sets the `missing documents` field by comparing `required_documents` with `documents_submitted`.\n- **Edit Fields1**: Extracts `date_of_joining` and `document_due_date` from the PostgreSQL output and assigns them to `joiningdate` and `duedate`.\n- **Edit Fields2**: Calculates `remaining days` until the `duedate` and also extracts `Name` from the PostgreSQL data.",
+        "height": 560,
+        "width": 600,
+        "color": 4
+      },
+      "name": "Data Processing Explanation",
+      "position": [
+        -2720,
+        -240
+      ],
+      "type": "n8n-nodes-base.stickyNote",
+      "id": "6412ff0e-8dc9-4dce-8674-13f3d7963ae2",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Conditional Logic 🧩\n\n- **If**: Checks if there are any `missing documents`. If `missing documents` is not empty, the workflow proceeds to the next steps.\n- **Switch**: Routes the workflow based on the `remaining days`:\n  - **Reminder Mail**: If `remaining days` is greater than 1.\n  - **Final Reminder**: If `remaining days` is equal to 1.\n  - **Escalation to HR**: If `remaining days` is less than 1.",
+        "height": 560,
+        "width": 640,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "name": "Conditional Logic Explanation",
+      "position": [
+        -2080,
+        -260
+      ],
+      "id": "65b6752f-f475-4a90-b6cc-e8e5dedee567",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Communication & Database Update 📧\n\n- **reminder mail (Gmail)**: Sends an initial reminder email to the employee about missing documents.\n- **final reminder (Gmail)**: Sends a final reminder email to the employee.\n- **Escalation to HR (Gmail)**: Sends an escalation email to HR if documents are still missing after the final reminder.\n- **Postgres1**: Updates the `employee_documents` table in PostgreSQL with `thread_id`, `label_ids`, `remaining_days`, `employee_id`, and `missing_documents` after the emails are sent.",
+        "height": 600,
+        "width": 680,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "name": "Communication & DB Update Explanation",
+      "position": [
+        -1380,
+        -280
+      ],
+      "id": "8a666203-d4a0-4b89-b9b0-363213a090bc",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Response Formatting ⚙️\n\n- **Format Response (Code)**: This node processes the workflow output to generate a structured response containing:\n  - **Stats**: `pendingUploads`, `completedUploads`, `totalDocuments`.\n  - **Recent Activity**: A list of recent document activities including `employeeName`, `documentType`, `status`, `dueDate`, and `lastReminder`. This node is useful for creating a dashboard or API response with summarized information.",
+        "height": 540,
+        "width": 400,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "name": "Response Formatting Explanation",
+      "position": [
+        -660,
+        -260
+      ],
+      "id": "048494cd-17a2-4ff3-b1dc-f46682c41411",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eUfUEqELU6xuZXdqErWNHhZNN814Min5BsA-k37gsEA",
+          "mode": "list",
+          "cachedResultName": "New Joiner data_J",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUfUEqELU6xuZXdqErWNHhZNN814Min5BsA-k37gsEA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUfUEqELU6xuZXdqErWNHhZNN814Min5BsA-k37gsEA/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2520,
+        100
+      ],
+      "id": "635d4cd3-0370-4082-8560-3db98178108d",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tLL0WXRwQz4Tk3zK",
+          "name": "Google Sheets account 11"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1eUfUEqELU6xuZXdqErWNHhZNN814Min5BsA-k37gsEA",
+          "mode": "list",
+          "cachedResultName": "New Joiner data_J",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUfUEqELU6xuZXdqErWNHhZNN814Min5BsA-k37gsEA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zalQrHYUG4urQLBlZpOcWSpGZ95xZgxu4w0F36Hv3Y8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "missing documents": "={{ $('Edit Fields').item.json['missing documents'] }}",
+            "remaning days": "={{ $('Edit Fields2').item.json['remaining days'] }}",
+            "employee id": "={{ $('Google Sheets').item.json['employee id'] }}"
+          },
+          "matchingColumns": [
+            "employee id"
+          ],
+          "schema": [
+            {
+              "id": "employee id",
+              "displayName": "employee id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "mail",
+              "displayName": "mail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Date of joining",
+              "displayName": "Date of joining",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "documents submitted ",
+              "displayName": "documents submitted ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "requried documents",
+              "displayName": "requried documents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "missing documents",
+              "displayName": "missing documents",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "document_due_date",
+              "displayName": "document_due_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "remaning days",
+              "displayName": "remaning days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -580,
+        80
+      ],
+      "id": "4ae6a28f-5e86-4190-89c2-55ac02f9302c",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tLL0WXRwQz4Tk3zK",
+          "name": "Google Sheets account 11"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst stats = {\n  pendingUploads: 0,\n  completedUploads: 0,\n  totalDocuments: 0\n};\n\nconst recentActivity = [];\n\nfor (const item of items) {\n  const missingDocs = $input.first().json.missing_documents || ''; // Default to an empty string if undefined\n  const submittedDocs = $input.first().json.documents_submitted || [];\n  \n  stats.pendingUploads += missingDocs.split(',').length; // Count items after splitting by comma\n  stats.completedUploads += submittedDocs.length;\n  stats.totalDocuments = stats.pendingUploads + stats.completedUploads;\n  \n  recentActivity.push({\n    id: Math.random().toString(36).substr(2, 9),\n    employeeName: $input.first().json.name,\n    documentType: missingDocs.split(',').join(', '), // Split by comma, then join with a comma-space\n    status: missingDocs.length > 0 ? 'PENDING' : 'COMPLETED',\n    dueDate: item.json.duedate,\n    lastReminder: new Date().toISOString()\n  });\n}\n\nreturn [{\n  json: {\n    stats,\n    recentActivity\n  }\n}];\n"
+      },
+      "id": "8021b039-129f-4c41-bcf8-85806180f2f4",
+      "name": "Format Response",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -320,
+        80
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -100,
+        80
+      ],
+      "id": "80264a19-cc39-49e6-8ef0-7708dfb4f8f6",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "reminder mail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "final reminder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Escalation to HR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "reminder mail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "final reminder": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Escalation to HR": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fc34cefc-1d22-49ce-baaa-da803ff3318d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "No9BLINUTwNOAKKY",
+  "tags": []
+}

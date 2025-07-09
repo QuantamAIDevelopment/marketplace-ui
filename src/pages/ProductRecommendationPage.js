@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaRobot, FaSearch, FaList, FaCheckCircle, FaBoxOpen, FaShoppingCart } from 'react-icons/fa';
 import axios from 'axios';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const workflowSteps = [
   { icon: FaSearch, label: 'Input Query', color: 'bg-blue-500' },

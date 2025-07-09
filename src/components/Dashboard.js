@@ -15,7 +15,21 @@ import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
 import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
 
+import { FaRegComments } from 'react-icons/fa';
+
 const workflows = [
+  {
+    title: 'Product Feedback Summarizer',
+    icon: FaRegComments,
+    path: '/workflows/product-feedback-summarizer',
+    description: 'Summarize customer feedback for each product, including praises, complaints, keywords, and sentiment.',
+  },
+  // {
+  //   title: 'Automating Research with AI Agent',
+  //   icon: FaFilePdf,
+  //   path: '/automated-research-ai',
+  //   description: 'Give a topic as input and get a downloadable PDF research report as output.',
+  // },
   {
     title: 'AI Customer Support',
     icon: FaRobot,

@@ -1,5 +1,5 @@
 {
-  "name": "Inventory_management",
+  "name": "Inventory management agent",
   "nodes": [
     {
       "parameters": {
@@ -8,13 +8,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "466f3ad6-7311-4e2e-bfad-6ddf87d3c177",
+      "id": "9e7d5241-7f1d-4d48-9eac-e253cc5af079",
       "name": "Webhook Trigger",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -480,
-        700
+        -440,
+        720
       ],
       "webhookId": "37a9c009-699d-464d-a59f-d6e14993215f"
     },
@@ -23,19 +23,19 @@
         "conditions": {
           "number": [
             {
-              "value1": "={{ $json.currentstock }}",
-              "value2": "={{ $json.threshold }}"
+              "value1": "={{ $json.CurrentStock }}",
+              "value2": "={{ $json.Threshold }}"
             }
           ]
         }
       },
-      "id": "d27c90aa-4ea2-4c73-9fc6-4e89b471047b",
+      "id": "48859baa-d8e6-4e82-bcbe-653b8236eb53",
       "name": "Low Stock Check",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        940,
-        600
+        1680,
+        580
       ]
     },
     {
@@ -48,32 +48,11 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -40,
-        -20
+        0,
+        0
       ],
-      "id": "df399528-be33-46cb-bfd3-d45e5a99c340",
+      "id": "33bf74e2-0c0e-454a-8aae-9ef9837529cd",
       "name": "Sticky Note1"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT *\nFROM stockdata\nWHERE currentstock <= threshold;\n",
-        "additionalFields": {}
-      },
-      "id": "025a3371-cfb7-4781-9baa-88dd5636d4cd",
-      "name": "Check Low Stock",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 1,
-      "position": [
-        1080,
-        160
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "ombHCedKDy5YY5fq",
-          "name": "Postgres account"
-        }
-      }
     },
     {
       "parameters": {
@@ -85,32 +64,11 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        880,
-        60
+        920,
+        80
       ],
-      "id": "310ee9dc-6300-4390-bd79-2d7a8ab2cc88",
+      "id": "66bff35d-4c0f-471a-b5fe-1eb7eb14c7bd",
       "name": "Sticky Note2"
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT * FROM stockdata\nWHERE currentstock > reorderquantity;\n",
-        "options": {}
-      },
-      "id": "07687de9-c5ab-4109-867c-0ae0ec32c08a",
-      "name": "Check Overstock",
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2,
-      "position": [
-        -540,
-        120
-      ],
-      "credentials": {
-        "postgres": {
-          "id": "ombHCedKDy5YY5fq",
-          "name": "Postgres account"
-        }
-      }
     },
     {
       "parameters": {
@@ -121,10 +79,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -800,
-        20
+        -760,
+        40
       ],
-      "id": "92e627ae-7edd-44d4-af09-29bf9e388ce8",
+      "id": "559d98f8-9892-4e29-896b-f55a847a3445",
       "name": "Sticky Note3"
     },
     {
@@ -135,10 +93,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.3,
       "position": [
-        2840,
-        240
+        3960,
+        200
       ],
-      "id": "744f85c3-ed52-4ddc-93f8-11b992fd5b16",
+      "id": "abba1de0-ea3d-4cdc-a9b2-6bda7724235a",
       "name": "Respond to Webhook"
     },
     {
@@ -146,23 +104,124 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 999021925,
+          "value": 606847537,
           "mode": "list",
-          "cachedResultName": "inventory-order-stock",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=999021925"
+          "cachedResultName": "order placed",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=606847537"
         },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {},
           "matchingColumns": [],
-          "schema": [],
+          "schema": [
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CurrentStock",
+              "displayName": "CurrentStock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Threshold",
+              "displayName": "Threshold",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Reorder Quantity",
+              "displayName": "Reorder Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Warehouse",
+              "displayName": "Warehouse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Supplier Name",
+              "displayName": "Supplier Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Supplier Contact",
+              "displayName": "Supplier Contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "restockUnits",
+              "displayName": "restockUnits",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -171,60 +230,15 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        2340,
-        360
+        3480,
+        380
       ],
-      "id": "5745865d-914f-49b2-87ea-2c9df78dd606",
+      "id": "f1671367-bd03-4ff0-8347-2f51613a7fe5",
       "name": "stock order",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "executeQuery",
-        "query": "{{ $json.sqlScript }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        460,
-        100
-      ],
-      "id": "b198836e-0ad3-40f4-a6db-3476c639bea7",
-      "name": "update inventory",
-      "credentials": {
-        "postgres": {
-          "id": "ombHCedKDy5YY5fq",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "listId": "6847c1f14c2cb4501661f5d9",
-        "name": "={{ $json.productname }}",
-        "description": "create a flag",
-        "additionalFields": {
-          "idLabels": "684814107bf2957e91b125ac"
-        }
-      },
-      "type": "n8n-nodes-base.trello",
-      "typeVersion": 1,
-      "position": [
-        1280,
-        680
-      ],
-      "id": "d4f11c9d-2a37-4fb8-a7c2-c09396055aec",
-      "name": "over stock flag",
-      "credentials": {
-        "trelloApi": {
-          "id": "nlYJfMNOXmNxSLF8",
-          "name": "Trello account"
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
         }
       }
     },
@@ -233,13 +247,13 @@
         "amount": 10,
         "unit": "minutes"
       },
-      "id": "2a5ca0eb-3419-4f10-955c-90365e05f21b",
+      "id": "a94f0571-0db3-4c03-9583-b754d8701f5a",
       "name": "Wait 10 Min",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1,
       "position": [
-        1500,
-        840
+        2420,
+        860
       ],
       "webhookId": "36fdb209-2651-4283-8a46-23f4b89ea832"
     },
@@ -254,69 +268,38 @@
           ]
         }
       },
-      "id": "8c666d5f-45d2-4b68-88f1-7701d24fbad9",
+      "id": "c397e50e-1e5b-4440-9015-dc7814e8633a",
       "name": "IF Retry < 3",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        1700,
-        840
+        2620,
+        860
       ]
     },
     {
       "parameters": {
         "functionCode": "return [{ json: { retryCount: $json.retryCount + 1 } }];"
       },
-      "id": "d0a97e41-1ce6-4fc7-b1cd-b2ad9f17e353",
+      "id": "c55237c4-7f66-4ff5-9c65-cf9b115e66ca",
       "name": "Increment Retry",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
       "position": [
-        1900,
-        880
+        2820,
+        900
       ]
     },
     {
       "parameters": {},
-      "id": "3720ecd7-e7a9-4b4a-ab73-431f64df3f4a",
+      "id": "d42c9299-61e1-4e92-8bad-55da5527f4dc",
       "name": "Exit",
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        1900,
-        1120
+        2820,
+        1140
       ]
-    },
-    {
-      "parameters": {
-        "operation": "select",
-        "schema": {
-          "__rl": true,
-          "mode": "list",
-          "value": "public"
-        },
-        "table": {
-          "__rl": true,
-          "value": "stockdata",
-          "mode": "list",
-          "cachedResultName": "stockdata"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.6,
-      "position": [
-        560,
-        580
-      ],
-      "id": "5b371b52-ae0e-4dc1-a8e0-5b3437748202",
-      "name": "fetch inventory",
-      "credentials": {
-        "postgres": {
-          "id": "ombHCedKDy5YY5fq",
-          "name": "Postgres account"
-        }
-      }
     },
     {
       "parameters": {
@@ -335,32 +318,33 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -760,
-        120
+        -720,
+        140
       ],
-      "id": "db3cf6c2-24a0-4e1a-8e5a-db147f8e554a",
+      "id": "d22f190f-1c8f-49db-8ecd-1c767963018e",
       "name": "Trigger once in a week"
     },
     {
       "parameters": {
         "sendTo": "akhilqaid@gmail.com",
         "subject": "over stock alert",
-        "message": "=hello inventory manager,\nThe product {{ $json.productname }} with the sku {{ $json.sku }} is more then the record quantity, current stock is {{ $json.currentstock }} but the record quantity is {{ $json.reorderquantity }} so take the nessery action to manage it.",
+        "emailType": "text",
+        "message": "=hello inventory manager,\nThe product {{ $json['Product Name'] }} with the sku {{ $json.SKU }} is more then the record quantity, current stock is {{ $json.CurrentStock }} but the record quantity is {{ $json['Reorder Quantity'] }} so take the nessery action to manage it.",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        -320,
-        120
+        -180,
+        100
       ],
-      "id": "c9c457b2-bc1c-4ee3-89b4-236803dad2c4",
+      "id": "c8bc2096-117b-48f9-95cc-f4cb9308d3e1",
       "name": "send mail to manager",
       "webhookId": "c698976f-1b91-49d1-8d60-69c772b49322",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "x1rSHsKo8WLWbNLO",
+          "name": "Gmail account 4"
         }
       }
     },
@@ -374,13 +358,13 @@
           ]
         }
       },
-      "id": "c321d390-0698-42c1-ba30-66e97ae9c534",
+      "id": "4825e146-55d8-47f3-83bc-e036216bb5c0",
       "name": "Trigger every 6 hours",
       "type": "n8n-nodes-base.cron",
       "typeVersion": 1,
       "position": [
-        240,
-        400
+        280,
+        420
       ]
     },
     {
@@ -389,62 +373,20 @@
           "assignments": [
             {
               "id": "93645942-e11b-4352-8804-5e9e70fe2634",
-              "name": "SKU",
+              "name": "Return SKU ",
               "value": "={{ $json.query.SKU }}",
-              "type": "string"
-            },
-            {
-              "id": "571007f9-a10a-457c-a282-30c0c41e3575",
-              "name": "STATUS",
-              "value": "={{ $json.query.STATUS }}",
               "type": "string"
             },
             {
               "id": "8a62329d-f896-4f8a-b386-5e555b40d82b",
               "name": "Returnstock",
-              "value": "={{ $json.query.Returnstock }}",
+              "value": "={{ $json.query.returnstock }}",
               "type": "string"
             },
             {
               "id": "71a5ea66-dad1-4776-95d4-4f931ec235d2",
-              "name": "Product Name",
-              "value": "={{ $json.query.productName }}",
-              "type": "string"
-            },
-            {
-              "id": "b0770002-d75c-4d1c-b128-a9a0c08d981d",
-              "name": "CurrentStock",
-              "value": "={{ $json.query.CurrentStock }}",
-              "type": "string"
-            },
-            {
-              "id": "e2b5275b-68d8-42e2-9bac-53867953a7d3",
-              "name": "Threshold",
-              "value": "={{ $json.query.Threshold }}",
-              "type": "string"
-            },
-            {
-              "id": "470c1249-48b9-4f50-b8ef-6167a3c4840d",
-              "name": "Reorder Quantity",
-              "value": "={{ $json.query.reorderQuantity }}",
-              "type": "string"
-            },
-            {
-              "id": "b5d98687-dc6f-4105-b911-8e547379ece0",
-              "name": "Warehouse",
-              "value": "={{ $json.query.Warehouse }}",
-              "type": "string"
-            },
-            {
-              "id": "c7bd4b89-d9fa-4d82-88c7-133d13126831",
-              "name": "Supplier Name",
-              "value": "={{ $json.query.supplierName }}",
-              "type": "string"
-            },
-            {
-              "id": "8730d22f-7324-426b-af4c-78a76f95007e",
-              "name": "Supplier Contact",
-              "value": "={{ $json.query.supplierContact }}",
+              "name": "Return Product Name",
+              "value": "={{ $json.query['Product Name'] }}",
               "type": "string"
             }
           ]
@@ -454,24 +396,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        60,
-        100
+        80,
+        140
       ],
-      "id": "872f2f3b-5942-48ed-b61a-31bb371af411",
+      "id": "2d1a6202-7b2a-41ea-83cb-5e1bdef62287",
       "name": "extract webhook body"
-    },
-    {
-      "parameters": {
-        "jsCode": "function generateSQLScript(inputData) {\n\n    let sqlScripts = [];\n\n    inputData.forEach(item => {\n\n        const {\n\n            SKU,\n\n            STATUS,\n\n            Returnstock,\n\n            \"Product Name\": productName,\n\n            CurrentStock,\n\n            Threshold,\n\n            \"Reorder Quantity\": reorderQuantity,\n\n            Warehouse,\n\n            \"Supplier Name\": supplierName,\n\n            \"Supplier Contact\": supplierContact\n\n        } = item;\n \n        // Map input fields to database column names\n\n        const mappedProductName = productName || null;\n\n        const mappedCurrentStock = CurrentStock || null;\n\n        const mappedReturnstock = Returnstock || null;\n\n        const mappedThreshold = Threshold || null;\n\n        const mappedReorderQuantity = reorderQuantity || null;\n\n        const mappedWarehouse = Warehouse || null;\n\n        const mappedSupplierName = supplierName || null;\n\n        const mappedSupplierContact = supplierContact || null;\n \n        // Generate SQL based on STATUS\n\n        let sql;\n\n        switch (STATUS.toUpperCase()) {\n\n            case 'INSERT':\n\n                sql = `\n\n                    INSERT INTO stockdata (\n\n                        Product_Name, SKU, CurrentStock, Threshold, Reorder_Quantity, Warehouse, Supplier_Name, Supplier_Contact\n\n                    ) VALUES (\n\n                        ${mappedProductName ? `'${mappedProductName.replace(/'/g, \"''\")}'` : 'NULL'},\n\n                        '${SKU.replace(/'/g, \"''\")}',\n\n                        ${mappedCurrentStock !== null ? mappedCurrentStock : 'NULL'},\n\n                        ${mappedThreshold !== null ? mappedThreshold : 'NULL'},\n\n                        ${mappedReorderQuantity !== null ? mappedReorderQuantity : 'NULL'},\n\n                        ${mappedWarehouse ? `'${mappedWarehouse.replace(/'/g, \"''\")}'` : 'NULL'},\n\n                        ${mappedSupplierName ? `'${mappedSupplierName.replace(/'/g, \"''\")}'` : 'NULL'},\n\n                        ${mappedSupplierContact ? `'${mappedSupplierContact.replace(/'/g, \"''\")}'` : 'NULL'}\n\n                    );\n\n                `;\n\n                break;\n \n            case 'UPDATE':\n\n                sql = `\n\n                    UPDATE stockdata\n\n                    SET\n\n                        ${mappedProductName ? `Product_Name = '${mappedProductName.replace(/'/g, \"''\")}',` : ''}\n\n                        ${(mappedCurrentStock !== null || mappedReturnstock !== null) ? `CurrentStock = CurrentStock + ${(mappedReturnstock || 0)}, ` : ''}\n\n                        ${mappedThreshold !== null ? `Threshold = ${mappedThreshold},` : ''}\n\n                        ${mappedReorderQuantity !== null ? `Reorder_Quantity = ${mappedReorderQuantity},` : ''}\n\n                        ${mappedWarehouse ? `Warehouse = '${mappedWarehouse.replace(/'/g, \"''\")}',` : ''}\n\n                        ${mappedSupplierName ? `Supplier_Name = '${mappedSupplierName.replace(/'/g, \"''\")}',` : ''}\n\n                        ${mappedSupplierContact ? `Supplier_Contact = '${mappedSupplierContact.replace(/'/g, \"''\")}',` : ''}\n\n                       \n\n                    WHERE SKU = '${SKU.replace(/'/g, \"''\")}';\n\n                `;\n\n                // Remove trailing comma before WHERE\n\n                sql = sql.replace(/,\\s*WHERE/, ' WHERE');\n\n                break;\n \n            case 'DELETE':\n\n                sql = `\n\n                    DELETE FROM stockdata\n\n                    WHERE SKU = '${SKU.replace(/'/g, \"''\")}';\n\n                `;\n\n                break;\n \n            default:\n\n                sql = `-- Invalid STATUS '${STATUS}' for SKU '${SKU}'`;\n\n        }\n \n        sqlScripts.push({ json: { sqlScript: sql.trim() } });\n\n    });\n \n    return sqlScripts;\n\n}\n \n// Get input data from n8n\n\nconst inputData = items.map(item => item.json);\n \n// Generate SQL scripts and return in n8n format\n\nreturn generateSQLScript(inputData);"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        260,
-        100
-      ],
-      "id": "f4d53263-c78c-471c-8464-4494cc97b9f1",
-      "name": "generate the SQL query"
     },
     {
       "parameters": {
@@ -487,23 +416,23 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        920,
-        160
+        960,
+        180
       ],
-      "id": "cf68191a-f758-4b8d-9511-a6fd882a5844",
+      "id": "daab6bcc-0a34-48f9-bac8-e556398072e6",
       "name": "Trigger every 2 hours"
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst timestamp = $(\"Trigger every 2 hours\").all()[0]?.json?.timestamp;\n\nconst updatedItems = items.map((item) => {\n  const restockUnits = item?.json?.reorder_quantity - item?.json?.currentstock;\n  item.json.restockUnits = restockUnits;\n  item.json.timestamp = timestamp;\n  return item;\n});\n\nreturn updatedItems;\n"
+        "jsCode": "const items = $input.all();\nconst timestamp = $(\"Trigger every 2 hours\").all()[0]?.json?.timestamp;\n\nconst updatedItems = items.map((item) => {\n  const currentStock = parseInt(item?.json?.CurrentStock);\n  const reorderQty = parseInt(item?.json?.[\"Reorder Quantity\"]);\n\n  const restockUnits = reorderQty - currentStock;\n\n  item.json.restockUnits = restockUnits;\n  item.json.timestamp = timestamp;\n\n  return item;\n});\n\nreturn updatedItems;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1240,
-        160
+        1580,
+        280
       ],
-      "id": "76caeaf5-07df-4e24-893c-fc044ae68212",
+      "id": "bc9f2e56-c6a7-40e8-96ea-2eba6dbfee2d",
       "name": "calculate Restock units"
     },
     {
@@ -513,72 +442,72 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1980,
-        500
+        2900,
+        520
       ],
-      "id": "85e1472d-5a56-48f7-9bd7-bf44f027d2ed",
+      "id": "3b5e39c2-64f7-40b6-8bf2-19aea2e1bba6",
       "name": "extract the data from slack"
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst updatedItems = items.map((item) => {\n  item.json.restockUnits = item.json.reorder_quantity - item.json.currentstock;\n  item.json.timestamp = new Date();\n  return item;\n});\nreturn updatedItems;\n"
+        "jsCode": "const items = $input.all();\n\nconst updatedItems = items.map((item) => {\n  const reorderQty = parseInt(item.json[\"Reorder Quantity\"]);\n  const currentStock = parseInt(item.json.CurrentStock);\n\n  item.json.restockUnits = reorderQty - currentStock;\n  item.json.timestamp = new Date().toISOString(); // ISO format is safer\n\n  return item;\n});\n\nreturn updatedItems;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2160,
-        500
+        3080,
+        520
       ],
-      "id": "7dc53607-3164-4d0a-aedb-cf116a9f55ba",
+      "id": "69561587-a1d0-4a84-8636-82eeaed8d53d",
       "name": "calculate the Restock units"
     },
     {
       "parameters": {
         "sendTo": "=akhilqaid@gmail.com",
         "subject": "restock units",
-        "message": "=Dear {{ $json.suppliername }} ,\n\nI hope this message finds you well.\n\nWe are reaching out to request a restock of the following product due to low inventory levels at our warehouse:\n\nProduct Name:{{ $json.productname }}\n\nSKU:{{ $json.sku }}\n\nrestockunits:{{ $json.restockUnits }}\nWarehouse Location:{{ $json.warehouse }}\n\nKindly confirm the availability and expected delivery date for the requested units at your earliest convenience. Please include any relevant shipping or invoice details required to process this request smoothly.\n\nLooking forward to your response.\n\nBest regards,",
+        "message": "=Dear {{ $json['Supplier Name'] }} ,\n\nI hope this message finds you well.\n\nWe are reaching out to request a restock of the following product due to low inventory levels at our warehouse:\n\nProduct Name:{{ $json['Product Name'] }}\n\nSKU:{{ $json.SKU }}\n\nrestockunits:{{ $json.restockUnits }}\nWarehouse Location:{{ $json.Warehouse }}\n\nKindly confirm the availability and expected delivery date for the requested units at your earliest convenience. Please include any relevant shipping or invoice details required to process this request smoothly.\n\nLooking forward to your response.\n\nBest regards,",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        2400,
-        500
+        3540,
+        520
       ],
-      "id": "84e127ce-1f8f-42f7-b792-f68e0228a8e3",
+      "id": "4bf781b2-85e5-4a2a-beab-b623699e079c",
       "name": "send mails to the suppliers",
       "webhookId": "0e30b88a-eb3f-4be6-9513-6de96a06e1b8",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "x1rSHsKo8WLWbNLO",
+          "name": "Gmail account 4"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const products = $input.all().map((item) => item.json);\nconst effectedProducts = products.filter(\n  (product) => product.currentstock <= product.threshold,\n);\n\nreturn { effectedProducts };\n"
+        "jsCode": "const products = $input.all().map((item) => item.json);\nconst effectedProducts = products.filter(\n  (product) => product.CurrentStock <= product.Threshold,\n);\n\nreturn { effectedProducts };\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1720,
-        180
+        2860,
+        200
       ],
-      "id": "faa6f517-8b09-40cf-827c-e29196e571af",
+      "id": "f8b445b6-3fed-4975-affa-138e377c4f97",
       "name": "check the effected product"
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all().map((item) => item.json);\nconst effectedProducts = items[0].effectedProducts;\n\nconst lowStockProducts = effectedProducts.map((product) => {\n  return {\n    Product: product.productname,\n    SKU: product.sku,\n    \"Current Stock\": product.currentstock,\n    Threshold: product.threshold,\n    Action:\n      product.currentstock < product.threshold\n        ? \"Recommend restocking \" + product.reorderquantity + \" units\"\n        : \"Auto-PO created & sent to supplier\",\n  };\n});\n\nreturn { lowStockProducts };\n"
+        "jsCode": "const items = $input.all().map((item) => item.json);\nconst effectedProducts = items[0].effectedProducts;\n\nconst lowStockProducts = effectedProducts.map((product) => {\n  const reorderQty = parseInt(product[\"Reorder Quantity\"]);\n  const currentStock = parseInt(product.CurrentStock);\n  const restockUnits = reorderQty - currentStock;\n\n  return {\n    Product: product[\"Product Name\"],\n    SKU: product.SKU,\n    \"Current Stock\": currentStock,\n    Threshold: product.Threshold,\n    \"Reorder Quantity\": reorderQty,\n    restockUnits: restockUnits,\n    Action:\n      currentStock < product.Threshold\n        ? \"Recommend restocking \" + restockUnits + \" units\"\n        : \"Auto-PO created & sent to supplier\",\n  };\n});\n\nreturn { lowStockProducts };\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1900,
-        180
+        3040,
+        200
       ],
-      "id": "89ebfbcc-3754-4798-82f7-724a08755411",
+      "id": "6c16e921-dcdc-47b6-8714-230d9c289cba",
       "name": "extract the data of effected products"
     },
     {
@@ -588,10 +517,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2080,
-        180
+        3220,
+        200
       ],
-      "id": "ac309ed6-7701-45c7-950d-f01174611d24",
+      "id": "2218a059-ccf4-41c4-8959-f90cb8656787",
       "name": "Add timestamp &error"
     },
     {
@@ -629,10 +558,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2480,
-        180
+        3580,
+        200
       ],
-      "id": "26a6d4f4-12be-4cea-9879-8609b32de54b",
+      "id": "465fc001-39da-49b2-96a7-1ccf0ecaedfb",
       "name": "extract the log details"
     },
     {
@@ -640,64 +569,23 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1897104635,
+          "value": 332342716,
           "mode": "list",
-          "cachedResultName": "inventory-management",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1897104635"
+          "cachedResultName": "logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=332342716"
         },
         "columns": {
           "mappingMode": "autoMapInputData",
           "value": {},
           "matchingColumns": [],
-          "schema": [
-            {
-              "id": "productseffected",
-              "displayName": "productseffected",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "timestamp",
-              "displayName": "timestamp",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "triggerType",
-              "displayName": "triggerType",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "error",
-              "displayName": "error",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            }
-          ],
+          "schema": [],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -706,15 +594,15 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        2640,
-        180
+        3780,
+        200
       ],
-      "id": "02d93d42-ba63-4199-9dab-0444f025b110",
+      "id": "5363cc17-948b-4e3e-9206-70f7be0b8142",
       "name": "log",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
         }
       }
     },
@@ -728,30 +616,30 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        1760,
-        680
+        2680,
+        700
       ],
-      "id": "8a752c44-4fbd-4166-aedb-e1d38a5a9165",
+      "id": "04f6986c-fe3d-40be-8943-e0a98c736a75",
       "name": "error message to manager",
       "webhookId": "56716585-91d0-446e-8640-5cd4255dc20d",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "x1rSHsKo8WLWbNLO",
+          "name": "Gmail account 4"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "const items = $input.all();\nconst updatedItems = items.map((item) => {\n  item.json.isFromFetchInventory = item.json.productname ? true : false;\n  return item;\n});\nreturn updatedItems;\n"
+        "jsCode": "const items = $input.all();\n\nconst updatedItems = items.map((item) => {\n  item.json.isFromFetchInventory = item.json[\"Product Name\"] ? true : false;\n  return item;\n});\n\nreturn updatedItems;\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        680,
-        780
+        1600,
+        800
       ],
-      "id": "a02aa3fb-0ad6-4a97-85b9-67f5bb02e92a",
+      "id": "f840c420-92f8-45ce-8f6c-c095c699feca",
       "name": "fetch inventory products and set their status as true or false"
     },
     {
@@ -782,10 +670,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        900,
-        780
+        1820,
+        800
       ],
-      "id": "afd60c2d-d24d-4ef4-a621-fa0e97119094",
+      "id": "2fe55a45-a669-4366-8b04-82a5a30193d6",
       "name": "check the product status"
     },
     {
@@ -795,10 +683,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1100,
-        840
+        2020,
+        860
       ],
-      "id": "f9f3b018-9054-4cb7-ab61-78f5081ba6a2",
+      "id": "135bd826-3b0f-454a-8973-428f20bd8c5d",
       "name": "fetch the error"
     },
     {
@@ -808,10 +696,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1280,
-        840
+        2200,
+        860
       ],
-      "id": "b4bf2206-2557-48cb-a417-5a703b29db35",
+      "id": "1960b066-cecc-4338-aa95-6742cb25c52c",
       "name": "generate the error message"
     },
     {
@@ -826,7 +714,7 @@
           "conditions": [
             {
               "id": "a275e2e0-4d17-432b-9922-c2a1c7d8c4e0",
-              "leftValue": "={{ $json.query.STATUS }}",
+              "leftValue": "={{ $json.query.returnstock }}",
               "rightValue": "",
               "operator": {
                 "type": "string",
@@ -842,10 +730,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -180,
-        620
+        -140,
+        640
       ],
-      "id": "a9efb5f0-eac0-4ff6-82f4-ab6c74339773",
+      "id": "d3498a62-ec7c-448d-9cf7-97a7abf44601",
       "name": "if webhook query is not empty"
     },
     {
@@ -855,10 +743,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2300,
-        180
+        3440,
+        200
       ],
-      "id": "0c7a8e2f-fc4a-4dc2-8a0a-b175d18095c8",
+      "id": "62d438a1-9344-43e7-a680-b15265c6bd62",
       "name": "converting the effected products as list"
     },
     {
@@ -866,17 +754,316 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1842057073,
+          "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "inventory-stock-alerts",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=1842057073"
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SKU": "={{ $json.SKU }}",
+            "CurrentStock": "={{ $json.CurrentStock }}"
+          },
+          "matchingColumns": [
+            "SKU"
+          ],
+          "schema": [
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CurrentStock",
+              "displayName": "CurrentStock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Threshold",
+              "displayName": "Threshold",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reorder Quantity",
+              "displayName": "Reorder Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Warehouse",
+              "displayName": "Warehouse",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Supplier Name",
+              "displayName": "Supplier Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Supplier Contact",
+              "displayName": "Supplier Contact",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        700,
+        120
+      ],
+      "id": "f846716c-ccf9-4211-92bf-63eb87e19b5f",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
+          "mode": "list",
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1160,
+        580
+      ],
+      "id": "77c53beb-cbec-43b4-b784-8bb4538935a9",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
+          "mode": "list",
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -540,
+        140
+      ],
+      "id": "0621b91e-17ea-4fc0-8ae9-22203b2f4392",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
+          "mode": "list",
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1100,
+        180
+      ],
+      "id": "a519ef1d-b25d-4fa3-a1ff-ef50b8c0d152",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const currentStock = parseInt($input.first().json.CurrentStock);\n  const reorderQuantity = parseInt($input.first().json['Reorder Quantity']); // Assuming 'Threshold' in your sheet is 'reorderquantity'\n\n  const isOverstock = currentStock > reorderQuantity;\n  const overstockAmount = isOverstock ? (currentStock - reorderQuantity) : 0;\n\n  return {\n    json: {\n      ProductName: item.json.ProductName,\n      SKU: item.json.SKU,\n      CurrentStock: currentStock,\n      ReorderQuantity: reorderQuantity, // Renamed for clarity in output\n      isOverstock: isOverstock,\n      overstockAmount: overstockAmount\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        480
+      ],
+      "id": "0abd0609-2bc4-4e9e-91dc-b8ccbf0819e7",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f31930c1-9a8a-4965-b9ca-b7ef04a76bfd",
+              "leftValue": "={{ $json.CurrentStock }}",
+              "rightValue": "={{ $json['Reorder Quantity'] }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -360,
+        140
+      ],
+      "id": "da2438ea-b6fa-4f6b-a7d2-4a30d4fe0160",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3e2ec894-5042-43b5-a793-d778a738a728",
+              "leftValue": "={{ $json.CurrentStock }}",
+              "rightValue": "={{ $json.Threshold }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1300,
+        180
+      ],
+      "id": "33372d7a-53bf-471e-8423-935e74cbf9e1",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
+          "mode": "list",
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 871180184,
+          "mode": "list",
+          "cachedResultName": "return orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=871180184"
         },
         "columns": {
           "mappingMode": "autoMapInputData",
@@ -891,17 +1078,74 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        1360,
-        460
+        540,
+        -180
       ],
-      "id": "20a89d78-d5ef-4793-b9d1-985ba4b758a9",
-      "name": "Google Sheets",
+      "id": "580695c7-579e-46db-b767-e5742438ecc8",
+      "name": "Google Sheets4",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
         }
       }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
+          "mode": "list",
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "products",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        220,
+        120
+      ],
+      "id": "3642f61c-9783-482e-b6f7-a38e67a283a6",
+      "name": "Google Sheets5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\n\n// Extract the return info object\nconst returnItem = allItems.find(item => item.json[\"Return SKU \"] !== undefined)?.json;\n\nif (!returnItem) {\n  throw new Error(\"No return item found.\");\n}\n\nconst returnSKU = returnItem[\"Return SKU \"].trim();\nconst returnQty = Number(returnItem[\"Returnstock\"]);\n\nconst result = [];\n\nfor (const item of allItems) {\n  const data = item.json;\n\n  // Skip the return entry\n  if (data[\"Return SKU \"] !== undefined) {\n    continue;\n  }\n\n  if (data[\"SKU\"] === returnSKU) {\n    data[\"CurrentStock\"] = Number(data[\"CurrentStock\"]) + returnQty;\n\n    result.push({\n      json: {\n        SKU: data[\"SKU\"],\n        \"Product Name\": data[\"Product Name\"],\n        CurrentStock: data[\"CurrentStock\"]\n      }\n    });\n  }\n}\n\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        120
+      ],
+      "id": "bc960677-b09c-4921-8147-a9d0ac05b033",
+      "name": "update returnstock"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        380,
+        120
+      ],
+      "id": "d9727d58-2d8c-4f21-8ab4-bca29645ecad",
+      "name": "Merge"
     }
   ],
   "pinData": {},
@@ -921,25 +1165,7 @@
       "main": [
         [
           {
-            "node": "Google Sheets",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "over stock flag",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Low Stock": {
-      "main": [
-        [
-          {
-            "node": "calculate Restock units",
+            "node": "extract the data from slack",
             "type": "main",
             "index": 0
           },
@@ -948,25 +1174,10 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "Check Overstock": {
-      "main": [
+        ],
         [
           {
             "node": "send mail to manager",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "update inventory": {
-      "main": [
-        [
-          {
-            "node": "fetch inventory",
             "type": "main",
             "index": 0
           }
@@ -1006,28 +1217,7 @@
       "main": [
         [
           {
-            "node": "fetch inventory",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "fetch inventory": {
-      "main": [
-        [
-          {
-            "node": "Low Stock Check",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "check the effected product",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "fetch inventory products and set their status as true or false",
+            "node": "Google Sheets1",
             "type": "main",
             "index": 0
           }
@@ -1038,7 +1228,7 @@
       "main": [
         [
           {
-            "node": "Check Overstock",
+            "node": "Google Sheets2",
             "type": "main",
             "index": 0
           }
@@ -1049,7 +1239,7 @@
       "main": [
         [
           {
-            "node": "fetch inventory",
+            "node": "Google Sheets1",
             "type": "main",
             "index": 0
           }
@@ -1060,20 +1250,19 @@
       "main": [
         [
           {
-            "node": "generate the SQL query",
+            "node": "Google Sheets4",
             "type": "main",
             "index": 0
-          }
-        ]
-      ]
-    },
-    "generate the SQL query": {
-      "main": [
-        [
+          },
           {
-            "node": "update inventory",
+            "node": "Google Sheets5",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
           }
         ]
       ]
@@ -1082,7 +1271,7 @@
       "main": [
         [
           {
-            "node": "Check Low Stock",
+            "node": "Google Sheets3",
             "type": "main",
             "index": 0
           }
@@ -1253,7 +1442,7 @@
         ],
         [
           {
-            "node": "fetch inventory",
+            "node": "Google Sheets1",
             "type": "main",
             "index": 0
           }
@@ -1275,7 +1464,115 @@
       "main": [
         [
           {
-            "node": "extract the data from slack",
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "fetch inventory products and set their status as true or false",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Low Stock Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets3": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "send mail to manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "calculate Restock units",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "check the effected product",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets4": {
+      "main": [
+        []
+      ]
+    },
+    "Google Sheets5": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update returnstock": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "update returnstock",
             "type": "main",
             "index": 0
           }
@@ -1283,15 +1580,15 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d926c938-0d33-4c45-890b-31382fb01245",
+  "versionId": "560d1ade-41bb-4574-bee1-b19244d2c64b",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "y60mIChvjFQ5Shjy",
+  "id": "AUxKwnugowViqWgP",
   "tags": []
 }

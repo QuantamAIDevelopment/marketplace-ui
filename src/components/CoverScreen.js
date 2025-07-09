@@ -56,6 +56,7 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
               });
             })}
           </div>
+          {details}
         </div>
       )}
 

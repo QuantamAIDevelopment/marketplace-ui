@@ -1,0 +1,512 @@
+{
+  "name": "test generator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "doc-input",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "09ffd10f-6ea4-46df-935c-b65add50d75a",
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -2420,
+        860
+      ],
+      "webhookId": "c7d78fd8-3a34-4398-9fa5-90d32cc3eee2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const docText = $json[\"content\"]; // e.g., from Google Docs node\n\n// Basic extraction using regex or string manipulation\nconst titleMatch = docText.match(/Title:\\s*(.+)/i);\nconst descriptionMatch = docText.match(/Functional Description:\\s*([\\s\\S]*?)\\n(?:User Stories:|Acceptance Criteria:)/i);\nconst userStoriesMatch = docText.match(/User Stories:\\s*([\\s\\S]*?)(?:\\n[A-Z]|$)/i);\nconst acceptanceMatch = docText.match(/Acceptance Criteria:\\s*([\\s\\S]*?)(?:\\n[A-Z]|$)/i);\n\nreturn [\n  {\n    json: {\n      title: titleMatch ? titleMatch[1].trim() : '',\n      description: descriptionMatch ? descriptionMatch[1].trim() : '',\n      userStories: userStoriesMatch ? userStoriesMatch[1].trim().split('\\n').filter(Boolean) : [],\n      acceptanceCriteria: acceptanceMatch ? acceptanceMatch[1].trim().split('\\n').filter(Boolean) : [],\n    }\n  }\n];\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1860,
+        820
+      ],
+      "id": "a4cc64d6-9232-4627-803e-b9ad6093e975",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Use a structured, deterministic prompt like:\n\nPrompt:\n“From the following feature specification, generate a list of test cases. Include:\n\nTest ID-TC001\n\nScenario Name\n\nPreconditions\n\nSteps\n\nExpected Result\n\nTags (e.g., Regression, Boundary, Integration)\nEnsure both positive and negative test cases are covered, including boundary and edge scenarios where applicable.”\n\nSpecification:\n{{ $json.title }}\n{{ $json.description }}\n{{ $json.userStories }}\n{{ $json.acceptanceCriteria }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1660,
+        620
+      ],
+      "id": "82da07ce-8e64-4270-9be3-7157e762dcba",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputText = $input.first().json.output;\n\nif (!inputText || typeof inputText !== 'string' || inputText.trim() === '') {\n  return [{ json: { error: 'No test case data provided.' } }];\n}\n\nconsole.log(\"=== AI RAW OUTPUT START ===\\n\" + inputText + \"\\n=== AI RAW OUTPUT END ===\");\n\nconst testCases = [];\n\n// Match each block like: **Test ID-TC001: Title**\nconst testCaseRegex = /\\*\\*Test ID-(TC\\d+):\\s*(.*?)\\*\\*([\\s\\S]*?)(?=\\n\\*\\*Test ID-|$)/g;\nconst blocks = [...inputText.matchAll(testCaseRegex)];\n\nfor (const block of blocks) {\n  const [, test_id, rawTitle, body] = block;\n\n  const scenarioMatch = body.match(/\\*\\*Scenario Name:\\*\\*\\s*(.*)/i);\n  const scenario_title = scenarioMatch ? scenarioMatch[1].trim() : rawTitle.trim();\n\n  const preconditionsMatch = body.match(/\\*\\*Preconditions:\\*\\*\\s*([\\s\\S]*?)(?=\\n\\*\\*Steps:\\*\\*|\\n\\*\\*Expected Result:|\\n\\*\\*Tags:|\\n\\*\\*Test ID-|$)/i);\n  const preconditions = preconditionsMatch ? preconditionsMatch[1].trim() : \"N/A\";\n\n  const stepsMatch = body.match(/\\*\\*Steps:\\*\\*\\s*([\\s\\S]*?)(?=\\n\\*\\*Expected Result:|\\n\\*\\*Tags:|\\n\\*\\*Test ID-|$)/i);\n  const test_steps = stepsMatch\n    ? stepsMatch[1].trim().split(/\\d+\\.\\s/).filter(Boolean).map(s => s.trim())\n    : ['No steps listed'];\n\n  const expectedMatch = body.match(/\\*\\*Expected Result:\\*\\*\\s*([\\s\\S]*?)(?=\\n\\*\\*Tags:|\\n\\*\\*Test ID-|$)/i);\n  const expected_result = expectedMatch ? expectedMatch[1].trim() : \"N/A\";\n\n  const tagsMatch = body.match(/\\*\\*Tags:\\*\\*\\s*(.*)/i);\n  const tags = tagsMatch ? tagsMatch[1].split(',').map(t => t.trim()) : [];\n\n  const test_type = tags.includes('Negative') ? 'Negative'\n                   : tags.includes('Positive') ? 'Positive'\n                   : tags.includes('Boundary') ? 'Boundary'\n                   : 'Unspecified';\n\n  testCases.push({\n    json: {\n      test_id,\n      scenario_title,\n      preconditions,\n      test_steps,\n      expected_result,\n      tags,\n      test_type\n    }\n  });\n}\n\nif (testCases.length === 0) {\n  return [{ json: { error: 'No valid test cases parsed.' } }];\n}\n\nreturn testCases;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1300,
+        700
+      ],
+      "id": "e7525935-850a-4099-926a-745c4d9f081e",
+      "name": "Code3",
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -760,
+        480
+      ],
+      "id": "1ee6beb4-f7ca-43ba-bb39-47a07974f239",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build the HTML table header\nlet html = `\n  <h2>🧪 QA Test Cases Summary (${items.length} cases)</h2>\n  <table border=\"1\" cellpadding=\"6\" cellspacing=\"0\" style=\"border-collapse: collapse; font-family: Arial, sans-serif; font-size: 14px;\">\n    <thead style=\"background-color: #f2f2f2;\">\n      <tr>\n        <th>Test ID</th>\n        <th>Scenario</th>\n        <th>Preconditions</th>\n        <th>Steps</th>\n        <th>Expected Result</th>\n        <th>Tags</th>\n        <th>Type</th>\n        <th>User Story</th>\n      </tr>\n    </thead>\n    <tbody>\n`;\n\nfor (const item of items) {\n  const data = item.json;\n\n  const testId = data.test_id || '';\n  const scenario = data.scenario_title || '';\n  const preconditions = data.preconditions || '';\n  const steps = data.test_steps || '';\n  const expected = data.expected_result || '';\n  const tags = Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || '');\n  const type = data.test_type || '';\n  const userStory = data.user_story || '';\n\n  html += `\n    <tr>\n      <td>${testId}</td>\n      <td>${scenario}</td>\n      <td>${preconditions}</td>\n      <td><pre style=\"white-space: pre-wrap; margin: 0;\">${steps}</pre></td>\n      <td>${expected}</td>\n      <td>${tags}</td>\n      <td>${type}</td>\n      <td>${userStory}</td>\n    </tr>\n  `;\n}\n\nhtml += `</tbody></table>`;\n\n// Return formatted email object\nreturn [\n  {\n    json: {\n      email_subject: `🧪 ${items.length} Test Cases for Login Module`,\n      email_html: html\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -980,
+        740
+      ],
+      "id": "a1baa9f3-a832-4135-8a9e-c0cf0efff325",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "663cb5f9-ebb7-4a9b-b8f8-e589cffce821",
+              "leftValue": "={{ !$json[\"test_cases\"] || $json[\"test_cases\"].length === 0 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1100,
+        1060
+      ],
+      "id": "b4e80b11-2fd5-4085-989c-93b5c4ba03bc",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "mailhr100@gmail.com",
+        "subject": "login features",
+        "message": "={{ $json.email_html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -780,
+        740
+      ],
+      "id": "4257bc51-ecb0-488f-9ff0-69e1477dc7d2",
+      "name": "Send a message",
+      "webhookId": "535e2112-bb4a-43ee-815f-ab7bb7c6d73f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3EkL7v0Op6Dkojd6",
+          "name": "Gmail account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U",
+          "mode": "list",
+          "cachedResultName": "test case generator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 583250223,
+          "mode": "list",
+          "cachedResultName": "logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit#gid=583250223"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Number of test cases generated": "={{ $json.test_id }}",
+            "title": "={{ $('Webhook1').item.json.body['doc title'] }}",
+            "Timestamp and author": "={{ $now }}"
+          },
+          "matchingColumns": [
+            "title"
+          ],
+          "schema": [
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Number of test cases generated",
+              "displayName": "Number of test cases generated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp and author",
+              "displayName": "Timestamp and author",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -840,
+        940
+      ],
+      "id": "69d1adb0-5717-45df-8859-11a86244c407",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PlxPPnnNjyQv8Pvk",
+          "name": "Google Sheets account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "mailhr100@gmail.com",
+        "subject": "hi",
+        "emailType": "text",
+        "message": "“Test case generation failed for Feature X – check formatting.”",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -840,
+        1160
+      ],
+      "id": "84f98af1-62be-49ec-b550-d2e2b89605f1",
+      "name": "Send a message1",
+      "webhookId": "6f676f57-f7b6-406a-8054-a03c1f87a5b0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3EkL7v0Op6Dkojd6",
+          "name": "Gmail account 13"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1660,
+        900
+      ],
+      "id": "ce62a4d7-8e95-4bf6-8acd-e4e1c0be2ee6",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "T3JSWp24iw5DKNUK",
+          "name": "Groq account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U",
+          "mode": "list",
+          "cachedResultName": "test case generator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "test id": "={{ $json.test_id }}",
+            "title": "={{ $json.scenario_title }}",
+            "type": "={{ $json.test_type }}",
+            "steps": "={{ $json.test_steps }}",
+            "expected results": "={{ $json.expected_result }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "test id",
+              "displayName": "test id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "type",
+              "displayName": "type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "steps",
+              "displayName": "steps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "expected results",
+              "displayName": "expected results",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1020,
+        500
+      ],
+      "id": "99c43681-c7fb-4005-8f4e-217d64c1886d",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PlxPPnnNjyQv8Pvk",
+          "name": "Google Sheets account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.body['doc id'] }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2200,
+        860
+      ],
+      "id": "472ac0be-840e-4af1-8d54-616269e5ddd2",
+      "name": "Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "uq8MU1t2vjpC61Tu",
+          "name": "Google Docs account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Google Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0d03e389-d15e-4b4e-b16d-36af67e1c92a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "zuVR53lyo7gSEGIP",
+  "tags": []
+}

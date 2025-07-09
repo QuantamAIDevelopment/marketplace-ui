@@ -1,5 +1,5 @@
 import React from 'react';
-import PageRevealWrapper from '../components/PageRevealWrapper';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 import PayslipAutoEncrypted from '../components/workflows/PayslipAutoEncrypted';
 
 const PayslipAutoEncryptedPageContent = () => {

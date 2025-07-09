@@ -1,0 +1,291 @@
+{
+  "name": "On Boarding.Q",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "f0b05757-e6bf-4cdd-8c87-4589a9dc63e9",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "c993c3fb-4dad-4ea4-85d8-1d6213ea5dc3",
+      "name": "Error Handler",
+      "type": "n8n-nodes-base.errorTrigger",
+      "position": [
+        1480,
+        320
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {},
+      "id": "50ae7e74-ae3c-4cf2-a251-58e2a27151c1",
+      "name": "Execution Failure",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        1680,
+        320
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7c333d8f-04cd-4987-9c30-4c7bc26baecb",
+              "name": "fields",
+              "type": "string",
+              "value": "={{ $json['Client name'] }}\n{{ $json['Email address'] }}\n{{ $json['Company name'] }}{{ $json['Onboarding date'] }}\n{{ $json['Services opted'] }}\n{{ $json.Checklist }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c4a8619-5e2b-4d97-b24b-b5e01e559758",
+      "name": "Client Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        620,
+        0
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c9c81e80-f2f2-436d-a6cf-48882b0f72ea",
+              "name": "=Checklist",
+              "type": "string",
+              "value": "=\"Checklist\": \"\n1. Account setup\n2. Welcome call scheduled\n3. Document collection\n4. Service configuration\n5. Onboarding session\n6. First milestone review"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a89a5492-4c9a-4a62-a8a3-611725ebec86",
+      "name": "Client Checklist",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        800,
+        0
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Hi {{ $('Extract from File').item.json['Client name'] }},\n\nWelcome aboard! We’re thrilled to have {{ $('Extract from File').item.json['Company name'] }} join us. Your onboarding journey officially begins on {{ $('Extract from File').item.json['Onboarding date'] }}, and our team is committed to ensuring a smooth start.\n\nHere’s a quick summary of your onboarding checklist:\n\n{{ $json[\"Checklist\"] }}\n\nYour selected services: {{ $('Extract from File').item.json['Services opted'] }}\n\nIf you have any questions or need assistance, please feel free to reach out to your dedicated contact person: {{ $('Extract from File').item.json['Email address'] }}.\nBest regards,{{ $('Webhook').item.json.webhookUrl }}  \nYour  Team\n"
+      },
+      "id": "910c881d-b7e9-44a3-a360-deda822a942c",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        960,
+        0
+      ],
+      "typeVersion": 1.5
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "=Welcome to Our Service,{{ $workflow.name }}  ",
+        "emailType": "text",
+        "message": "=Hi {{ $('Extract from File').item.json['Client name'] }} ,\n\nWelcome to {{ $('Extract from File').item.json['Company name'] }}'s onboarding journey! 🎉\n\nWe’re excited to have you on board. Based on our records, here are your onboarding details:\n\n📅 Onboarding Date:{{ $('Extract from File').item.json['Onboarding date'] }}  \n🧩 Services Opted: {{ $('Extract from File').item.json['Services opted'] }} \n👤 Your Point of Contact: \n{{ $('Extract from File').item.json['Email address'] }}\n\n✅ Onboarding Checklist</h4>\n {{ $('Extract from File').item.json.Checklist }}\n\n\nIf you have any questions or need help during the setup, feel free to reply to this email. We're here to support you!\n\nBest regards,  \nYour {{ $('Webhook').item.json.webhookUrl }} Team\n",
+        "options": {}
+      },
+      "id": "ba7122dc-b951-4b0c-99bc-c9bd96f6e2f4",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1280,
+        0
+      ],
+      "webhookId": "2a07b507-23a6-4bfb-adff-997d30ea3dfa",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "iGssiilCMFWTUhxs",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d4c5fd15-5d71-4a4c-9b84-14e0949a75c5",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ],
+      "id": "a7b926fe-b70f-440e-878b-7a2fb052581e",
+      "name": "Webhook",
+      "webhookId": "d4c5fd15-5d71-4a4c-9b84-14e0949a75c5"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Basic LLM Chain').item.json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1500,
+        0
+      ],
+      "id": "9d9a6754-764f-4198-935c-6ff9329b0223",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "ods",
+        "binaryPropertyName": "ods",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        420,
+        0
+      ],
+      "id": "a450afc0-8d12-4022-9632-74aa79af3f8a",
+      "name": "Extract from File",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1060,
+        220
+      ],
+      "id": "f1a4cbbd-f364-44a5-8cff-97bc4cf5345b",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "OSrnRgGZXiRDJxFG",
+          "name": "OpenRouter account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Handler": {
+      "main": [
+        [
+          {
+            "node": "Execution Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Client Data": {
+      "main": [
+        [
+          {
+            "node": "Client Checklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Client Checklist": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Client Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0aacfb99-8f2a-4aac-804c-9fc78f7c7ed2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "7pSTS9BJTfCiKboN",
+  "tags": []
+}
