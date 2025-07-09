@@ -156,12 +156,6 @@ const workflowData = [
     summary: 'Book and manage appointments with ease.'
   },
   {
-    title: 'AI Background Verification Agent',
-    icon: FaUserShield,
-    path: '/background-verification-agent',
-    summary: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.'
-  },
-  {
     title: 'MCQ Generator & Trainer',
     icon: FaBrain,
     path: '/mcq-generator',
