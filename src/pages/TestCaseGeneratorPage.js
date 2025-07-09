@@ -1,6 +1,7 @@
 import React from 'react';
-import TestCaseGenerator from '../components/workflows/TestCaseGenerator';
+import TestGenerator from '../components/workflows/TestGenerator';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
+
 const TestCaseGeneratorPage = () => {
   return (
     <PageRevealWrapper
@@ -43,7 +44,7 @@ const TestCaseGeneratorPage = () => {
       }
     >
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl mx-auto mt-8">
-        <TestCaseGenerator />
+        <TestGenerator />
       </div>
     </PageRevealWrapper>
   );
