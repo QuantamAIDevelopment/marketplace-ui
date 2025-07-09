@@ -41,9 +41,6 @@ import GmailCategorizationPage from './pages/GmailCategorizationPage';
 import ResumeAnalyzerPage from './pages/ResumeAnalyzerPage';
 import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
 import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
-import './App.css';
-import './index.css';
-import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
 
 

@@ -1,10 +1,6 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt,FaDatabase, FaBook, FaVial, FaCalendarCheck , FaEnvelopeOpenText, FaFilePdf } from 'react-icons/fa'
-
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaBook, FaUserCheck, FaFileCsv, FaUserTie } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaUserCheck, FaFileCsv, FaUserTie } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard } from '../components/workflows';
 
@@ -192,7 +188,6 @@ const workflowData = [
     path: '/workflows/dynamic-model-selector',
     summary: 'Ask any question and let the agent route it to the best AI model for the job.'
   },
-  // ...existing code...
   {
     title: 'Notion Knowledge Base AI Assistant',
     icon: FaBook,
