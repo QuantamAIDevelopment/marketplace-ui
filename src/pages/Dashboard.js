@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
 
 import { useNavigate } from 'react-router-dom';
-import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard, FraudDetectionSystemCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
@@ -137,12 +137,6 @@ const workflowData = [
     summary: 'Track, upload, and chat about your monthly expenses.'
   },
   {
-    title: 'Fraud Detection',
-    icon: FaShieldAlt,
-    path: '/workflows/fraud-detection',
-    summary: 'Upload transaction CSVs to detect fraud, risk scores, and AI notes.'
-  },
-  {
     title: 'Inventory Management',
     icon: FaWarehouse,
     path: '/inventory-management',
@@ -273,6 +267,12 @@ const workflowData = [
     icon: FaUserCheck,
     path: '/automate-candidate-acceptance/cover',
     summary: 'Automate candidate acceptance and onboarding notifications.'
+  },
+  {
+    title: 'Fraud Detection System',
+    icon: FaShieldAlt,
+    path: '/fraud-detection-system',
+    summary: 'Upload transaction data to detect fraud, get AI risk scores, and see triggered rules for each order.'
   },
 ];
 
