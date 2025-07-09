@@ -25,18 +25,58 @@ const LeavesClassifierPageContent = () => {
     setIsLoading(true);
     setCurrentStep(0);
 
+    // Mock response data for demonstration
+    const mockResponse = {
+      stats: {
+        casualLeaves: 5,
+        sickLeaves: 3,
+        totalEmployees: 4,
+        activeRequests: 2
+      },
+      recentActivity: [
+        {
+          id: "zusdvg4ub",
+          employeeName: "Name : Bhavitha",
+          leaveType: "SICK LEAVE",
+          status: "APPROVED",
+          startDate: "2025-07-09T10:06:58.522Z",
+          endDate: "2025-07-09T10:06:58.522Z"
+        },
+        {
+          id: "ri59d8yfy",
+          employeeName: "name: siri",
+          leaveType: "CASUAL LEAVE",
+          status: "APPROVED",
+          startDate: "2025-07-09T10:06:58.522Z",
+          endDate: "2025-07-09T10:06:58.522Z"
+        },
+        {
+          id: "a1b2c3d4",
+          employeeName: "Name: John Doe",
+          leaveType: "CASUAL LEAVE",
+          status: "REJECTED",
+          startDate: "2025-07-08T09:00:00.000Z",
+          endDate: "2025-07-08T18:00:00.000Z"
+        },
+        {
+          id: "e5f6g7h8",
+          employeeName: "Name: Jane Smith",
+          leaveType: "SICK LEAVE",
+          status: "PENDING",
+          startDate: "2025-07-10T08:00:00.000Z",
+          endDate: "2025-07-11T17:00:00.000Z"
+        }
+      ]
+    };
+
     try {
-      const response = await axios.get('http://localhost:5678/webhook/leaves-classifier', {
-        params: formData
-      });
-      
       // Simulate workflow steps
       for (let i = 0; i < workflowSteps.length; i++) {
         setCurrentStep(i);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      
-      setResponse(response.data);
+      // Use mock response instead of API
+      setResponse(mockResponse);
     } catch (error) {
       console.error('Error:', error);
     } finally {
