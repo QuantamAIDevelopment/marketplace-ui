@@ -1,11 +1,11 @@
 {
-  "name": "Email Attachment Processing Agent for HRMS",
+  "name": "My workflow 28",
   "nodes": [
     {
       "parameters": {
         "functionCode": "// Extract email metadata and attachments\nreturn $input.all().map(item => {\n  return {\n    json: {\n      messageId: item.json.messageId,\n      senderEmail: item.json.from?.value?.[0]?.address || '',\n      senderName: item.json.from?.value?.[0]?.name || '',\n      subject: item.json.subject || '',\n      body: item.json.text || item.json.html || '',\n      attachments: item.binary ? Object.keys(item.binary).map(key => ({\n        fileName: item.binary[key].fileName,\n        mimeType: item.binary[key].mimeType,\n        data: item.binary[key].data, // base64 content\n        property: key\n      })) : []\n    },\n    binary: item.binary || {}\n  };\n});\n"
       },
-      "id": "d6a47242-275d-4d21-80d0-b462a4777174",
+      "id": "5b379524-25c8-47a2-b969-c76703bb878f",
       "name": "Parse Email Data",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
@@ -39,7 +39,7 @@
         },
         "options": {}
       },
-      "id": "a01cde60-4c83-408c-a4cd-3e8488bec3e4",
+      "id": "b0d7e2e1-d0d0-4a9b-a55d-ee3f58de6577",
       "name": "Has Attachments?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
@@ -52,7 +52,7 @@
       "parameters": {
         "functionCode": "// Handle No Attachments - maintain response format\nconst item = $input.first();\nconst data = item.json;\n\nconst noAttachmentsResponse = {\n  stats: {\n    processedAttachments: 0,\n    processingAttachments: 0,\n    failedAttachments: 1\n  },\n  expected: [\n    \"Resume\",\n    \"ID Proof\",\n    \"Offer Letter\",\n    \"Appointment Letter\", \n    \"Certificates\"\n  ],\n  received_files: [],\n  missing: [\n    \"Resume\",\n    \"ID Proof\",\n    \"Offer Letter\",\n    \"Appointment Letter\",\n    \"Certificates\"\n  ],\n  processingStatus: [\n    {\n      id: \"no_attachments_error\",\n      fileName: \"N/A\",\n      fileType: \"N/A\",\n      fileSize: \"N/A\",\n      status: \"FAILED\",\n      startTime: new Date().toISOString(),\n      endTime: new Date().toISOString(),\n      error: \"No attachments found in email\"\n    }\n  ]\n};\n\n// Also prepare email notification data\nconst emailData = {\n  ...data,\n  response: noAttachmentsResponse,\n  processingStatus: 'NO_ATTACHMENTS'\n};\n\nreturn [{ json: emailData }];"
       },
-      "id": "87af336f-063c-48ad-9e4f-1badeea7b4cb",
+      "id": "8c22ad3f-0382-4e63-a506-367399b4a887",
       "name": "Handle No Attachments",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
@@ -65,7 +65,7 @@
       "parameters": {
         "functionCode": "// Log errors and failed processing\nconst item = $input.first();\nconst data = item.json;\n\nconst errorLog = {\n  timestamp: new Date().toISOString(),\n  action: 'ERROR_LOGGED',\n  error: data.processingStatus || 'UNKNOWN_ERROR',\n  candidateId: data.candidateId,\n  senderEmail: data.from,\n  messageId: data.messageId,\n  errorDetails: data.errorNotification || {},\n  processingNode: 'error-logger'\n};\n\nconsole.error('ERROR:', JSON.stringify(errorLog, null, 2));\n\nreturn [{ json: { ...data, errorLog: errorLog } }];"
       },
-      "id": "84006627-cc8e-4382-987c-af66c0ae691c",
+      "id": "b5a7d139-49b0-440a-86e9-17486b9585ec",
       "name": "Log Error",
       "type": "n8n-nodes-base.function",
       "typeVersion": 1,
@@ -90,13 +90,13 @@
         -500,
         140
       ],
-      "id": "84fed75e-9521-4a06-9648-e9020062adbd",
+      "id": "887c6fdd-5f92-466d-b1fe-b3b647664341",
       "name": "Gmail",
       "webhookId": "a5bdd3b7-ee3f-4083-9688-5c2bad9c3fba",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "MCsQ7ODXQHSobYDv",
+          "name": "Gmail account 18"
         }
       }
     },
@@ -108,7 +108,7 @@
         -700,
         140
       ],
-      "id": "7ae48728-e148-42ac-8d8d-e007f14efca0",
+      "id": "d409a351-4b77-44d4-b4af-52735a438206",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -134,15 +134,15 @@
         540,
         240
       ],
-      "id": "c6a87a13-c433-4908-b526-3d42b4c1b1bf",
+      "id": "a8bdcd04-5c5e-4c0b-b14c-fba27ef396cc",
       "name": "Google Drive",
       "executeOnce": false,
       "retryOnFail": true,
       "alwaysOutputData": true,
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "iwYD7YqRk1Js8DQ7",
-          "name": "Google Drive account"
+          "id": "5Ll8GBkHFCOJvFAJ",
+          "name": "Google Drive account 6"
         }
       }
     },
@@ -156,7 +156,7 @@
         340,
         240
       ],
-      "id": "b13a2729-ca01-46a8-8492-fe8a8b362111",
+      "id": "f2542928-4ef3-446a-bc9d-dd47c2fad9ba",
       "name": "Code1"
     },
     {
@@ -169,7 +169,7 @@
         1320,
         240
       ],
-      "id": "a10d400e-4210-462c-afee-73027e723ef8",
+      "id": "0e7bcf19-b51b-461b-a076-be101a0f16ad",
       "name": "Code2"
     },
     {
@@ -182,7 +182,7 @@
         1100,
         240
       ],
-      "id": "d4a9bfae-24da-4503-8ddd-736d21271d26",
+      "id": "4076a343-7f60-4cd8-b99b-b766ce3cee36",
       "name": "Code3"
     },
     {
@@ -199,13 +199,13 @@
         2220,
         300
       ],
-      "id": "5e8e14b0-257c-4414-b529-c69ff2b9960a",
+      "id": "7c3aab04-347d-4c96-bdf5-8395a63cf129",
       "name": "Gmail1",
       "webhookId": "cad58fb8-d855-4b66-a049-d2cf1bfcae71",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "MCsQ7ODXQHSobYDv",
+          "name": "Gmail account 18"
         }
       }
     },
@@ -253,7 +253,7 @@
         780,
         0
       ],
-      "id": "23b0e94b-dd24-4806-bddd-c4de137e67bb",
+      "id": "90b30b50-b147-44f5-b1e3-2a8d97d262b0",
       "name": "Edit Fields"
     },
     {
@@ -266,7 +266,7 @@
         0,
         0
       ],
-      "id": "c98f996b-dcd5-4947-ae49-9cc99b3edf58",
+      "id": "22cbbd26-bd88-4d9a-b6d9-f3f3f8039555",
       "name": "Wait",
       "webhookId": "95291e85-8199-49bc-bc56-1d51fa618ad6"
     },
@@ -282,7 +282,7 @@
         1520,
         260
       ],
-      "id": "69318833-0c07-4f5c-a35b-ffe21bcac81e",
+      "id": "f1f04d10-7af4-4978-9fa7-251d5bb13edc",
       "name": "Merge"
     },
     {
@@ -298,13 +298,13 @@
         500,
         420
       ],
-      "id": "adb73398-bd99-49ce-a692-a7707429d80c",
+      "id": "cc1fde0a-1053-417f-b10f-7b3d1a5fa474",
       "name": "Gmail3",
       "webhookId": "752bdade-bf6c-4a96-abde-7f673cb439d0",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "MCsQ7ODXQHSobYDv",
+          "name": "Gmail account 18"
         }
       }
     },
@@ -318,12 +318,12 @@
         740,
         420
       ],
-      "id": "e1f6b3bf-aaf5-40ce-b7c9-8a5e9444fc10",
+      "id": "141f72bb-ef9c-441e-a153-5efc72a60fc0",
       "name": "OpenRouter Chat Model",
       "credentials": {
         "openRouterApi": {
-          "id": "JjMmhLRCLv1lEaa6",
-          "name": "OpenRouter New"
+          "id": "6Yq0aeaSUS0VvP6q",
+          "name": "OpenRouter account 16"
         }
       }
     },
@@ -339,7 +339,7 @@
         720,
         240
       ],
-      "id": "df0d0891-f4e8-49f5-8eaf-96aaec82271d",
+      "id": "50e10b59-d816-4cac-b7d1-a05730668408",
       "name": "AI Agent"
     },
     {
@@ -347,30 +347,31 @@
         "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM",
+          "value": "1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0",
           "mode": "list",
-          "cachedResultName": "n8n-work-book",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit?usp=drivesdk"
+          "cachedResultName": "Inventory management data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": "gid=0",
+          "value": 661119608,
           "mode": "list",
-          "cachedResultName": "Email Attachment Processing Agent for HRMS",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17YgQhJbBsi9HHlQ1dwj48Q2AT7Me52UPaxDUtrX-FsM/edit#gid=0"
+          "cachedResultName": "email",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eUt2QucPZrRgggjahKGDKVTo802cixzeyIz2AnXkJ-0/edit#gid=661119608"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
+            "SenderEmail": "={{ $json.SenderEmail }}",
             "Name": "={{ $json.Name }}",
-            "Sender Email": "={{ $json.SenderEmail }}",
             "expected": "={{ $json.expected }}",
             "received_files": "={{ $json.received_files }}",
             "missing": "={{ $json.missing }}",
-            "available_categories": "={{ $json.available_categories }}"
+            "processingStatus": "={{ $json.processingStatus }}",
+            "stats": "={{ $json.stats }}"
           },
           "matchingColumns": [
-            "Sender Email"
+            "SenderEmail"
           ],
           "schema": [
             {
@@ -384,8 +385,18 @@
               "removed": false
             },
             {
-              "id": "Sender Email",
-              "displayName": "Sender Email",
+              "id": "Subject",
+              "displayName": "Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "SenderEmail",
+              "displayName": "SenderEmail",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -394,14 +405,34 @@
               "removed": false
             },
             {
-              "id": "summary",
-              "displayName": "summary",
+              "id": "messageId",
+              "displayName": "messageId",
               "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true,
               "removed": true
+            },
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "stats",
+              "displayName": "stats",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "expected",
@@ -434,8 +465,8 @@
               "removed": false
             },
             {
-              "id": "available_categories",
-              "displayName": "available_categories",
+              "id": "processingStatus",
+              "displayName": "processingStatus",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -455,12 +486,12 @@
         1740,
         220
       ],
-      "id": "493e68dc-ae6a-4d4a-9a39-c1253bb331ba",
+      "id": "4bf4d9ce-bf5e-462d-94ad-f465c6b85097",
       "name": "Google Sheets",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "zEaLif2NVdOGF6k8",
-          "name": "Google Sheets account"
+          "id": "tHBE4YnuDGUtxzGi",
+          "name": "Google Sheets account 14"
         }
       }
     },
@@ -477,7 +508,7 @@
         -580,
         520
       ],
-      "id": "5dfd825d-81ae-4073-a40d-3ef5711ac618",
+      "id": "7cce003f-5d31-4c67-9ba9-e7d39a7d9394",
       "name": "Webhook",
       "webhookId": "e5d7bd98-bbac-473f-a1f9-55338909e7fe"
     },
@@ -491,7 +522,7 @@
         -160,
         340
       ],
-      "id": "f9d3bc88-fe40-4822-ae1f-e8730e71b2bd",
+      "id": "c588b940-1d38-4124-8185-273fdcfb293c",
       "name": "Code"
     },
     {
@@ -538,7 +569,7 @@
         520,
         600
       ],
-      "id": "2d4f0ec0-87dc-4d58-bc9e-5d8a2db993d2",
+      "id": "71be564d-0822-464e-977e-51f608d16251",
       "name": "Edit Fields1"
     },
     {
@@ -572,7 +603,7 @@
         1960,
         220
       ],
-      "id": "131dec89-4cf3-4edc-988f-d5b61240029a",
+      "id": "96f34f64-dd4c-4d68-a102-35239ab4a68d",
       "name": "If"
     },
     {
@@ -589,13 +620,13 @@
         2180,
         120
       ],
-      "id": "be3d5c0f-a636-4840-8f70-481fff0b25a9",
+      "id": "69f5bbe8-a759-434b-8722-5824e4a5ad13",
       "name": "Gmail2",
       "webhookId": "0e78363c-4be8-49e7-9c35-06bd764f59d4",
       "credentials": {
         "gmailOAuth2": {
-          "id": "Yzw60DakUdeHKqfQ",
-          "name": "Gmail account"
+          "id": "MCsQ7ODXQHSobYDv",
+          "name": "Gmail account 18"
         }
       }
     },
@@ -609,7 +640,7 @@
         1800,
         520
       ],
-      "id": "27c66191-2316-476e-ab02-3e8ba3dab4b0",
+      "id": "d6872f8b-418d-485f-b4c3-7a840b574a76",
       "name": "Final Response"
     },
     {
@@ -622,7 +653,7 @@
         1980,
         680
       ],
-      "id": "5a8ff114-68f7-4558-a05e-b1004283fc79",
+      "id": "8f42918a-ea15-4838-8902-6827c939bd42",
       "name": "Respond to Webhook"
     }
   ],
@@ -887,40 +918,17 @@
           }
         ]
       ]
-    },
-    "Respond to Webhook": {
-      "main": [
-        []
-      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "bd8ea6cd-7ff9-4f7d-9910-24c9b3e8f646",
+  "versionId": "f914f7c5-6981-46b2-bed0-7d6c83e6525c",
   "meta": {
-    "instanceId": "b49f74740e4a155f21338af76c2aa80263c734ce9c55ab82f1aa145d7b4ee228"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "mBUZQajjvd4NMrZ6",
-  "tags": [
-    {
-      "createdAt": "2025-06-06T12:12:14.923Z",
-      "updatedAt": "2025-06-06T12:12:14.923Z",
-      "id": "5zzYKeYCiMezpsml",
-      "name": "HRMS Automation"
-    },
-    {
-      "createdAt": "2025-06-06T12:12:14.915Z",
-      "updatedAt": "2025-06-06T12:12:14.915Z",
-      "id": "Ztx2Vx5t2vXJGB7Q",
-      "name": "Document Management"
-    },
-    {
-      "createdAt": "2025-06-06T12:12:14.928Z",
-      "updatedAt": "2025-06-06T12:12:14.928Z",
-      "id": "ederssWZTBXAOxtY",
-      "name": "Email Processing"
-    }
-  ]
+  "id": "CiuKPH9jmQmi0SWx",
+  "tags": []
 }

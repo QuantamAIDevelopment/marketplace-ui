@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 
 import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
 
+
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
 
@@ -268,6 +269,18 @@ const workflowData = [
     summary: 'Get instant leave balance information through AI-powered HR assistant.'
   },
   {
+    title: 'PR Summary Agent',
+    icon: FaRobot,
+    path: '/pr-summary-agent',
+    summary: 'Summarize GitHub PRs and get AI-powered summaries and notifications.'
+  },
+  {
+    title: 'PR Reviewer AI Agent',
+    icon: FaRobot,
+    path: '/pr-reviewer-agent',
+    summary: 'Automated code review and actionable suggestions for your GitHub PRs.'
+  },
+  {
     title: 'Project Coast Reports',
     icon: FaTable,
     path: '/project-coast-reports',
@@ -278,6 +291,7 @@ const workflowData = [
     icon: FaUserCheck,
     path: '/automate-candidate-acceptance/cover',
     summary: 'Automate candidate acceptance and onboarding notifications.'
+
   },
 ];
 

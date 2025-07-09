@@ -58,7 +58,14 @@ import AIBackroundVerificationPage from './pages/AIBackroundVerificationPage';
 
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+
+import PRSummaryAgentPage from './pages/PRSummaryAgentPage';
+import PRReviewerAIAgentPage from './pages/PRReviewerAIAgentPage';
+import PRSummaryAgentFormPage from './pages/PRSummaryAgentFormPage';
+import PRReviewerAIAgentFormPage from './pages/PRReviewerAIAgentFormPage';
+
 import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
+
 import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
 
 function App() {
@@ -111,7 +118,12 @@ function App() {
               <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
-
+              <Route path="/pr-summary-agent" element={<PRSummaryAgentPage />} />
+              <Route path="/pr-summary-agent/form" element={<PRSummaryAgentFormPage />} />
+              <Route path="/pr-reviewer-ai-agent" element={<PRReviewerAIAgentPage />} />
+              <Route path="/pr-reviewer-ai-agent/form" element={<PRReviewerAIAgentFormPage />} />
+              <Route path="/pr-reviewer-agent" element={<PRReviewerAIAgentPage />} />
+    
               <Route path="/background-verification-agent" element={<BackgroundVerificationAgentPage />} />
               <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
