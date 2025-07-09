@@ -29,4 +29,4 @@ const ComplaintHandlerAgent = ({ compact = false }) => {
   );
 };
 
-export default ComplaintHandlerAgent; 
+export default ComplaintHandlerAgent;

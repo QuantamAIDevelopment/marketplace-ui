@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaRobot, FaCalendarAlt, FaFileAlt, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaEnvelope, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartBar, FaRupeeSign, FaShieldAlt } from 'react-icons/fa';
+import { FaRobot, FaCalendarAlt, FaFileAlt, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaEnvelope, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartBar, FaRupeeSign, FaShieldAlt, FaChartLine } from 'react-icons/fa';
 
 const workflows = [
   { title: 'AI Customer Support', icon: FaRobot, path: '/ai-customer-support' },
@@ -15,6 +15,7 @@ const workflows = [
   { title: 'Resume to Profile Extractor', icon: FaUserAlt, path: '/workflows/resume-extractor' },
   { title: 'Contract Red Flag Detector', icon: FaFileContract, path: '/workflows/contract-red-flag' },
   { title: 'Product Recommendation Agent', icon: FaBoxOpen, path: '/workflows/product-recommendation' },
+  { title: 'Business Intelligence Explainer Bot', icon: FaChartBar, path: '/workflows/business-intelligence-bot' },
   { title: 'Product Feedback Summarizer', icon: FaCommentDots, path: '/workflows/product-feedback-summarizer' },
   { title: 'Dynamic Pricing Agent', icon: FaMoneyBillWave, path: '/workflows/dynamic-pricing' },
   { title: 'Metrics Business Analytics', icon: FaChartBar, path: '/workflows/metrics-business-analytics' },
@@ -23,7 +24,6 @@ const workflows = [
   { title: 'Inventory Management', icon: FaWarehouse, path: '/inventory-management' },
   { title: 'Appointment Scheduler', icon: FaCalendarAlt, path: '/appointment-scheduler' },
   { title: 'MCQ Generator & Trainer', icon: FaBrain, path: '/mcq-generator' },
-  { title: 'Business Intelligence BOT', icon: FaChartBar, path: '/business-intelligence-bot' },
   { title: 'Complaint Handler Agent', icon: FaCommentDots, path: '/complaint-handler' },
 ];
 

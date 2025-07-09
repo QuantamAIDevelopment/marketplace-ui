@@ -1,12 +1,28 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaChartBar, FaFileUpload } from 'react-icons/fa';
+import { FaChartBar } from 'react-icons/fa';
+import { uploadSalesFileAndGetInsights } from '../../services/workflows/businessIntelligenceBot';
+
+const parseSummary = (summary) => {
+  // Try to parse JSON summary, otherwise return as is
+  try {
+    const parsed = JSON.parse(summary);
+    if (typeof parsed === 'object') {
+      return Object.entries(parsed).map(([key, value]) => (
+        <div key={key} className="text-xs text-gray-700"><b>{key}:</b> {value}</div>
+      ));
+    }
+  } catch {
+    // Not JSON, return as string
+  }
+  return <div className="text-xs text-gray-700">{summary}</div>;
+};
 
 const BusinessIntelligenceBOT = () => {
   const [file, setFile] = useState(null);
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [result, setResult] = useState(null);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -15,22 +31,15 @@ const BusinessIntelligenceBOT = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!file) {
-      setError('Please select a file.');
+      setError('Please select a file to upload.');
       return;
     }
     setLoading(true);
     setError(null);
-    setResult(null);
-    const formData = new FormData();
-    formData.append('Sales', file);
+    setResults([]);
     try {
-      const response = await fetch('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook-test/Sales', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) throw new Error('Failed to fetch results');
-      const data = await response.json();
-      setResult(data[0]);
+      const response = await uploadSalesFileAndGetInsights(file);
+      setResults(response);
     } catch (err) {
       setError('Failed to process file. Please try again.');
     } finally {
@@ -39,55 +48,47 @@ const BusinessIntelligenceBOT = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-lg mt-8">
-      <div className="flex items-center space-x-3 mb-4">
-        <div className="bg-blue-500 p-3 rounded-lg shadow">
+    <div className="space-y-8 w-full">
+      <div className="flex items-center space-x-4 mb-2">
+        <div className="bg-blue-500 p-3 rounded-lg shadow-lg">
           <FaChartBar className="w-6 h-6 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-800">Business Intelligence BOT</h2>
+        <h3 className="text-2xl font-display text-anthropic-dark font-bold">Business Intelligence Explainer Bot</h3>
       </div>
+      <p className="text-sm text-gray-700">
+        Upload your sales data file (CSV/Excel) to get instant business insights, error detection, and actionable suggestions powered by AI.
+      </p>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block">
-          <span className="text-gray-700 font-medium">Upload Sales Data File</span>
-          <div className="flex items-center mt-2">
-            <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} className="mr-2" />
-            <FaFileUpload className="text-gray-400" />
-          </div>
-        </label>
-        <button
+        <input type="file" onChange={handleFileChange} className="w-full p-2 border rounded" />
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           type="submit"
-          className="w-full bg-gradient-to-r from-blue-500 to-green-500 text-white py-2 rounded-lg font-bold text-lg shadow hover:from-blue-600 hover:to-green-600 transition-colors"
           disabled={loading}
+          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
         >
-          {loading ? 'Processing...' : 'Analyze'}
-        </button>
+          {loading ? 'Processing...' : 'Upload & Analyze'}
+        </motion.button>
       </form>
-      {error && <div className="mt-4 text-red-600 font-semibold">{error}</div>}
-      {result && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-6 bg-gray-50 p-4 rounded-lg border"
-        >
-          <h3 className="text-lg font-bold mb-2">KPI Summary Report</h3>
-          {typeof result.Summary === 'string' ? (
-            <div className="mb-2 text-gray-700">{result.Summary}</div>
-          ) : (
-            <ul className="mb-2 text-gray-700">
-              <li><b>Total Revenue:</b> {result.Summary?.totalRevenue}</li>
-              <li><b>Average Revenue:</b> {result.Summary?.averageRevenue}</li>
-              <li><b>Min Revenue:</b> {result.Summary?.minRevenue}</li>
-              <li><b>Max Revenue:</b> {result.Summary?.maxRevenue}</li>
-              <li><b>Rows:</b> {result.Summary?.rowCount}</li>
-            </ul>
-          )}
-          <div className="mb-1"><b>Suggestion:</b> {result.Suggestion}</div>
-          <div className="mb-1 text-red-600"><b>Issue:</b> {result.Error}</div>
-          <div className="text-xs text-gray-400 mt-2">Time: {new Date(result['Time Stamp']).toLocaleString()}</div>
-        </motion.div>
-      )}
+      {error && <div className="text-red-500 mt-4">{error}</div>}
+      <div className="mt-6 space-y-4">
+        {results.length > 0 && (
+          <motion.div
+            key={0}
+            className="bg-white p-4 rounded-lg shadow border"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0 }}
+          >
+            <div className="text-xs text-gray-500 mb-1">{results[0]['Time Stamp'] && new Date(results[0]['Time Stamp']).toLocaleString()}</div>
+            <div className="mb-1">{parseSummary(results[0]['Summary'])}</div>
+            {results[0]['Error'] && <div className="text-sm text-red-600"><b>Error:</b> {results[0]['Error']}</div>}
+            {results[0]['Suggestion'] && <div className="text-sm text-green-700"><b>Suggestion:</b> {results[0]['Suggestion']}</div>}
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default BusinessIntelligenceBOT;
+export default BusinessIntelligenceBOT; 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaBell, FaFileAlt } from 'react-icons/fa';
 
-const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook-test/policy-update';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/policy-update';
 
 const PolicyChangeNotification = () => {
   const [file, setFile] = useState(null);
@@ -30,11 +30,20 @@ const PolicyChangeNotification = () => {
         method: 'POST',
         body: formData,
       });
-      if (!response.ok) throw new Error('Failed to fetch policy stats');
+      if (!response.ok) {
+        let msg = `Failed to fetch policy stats (Status: ${response.status})`;
+        if (response.status === 404) msg += ' - Endpoint not found.';
+        if (response.status === 500) msg += ' - Server error.';
+        throw new Error(msg);
+      }
       const result = await response.json();
       setData(result);
     } catch (err) {
-      setError(err.message || 'Something went wrong');
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        setError('Network error or CORS issue. Please check your backend, CORS settings, and browser console for details.');
+      } else {
+        setError(err.message || 'Something went wrong');
+      }
     } finally {
       setLoading(false);
     }
@@ -102,7 +111,7 @@ const PolicyChangeNotification = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.recentNotifications.map((n, idx) => (
+                  {data.recentNotifications.slice(0, 5).map((n, idx) => (
                     <tr key={idx} className="hover:bg-blue-50">
                       <td className="py-2 px-3 border">{n.email}</td>
                       <td className="py-2 px-3 border">{n.userName}</td>

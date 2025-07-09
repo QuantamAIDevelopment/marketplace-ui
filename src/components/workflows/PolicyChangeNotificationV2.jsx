@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaBell, FaFileAlt } from 'react-icons/fa';
 
-const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook-test/policy-update';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/policy-update';
 
 const PolicyChangeNotificationV2 = () => {
   const [file, setFile] = useState(null);

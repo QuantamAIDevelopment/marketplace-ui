@@ -14,8 +14,6 @@ import ProductRecommendationPage from './pages/ProductRecommendationPage';
 import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
-// import BusinessIntelligenceExplainerBotPage from './pages/BusinessIntelligenceExplainerBotPage';
-import BusinessIntelligenceBOTPage from './pages/BusinessIntelligenceBOTPage.jsx';
 import AppointmentSchedulerPage from './pages/AppointmentSchedulerPage';
 import ProductFeedbackSummarizerPage from './pages/ProductFeedbackSummarizerPage';
 import DynamicPricingAgentPage from './pages/DynamicPricingAgentPage';
@@ -25,21 +23,19 @@ import FraudDetectionPage from './pages/FraudDetectionPage';
 import './App.css';
 import './index.css';
 import ErrorBoundary from './components/ErrorBoundary';
-// import Navbar from './components/Navbar';
 import DashboardComponent from './components/Dashboard';
 import ComplaintHandlerAgentPage from './pages/ComplaintHandlerAgentPage';
+import BusinessIntelligenceBOTPage from './pages/BusinessIntelligenceBOTPage';
 
 function App() {
   return (
     <Router>
       <ErrorBoundary>
         <div className="min-h-screen bg-gradient-to-br from-background via-background-secondary to-background-tertiary">
-          {/* <Navbar /> */}
           <main className="flex-1 flex flex-col items-center justify-center p-4">
             <Routes>
               <Route path="/" element={<MarketplaceDashboard />} />
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
-              {/* <Route path="/workflows/birthday-anniversary" element={<BirhdayWorkAnniversaryPage />} /> */}
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
@@ -51,10 +47,8 @@ function App() {
               <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
-              <Route path="/business-intelligence-bot" element={<BusinessIntelligenceBOTPage />} />
+              <Route path="/workflows/business-intelligence-bot" element={<BusinessIntelligenceBOTPage />} />
               <Route path="/complaint-handler" element={<ComplaintHandlerAgentPage />} />
-              {/* <Route path="/workflows/complaint-handler" element={<ComplaintHandlerAgentPage />} /> */}
-              {/* <Route path="/business-intelligence-explainer-bot" element={<BusinessIntelligenceExplainerBotPage />} /> */}
               <Route path="/dashboard-component" element={<DashboardComponent />} />
             </Routes>
           </main>
