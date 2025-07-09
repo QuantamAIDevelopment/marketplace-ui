@@ -5,7 +5,6 @@ import InventoryPredictAIPage from './pages/InventoryPredictAIPage';
 import LeavesClassifierPage from './pages/LeavesClassifierPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
-import DocumentUploadReminderDetailsPage from './pages/DocumentUploadReminderDetailsPage';
 import ResumeToProfileExtractorPage from './pages/ResumeToProfileExtractorPage';
 import EmailAttachmentProcessingPage from './pages/EmailAttachmentProcessingPage';
 import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
@@ -15,14 +14,17 @@ import ProductRecommendationPage from './pages/ProductRecommendationPage';
 import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
-import SalesForecastingPage from './pages/SalesForecastingPage';
+import AutomatedResearchPage from './pages/AutomatedResearchPage';
+// Removed: AutomatedResearchAIPage (workflow removed)
 import AppointmentSchedulerPage from './pages/AppointmentSchedulerPage';
+import InterviewPanelAssignmentPage from './pages/InterviewPanelAssignmentPage';
 import ProductFeedbackSummarizerPage from './pages/ProductFeedbackSummarizerPage';
 import DynamicPricingAgentPage from './pages/DynamicPricingAgentPage';
 import BusinessInsightsAgentPage from './pages/BusinessInsightsAgentPage';
 import MetricsBusinessAnalyticsPage from './pages/MetricsBusinessAnalyticsPage';
 import MonthlyExpenditurePage from './pages/MonthlyExpenditurePage';
 import FraudDetectionPage from './pages/FraudDetectionPage';
+import PerformanceReviewSummaryPage from './pages/PerformanceReviewSummaryPage';
 
 import OnBoardingQPage from './pages/OnBoardingQPage';
 import LeaveApprovalReminderPage from './pages/LeaveApprovalReminderPage';
@@ -72,7 +74,6 @@ function App() {
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
               <Route path="/workflows/document-upload" element={<DocumentUploadReminderPage />} />
-              <Route path="/workflows/document-upload-details" element={<DocumentUploadReminderDetailsPage />} />
               <Route path="/workflows/resume-extractor" element={<ResumeToProfileExtractorPage />} />
               <Route path="/workflows/email-attachment" element={<EmailAttachmentProcessingPage />} />
               <Route path="/workflows/payslip-encryption" element={<PayslipAutoEncryptedPage />} />
@@ -80,14 +81,12 @@ function App() {
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
               <Route path="/workflows/product-recommendation" element={<ProductRecommendationPage />} />
               <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
-              <Route path="/contract-red-flag-detector" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
-              <Route path="/workflows/testmonial-extractor" element={React.createElement(require('./pages/TestmonialExtractorPage.jsx').default)} />
-              <Route path="/workflows/dynamic-model-selector" element={React.createElement(require('./pages/DynamicModelSelectorPage.jsx').default)} />
-              <Route path="/test-generator" element={<TestGeneratorPage />} />
-              <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
+              <Route path="/automated-research" element={<AutomatedResearchPage />} />
+              {/* Removed: /automated-research-ai route (workflow removed) */}
               <Route path="/appointment-scheduler" element={<AppointmentSchedulerPage />} />
+              <Route path="/interview-panel-assignment" element={<InterviewPanelAssignmentPage />} />
               <Route path="/workflows/product-feedback-summarizer" element={<ProductFeedbackSummarizerPage />} />
               <Route path="/workflows/dynamic-pricing" element={<DynamicPricingAgentPage />} />
               <Route path="/workflows/business-insights" element={<BusinessInsightsAgentPage />} />
@@ -95,6 +94,7 @@ function App() {
               <Route path="/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/monthly-expenditure" element={<MonthlyExpenditurePage />} />
               <Route path="/workflows/fraud-detection" element={<FraudDetectionPage />} />
+              <Route path="/workflows/performance-review-summary" element={<PerformanceReviewSummaryPage />} />
               <Route path="/workflows/leave-approval-reminder" element={<LeaveApprovalReminderPage />} />
               <Route path="/workflows/restaurant-order-chatbot" element={<AIPoweredRestaurantOrderChatbotPage />} />
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />

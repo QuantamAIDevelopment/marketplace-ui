@@ -5,7 +5,11 @@ import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFile
 
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
+
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
+import AutomatedResearch from '../components/workflows/AutomatedResearch';
+import InterviewPanelAutoAssignment from '../components/workflows/InterviewPanelAutoAssignment';
+import PerformanceReviewSummary from '../components/workflows/PerformanceReviewSummary';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -304,7 +308,10 @@ const Dashboard = () => {
               summary={workflow.summary}
             />
           ))}
-          <AmazonWebScrapeCard compact />
+          {/* <AmazonWebScrapeCard compact /> */}
+          <AutomatedResearch compact />
+          <InterviewPanelAutoAssignment compact />
+          <PerformanceReviewSummary compact />
         </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

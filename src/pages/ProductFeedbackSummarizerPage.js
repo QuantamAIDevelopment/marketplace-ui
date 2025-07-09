@@ -1,289 +1,366 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCommentDots, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
+import { FaCommentDots, FaUpload, FaChartBar, FaThumbsUp, FaThumbsDown, FaClock, FaTag } from 'react-icons/fa';
+import PageRevealWrapper from '../components/PageRevealWrapper';
 import { triggerProductFeedbackSummarizer } from '../services/workflows/productFeedbackSummarizer';
-import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
-const workflowSteps = [
-  { icon: FaCommentDots, label: 'Input Feedback', color: 'bg-pink-500' },
-  { icon: FaCheckCircle, label: 'Summarizing', color: 'bg-purple-500' },
-  { icon: FaCheckCircle, label: 'Complete', color: 'bg-green-500' },
-];
+const defaultRow = () => ({
+    productId: '',
+    feedback: '',
+    timestamp: '',
+    rating: ''
+});
 
-const parseField = (field, fallback = []) => {
-  if (!field) return fallback;
-  try {
-    const parsed = JSON.parse(field);
-    return Array.isArray(parsed) ? parsed : fallback;
-  } catch {
-    return fallback;
-  }
-};
+const ProductFeedbackSummarizerContent = () => {
+    const [rows, setRows] = useState([
+        defaultRow(),
+    ]);
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-const parseSentiment = (field) => {
-  if (!field) return { positive: 0, neutral: 0, negative: 0 };
-  try {
-    const parsed = JSON.parse(field);
-    return typeof parsed === 'object' ? parsed : { positive: 0, neutral: 0, negative: 0 };
-  } catch {
-    return { positive: 0, neutral: 0, negative: 0 };
-  }
-};
+    const handleRowChange = (idx, field, value) => {
+        setRows(prev => prev.map((row, i) => i === idx ? { ...row, [field]: value } : row));
+    };
 
-const defaultFeedbackObj = {
-  "Timestamp (Date)": "2025-07-07",
-  "Product ID": "ZX200",
-  "Feedback": "Connectivity drops when moving between rooms",
-  "Rating": 2
-};
+    const handleAddRow = () => {
+        setRows(prev => [...prev, defaultRow()]);
+    };
 
-const ProductFeedbackSummarizerPageContent = () => {
-  const [formData, setFormData] = useState(defaultFeedbackObj);
-  const [isExecuting, setIsExecuting] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [response, setResponse] = useState(null);
-  const [error, setError] = useState(null);
+    const handleRemoveRow = (idx) => {
+        setRows(prev => prev.length === 1 ? prev : prev.filter((_, i) => i !== idx));
+    };
 
-  React.useEffect(() => {
-    let interval;
-    if (isExecuting) {
-      interval = setInterval(() => {
-        setCurrentStep((prev) => (prev + 1) % workflowSteps.length);
-      }, 900);
-    }
-    return () => clearInterval(interval);
-  }, [isExecuting]);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError(null);
+        setResults([]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: name === 'Rating' ? Number(value) : value }));
-  };
+        // Validate rows
+        for (let row of rows) {
+            if (!row.productId || !row.feedback || !row.timestamp || !row.rating) {
+                setError('Please fill all fields in every row.');
+                return;
+            }
+        }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setIsExecuting(true);
-    setCurrentStep(0);
-    setResponse(null);
-    // Validate required fields
-    if (!formData["Timestamp (Date)"] || !formData["Product ID"] || !formData["Feedback"] || !formData["Rating"]) {
-      setError('All fields are required.');
-      setIsExecuting(false);
-      return;
-    }
-    try {
-      const result = await triggerProductFeedbackSummarizer(formData);
-      setResponse(Array.isArray(result) ? result : [result]);
-    } catch (err) {
-      setError('Failed to run workflow. Check the console for more details.');
-      setResponse(null);
-    } finally {
-      setIsExecuting(false);
-      setCurrentStep(0);
-    }
-  };
+        setLoading(true);
+        try {
+            // Format data for API
+            const payload = rows.map(row => ({
+                "Product ID": row.productId,
+                "Feedback": row.feedback,
+                "Timestamp (Date)": row.timestamp,
+                "Rating": Number(row.rating)
+            }));
+            const result = await triggerProductFeedbackSummarizer(payload);
+            setResults(result);
+        } catch (err) {
+            setError('Failed to process feedback. Please try again.');
+            console.error('Error:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  return (
-    <div className="flex items-center justify-center min-h-[70vh]">
-      <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-4xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-3xl md:text-4xl font-extrabold text-center mb-8 text-anthropic-dark drop-shadow-lg"
-        >
-          Product Feedback Summarizer
-        </motion.h1>
-        <div className="relative z-10 w-full max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-2xl p-4 md:p-8 space-y-6 border border-gray-200 w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <label className="font-semibold">Timestamp (Date)</label>
-                <input
-                  type="date"
-                  name="Timestamp (Date)"
-                  value={formData["Timestamp (Date)"]}
-                  onChange={handleChange}
-                  className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-pink-400 w-full"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-semibold">Product ID</label>
-                <input
-                  type="text"
-                  name="Product ID"
-                  value={formData["Product ID"]}
-                  onChange={handleChange}
-                  className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-pink-400 w-full"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2 md:col-span-2">
-                <label className="font-semibold">Feedback</label>
-                <textarea
-                  name="Feedback"
-                  value={formData["Feedback"]}
-                  onChange={handleChange}
-                  rows={3}
-                  className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-pink-400 w-full"
-                  required
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-semibold">Rating</label>
-                <input
-                  type="number"
-                  name="Rating"
-                  min={1}
-                  max={5}
-                  value={formData["Rating"]}
-                  onChange={handleChange}
-                  className="bg-gray-100 rounded-lg px-4 py-2 text-anthropic-dark focus:outline-none focus:ring-2 focus:ring-pink-400 w-full"
-                  required
-                />
-              </div>
-            </div>
-            {error && <div className="bg-red-500 text-white p-3 rounded-lg flex items-center gap-2"><FaExclamationTriangle /> {error}</div>}
-            <motion.button
-              whileHover={{ scale: 1.02, boxShadow: '0 8px 32px 0 #e7548033' }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={isExecuting}
-              className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-pink-600 hover:to-purple-600 transition-colors disabled:opacity-50"
+    const renderProductSummary = (product, index) => {
+        // Defensive fallback for all fields
+        let praises = [];
+        let complaints = [];
+        let keywords = [];
+        let sentimentBreakdown = { positive: 0, neutral: 0, negative: 0 };
+
+        try {
+            praises = product.praises ? (typeof product.praises === 'string' ? JSON.parse(product.praises) : product.praises) : [];
+        } catch { praises = []; }
+        try {
+            complaints = product.complaints ? (typeof product.complaints === 'string' ? JSON.parse(product.complaints) : product.complaints) : [];
+        } catch { complaints = []; }
+        try {
+            keywords = product.keywords ? (typeof product.keywords === 'string' ? JSON.parse(product.keywords) : product.keywords) : [];
+        } catch { keywords = []; }
+        try {
+            sentimentBreakdown = product.sentimentBreakdown ? (typeof product.sentimentBreakdown === 'string' ? JSON.parse(product.sentimentBreakdown) : product.sentimentBreakdown) : { positive: 0, neutral: 0, negative: 0 };
+            if (!sentimentBreakdown) sentimentBreakdown = { positive: 0, neutral: 0, negative: 0 };
+        } catch { sentimentBreakdown = { positive: 0, neutral: 0, negative: 0 }; }
+
+        return (
+            <motion.div 
+                key={index} 
+                className="bg-white p-6 rounded-lg shadow-lg border border-gray-200"
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                transition={{ delay: index * 0.1 }}
             >
-              {isExecuting ? 'Processing...' : 'Summarize Feedback'}
-            </motion.button>
-          </form>
-
-          <AnimatePresence>
-            {isExecuting && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="mt-8 bg-white rounded-2xl p-6 shadow-2xl flex flex-col items-center border border-gray-200"
-              >
-                <h2 className="text-xl md:text-2xl font-semibold mb-6 text-center text-anthropic-dark">Executing Workflow...</h2>
-                <div className="flex flex-wrap justify-center items-center w-full gap-4">
-                  {workflowSteps.map((step, idx) => (
-                    <motion.div
-                      key={idx}
-                      animate={{
-                        scale: currentStep === idx ? 1.2 : 0.95,
-                        opacity: currentStep === idx ? 1 : 0.5
-                      }}
-                      transition={{ duration: 0.3 }}
-                      className="flex flex-col items-center space-y-2"
-                    >
-                      <div className={`p-4 rounded-full shadow-xl border-4 border-gray-200 ${step.color} ${currentStep === idx ? 'ring-4 ring-pink-400' : ''}`}>
-                        <step.icon className="w-8 h-8 text-white drop-shadow-lg" />
-                      </div>
-                      <span className="text-xs md:text-sm text-anthropic-dark font-semibold">{step.label}</span>
-                    </motion.div>
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <FaTag className="text-blue-500" />
+                        Product ID: {product.productid}
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <FaClock className="text-gray-400" />
+                        {product.timestamp ? new Date(product.timestamp).toLocaleDateString() : 'N/A'}
+                    </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
-          <AnimatePresence>
-            {response && !isExecuting && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                className="mt-10 bg-gray-50 rounded-2xl p-8 shadow-inner border border-gray-200"
-              >
-                <h3 className="text-xl font-bold mb-4 text-center">Summarized Feedback</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Praises Section */}
+                    <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <div className="flex items-center gap-2 mb-3">
+                            <FaThumbsUp className="text-green-600" />
+                            <h4 className="font-semibold text-green-800">Praises</h4>
+                        </div>
+                        <ul className="space-y-2">
+                            {Array.isArray(praises) && praises.length > 0 ? praises.map((praise, idx) => (
+                                <li key={idx} className="text-sm text-green-700 flex items-start gap-2">
+                                    <span className="text-green-500 mt-1">•</span>
+                                    {praise}
+                                </li>
+                            )) : (
+                                <li className="text-sm text-green-700">No praises found</li>
+                            )}
+                        </ul>
+                    </div>
+
+                    {/* Complaints Section */}
+                    <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                        <div className="flex items-center gap-2 mb-3">
+                            <FaThumbsDown className="text-red-600" />
+                            <h4 className="font-semibold text-red-800">Complaints</h4>
+                        </div>
+                        <ul className="space-y-2">
+                            {Array.isArray(complaints) && complaints.length > 0 ? complaints.map((complaint, idx) => (
+                                <li key={idx} className="text-sm text-red-700 flex items-start gap-2">
+                                    <span className="text-red-500 mt-1">•</span>
+                                    {complaint}
+                                </li>
+                            )) : (
+                                <li className="text-sm text-red-700">No complaints found</li>
+                            )}
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Sentiment Analysis */}
+                <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-2 mb-3">
+                        <FaChartBar className="text-blue-600" />
+                        <h4 className="font-semibold text-blue-800">Sentiment Analysis</h4>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="text-center">
+                            <div className="text-2xl font-bold text-green-600">{sentimentBreakdown.positive ?? 0}%</div>
+                            <div className="text-sm text-gray-600">Positive</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-2xl font-bold text-yellow-600">{sentimentBreakdown.neutral ?? 0}%</div>
+                            <div className="text-sm text-gray-600">Neutral</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-2xl font-bold text-red-600">{sentimentBreakdown.negative ?? 0}%</div>
+                            <div className="text-sm text-gray-600">Negative</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Keywords */}
+                {Array.isArray(keywords) && keywords.length > 0 && (
+                    <div className="mt-4">
+                        <h4 className="font-semibold text-gray-800 mb-2">Key Terms</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {keywords.map((keyword, idx) => (
+                                <span key={idx} className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                                    {keyword}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </motion.div>
+        );
+    };
+
+    return (
+        <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-6xl mx-auto">
+            <motion.h1 
+                initial={{ opacity: 0, y: -30 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                className="text-3xl font-bold text-center mb-6 text-gray-800"
+            >
+                Product Feedback Summarizer
+            </motion.h1>
+
+            <form onSubmit={handleSubmit} className="space-y-4 mb-8">
                 <div className="overflow-x-auto">
-                  <table className="min-w-full bg-white rounded-lg shadow">
-                    <thead className="bg-gray-200">
-                      <tr>
-                        <th className="py-2 px-4 text-left">Product ID</th>
-                        <th className="py-2 px-4 text-left">Praises</th>
-                        <th className="py-2 px-4 text-left">Complaints</th>
-                        <th className="py-2 px-4 text-left">Keywords</th>
-                        <th className="py-2 px-4 text-left">Sentiment</th>
-                        <th className="py-2 px-4 text-left">Timestamp</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {response.map((item, idx) => {
-                        const praises = parseField(item.praises);
-                        const complaints = parseField(item.complaints);
-                        const keywords = parseField(item.keywords);
-                        const sentiment = parseSentiment(item.sentimentBreakdown);
-                        return (
-                          <tr key={idx} className="border-b">
-                            <td className="py-2 px-4 font-bold">{item.productid}</td>
-                            <td className="py-2 px-4">
-                              <ul className="list-disc pl-4">
-                                {praises.map((p, i) => <li key={i}>{p}</li>)}
-                              </ul>
-                            </td>
-                            <td className="py-2 px-4">
-                              <ul className="list-disc pl-4">
-                                {complaints.map((c, i) => <li key={i}>{c}</li>)}
-                              </ul>
-                            </td>
-                            <td className="py-2 px-4">{keywords.join(', ')}</td>
-                            <td className="py-2 px-4">
-                              <ul>
-                                <li>Positive: {sentiment.positive}%</li>
-                                <li>Neutral: {sentiment.neutral}%</li>
-                                <li>Negative: {sentiment.negative}%</li>
-                              </ul>
-                            </td>
-                            <td className="py-2 px-4">{item.timestamp ? new Date(item.timestamp).toLocaleString() : ''}</td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                    <table className="min-w-full bg-white border rounded-lg">
+                        <thead>
+                            <tr>
+                                <th className="px-4 py-2 border-b">Product ID</th>
+                                <th className="px-4 py-2 border-b">Feedback</th>
+                                <th className="px-4 py-2 border-b">Timestamp (Date)</th>
+                                <th className="px-4 py-2 border-b">Rating</th>
+                                <th className="px-4 py-2 border-b">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows.map((row, idx) => (
+                                <tr key={idx}>
+                                    <td className="px-2 py-1 border-b">
+                                        <input
+                                            type="text"
+                                            className="w-full border rounded p-1"
+                                            value={row.productId}
+                                            onChange={e => handleRowChange(idx, 'productId', e.target.value)}
+                                            placeholder="e.g. ZX100"
+                                            required
+                                        />
+                                    </td>
+                                    <td className="px-2 py-1 border-b">
+                                        <input
+                                            type="text"
+                                            className="w-full border rounded p-1"
+                                            value={row.feedback}
+                                            onChange={e => handleRowChange(idx, 'feedback', e.target.value)}
+                                            placeholder="Feedback"
+                                            required
+                                        />
+                                    </td>
+                                    <td className="px-2 py-1 border-b">
+                                        <input
+                                            type="date"
+                                            className="w-full border rounded p-1"
+                                            value={row.timestamp}
+                                            onChange={e => handleRowChange(idx, 'timestamp', e.target.value)}
+                                            required
+                                        />
+                                    </td>
+                                    <td className="px-2 py-1 border-b">
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="5"
+                                            className="w-full border rounded p-1"
+                                            value={row.rating}
+                                            onChange={e => handleRowChange(idx, 'rating', e.target.value)}
+                                            required
+                                        />
+                                    </td>
+                                    <td className="px-2 py-1 border-b text-center">
+                                        <button
+                                            type="button"
+                                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                                            onClick={() => handleRemoveRow(idx)}
+                                            disabled={rows.length === 1}
+                                        >
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-              </motion.div>
+                <button
+                    type="button"
+                    className="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 font-semibold"
+                    onClick={handleAddRow}
+                >
+                    Add Row
+                </button>
+                <motion.button 
+                    whileHover={{ scale: 1.02 }} 
+                    whileTap={{ scale: 0.98 }} 
+                    type="submit" 
+                    disabled={loading} 
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white p-3 rounded-lg hover:from-blue-600 hover:to-purple-600 disabled:bg-gray-400 font-semibold mt-4"
+                >
+                    {loading ? (
+                        <div className="flex items-center justify-center gap-2">
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                            Fetching Feedback Summary...
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center gap-2">
+                            <FaCommentDots />
+                            Fetch Feedback Summary
+                        </div>
+                    )}
+                </motion.button>
+            </form>
+
+            {error && (
+                <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6"
+                >
+                    {error}
+                </motion.div>
             )}
-          </AnimatePresence>
+
+            {results.length > 0 && (
+                <div className="space-y-6">
+                    <motion.h2 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-2xl font-bold text-gray-800 mb-4"
+                    >
+                        Analysis Results ({results.length} products)
+                    </motion.h2>
+                    {results.map(renderProductSummary)}
+                </div>
+            )}
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 const ProductFeedbackSummarizerPage = () => (
-  <PageRevealWrapper
-    heading="AI Product Feedback Summarizer"
-    description="Automatically transforms raw customer feedback from spreadsheets or webhook inputs into structured summaries—including praises, complaints, sentiment, and keywords—ready for decision-makers. Whether triggered manually or on a daily schedule, this AI-powered agent cleans, filters, and semantically summarizes reviews by product. Output is sent as a clean summary to Google Sheets and via email to stakeholders, helping PMs, sellers, and support teams prioritize and act faster."
-    details={
-      <div className="space-y-6">
-        <div>
-          <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
-          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-            <li>Product Teams: Get daily insights on what users love and hate—without manual review.</li>
-            <li>Customer Support: Spot emerging pain points in feedback logs.</li>
-            <li>SaaS Analytics: Enrich NPS/CSAT data with qualitative analysis.</li>
-            <li>E-commerce: Monitor product-level sentiment from reviews and returns.</li>
-            <li>AI Copilot for PMs: Plug into tools like Notion or Slack for daily summaries.</li>
-          </ul>
-        </div>
-        <div>
-          <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
-          <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-            <li>Multi-Trigger Flow: Runs daily or on webhook (real-time).</li>
-            <li>Data Cleaning Built-In: Automatically strips noise and normalizes feedback.</li>
-            <li>LLM Summarization: Not keyword matching—semantic understanding with GPT/Groq.</li>
-            <li>Structured Output: Saves JSON summaries with sentiment % and keyword tags.</li>
-            <li>HTML Email Digest: Sends a beautiful, table-formatted summary to your inbox.</li>
-          </ul>
-        </div>
-        <div className="mt-6 text-center">
-          <span className="inline-block bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg">Summarize your customer feedback in minutes—start with 100 free insights today.</span>
-        </div>
-      </div>
-    }
-  >
-    <ProductFeedbackSummarizerPageContent />
-  </PageRevealWrapper>
+    <PageRevealWrapper
+        heading="Product Feedback Summarizer: AI-Powered Customer Insight Engine"
+        description="Transform raw customer feedback into actionable business intelligence. This AI-powered system processes customer reviews, ratings, and comments to extract key insights, sentiment analysis, and trend patterns. It automatically categorizes feedback into praises and complaints, identifies common keywords, and provides sentiment breakdowns to help businesses understand customer satisfaction and areas for improvement."
+        details={
+            <div className="space-y-6">
+                <div>
+                    <h2 className="font-semibold text-blue-700 mb-2">Features</h2>
+                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>Automated Feedback Processing: Handles structured JSON data with timestamps, product IDs, and ratings.</li>
+                        <li>AI-Powered Sentiment Analysis: Uses Groq LLM to analyze customer sentiment and categorize feedback.</li>
+                        <li>Smart Categorization: Automatically separates praises from complaints for clear insights.</li>
+                        <li>Keyword Extraction: Identifies common terms and phrases across feedback data.</li>
+                        <li>Sentiment Breakdown: Provides percentage breakdown of positive, neutral, and negative sentiment.</li>
+                        <li>Google Sheets Integration: Stores processed data and generates summary reports.</li>
+                        <li>Email Reporting: Sends formatted HTML reports via Gmail for easy sharing.</li>
+                        <li>Error Handling: Robust error detection and alerting system for failed processing.</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h2 className="font-semibold text-purple-700 mb-2">Example Use Cases</h2>
+                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>E-commerce Platforms: Analyze product reviews to identify improvement opportunities.</li>
+                        <li>Product Teams: Understand customer pain points and feature requests.</li>
+                        <li>Customer Success: Track satisfaction trends and identify at-risk customers.</li>
+                        <li>Marketing Teams: Extract positive testimonials and success stories.</li>
+                        <li>Quality Assurance: Monitor product quality issues and defect patterns.</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h2 className="font-semibold text-blue-700 mb-2">⚡ Why This Stands Out</h2>
+                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+                        <li>Real-time Processing: Handles feedback data as it comes in via webhook or scheduled triggers.</li>
+                        <li>Intelligent Filtering: Groups feedback by product and applies configurable filters.</li>
+                        <li>Comprehensive Analysis: Provides both qualitative (praises/complaints) and quantitative (sentiment) insights.</li>
+                        <li>Automated Reporting: Generates professional HTML reports and sends via email.</li>
+                        <li>Scalable Architecture: Built on n8n workflow engine for enterprise-grade reliability.</li>
+                        <li>Data Persistence: Stores results in Google Sheets for historical analysis and tracking.</li>
+                    </ul>
+                </div>
+            </div>
+        }
+    >
+        <ProductFeedbackSummarizerContent />
+    </PageRevealWrapper>
 );
 
 export default ProductFeedbackSummarizerPage; 
