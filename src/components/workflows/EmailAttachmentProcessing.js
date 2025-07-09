@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FaEnvelope, FaPaperclip, FaCheckCircle, FaExclamationCircle, FaFileAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
+const EMAIL_ATTACHMENT_API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/upload-files';
+
 const EmailAttachmentProcessing = ({ compact = false }) => {
   const navigate = useNavigate();
-  const [stats] = React.useState({
-    processedAttachments: 12,
-    processingAttachments: 3,
-    failedAttachments: 1,
-    totalDocuments: 16,
+  const [stats, setStats] = useState({
+    processedAttachments: 0,
+    processingAttachments: 0,
+    failedAttachments: 0,
+    totalDocuments: 0,
   });
+  const [response, setResponse] = useState(null);
+  const [error, setError] = useState(null);
+  const [form, setForm] = useState({
+    email: '',
+    Name: '',
+    Subject: '',
+    messageId: '',
+    id: '',
+    files: []
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const statList = [
     { title: 'Processed Attachments', value: stats.processedAttachments, icon: FaCheckCircle, color: 'bg-green-500' },
@@ -18,6 +31,48 @@ const EmailAttachmentProcessing = ({ compact = false }) => {
     { title: 'Failed', value: stats.failedAttachments, icon: FaExclamationCircle, color: 'bg-red-500' },
     { title: 'Total Documents', value: stats.totalDocuments, icon: FaFileAlt, color: 'bg-blue-500' },
   ];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    setForm((prev) => ({ ...prev, files: Array.from(e.target.files) }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+    setResponse(null);
+    try {
+      const formData = new FormData();
+      form.files.forEach((file) => formData.append('files', file));
+      formData.append('email', form.email);
+      formData.append('Name', form.Name);
+      formData.append('Subject', form.Subject);
+      formData.append('messageId', form.messageId);
+      formData.append('id', form.id);
+      const res = await fetch(EMAIL_ATTACHMENT_API_URL, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Failed to process attachments');
+      const data = await res.json();
+      setResponse(data);
+      setStats({
+        processedAttachments: data.stats?.processedAttachments || 0,
+        processingAttachments: data.stats?.processingAttachments || 0,
+        failedAttachments: data.stats?.failedAttachments || 0,
+        totalDocuments: (data.stats?.processedAttachments || 0) + (data.stats?.processingAttachments || 0) + (data.stats?.failedAttachments || 0),
+      });
+    } catch (err) {
+      setError(err.message || 'Unknown error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const StatCard = ({ title, value, icon: Icon, color }) => (
     <motion.div
@@ -44,16 +99,58 @@ const EmailAttachmentProcessing = ({ compact = false }) => {
         </div>
         <h3 className={compact ? "text-lg font-display text-anthropic-dark font-bold" : "text-2xl font-display text-anthropic-dark font-bold"}>Email Attachment Processing</h3>
       </div>
-      <div className={compact ? "flex gap-2 w-full overflow-x-auto" : "grid grid-cols-2 gap-4 w-full"}>
+      <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-4 shadow space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="email" name="email" value={form.email} onChange={handleInputChange} placeholder="Sender Email" className="bg-gray-100 rounded-lg px-4 py-2 w-full" required />
+          <input type="text" name="Name" value={form.Name} onChange={handleInputChange} placeholder="Sender Name" className="bg-gray-100 rounded-lg px-4 py-2 w-full" required />
+          <input type="text" name="Subject" value={form.Subject} onChange={handleInputChange} placeholder="Subject" className="bg-gray-100 rounded-lg px-4 py-2 w-full" required />
+          <input type="text" name="messageId" value={form.messageId} onChange={handleInputChange} placeholder="Message ID" className="bg-gray-100 rounded-lg px-4 py-2 w-full" />
+          <input type="text" name="id" value={form.id} onChange={handleInputChange} placeholder="ID (optional)" className="bg-gray-100 rounded-lg px-4 py-2 w-full" />
+          <input type="file" name="files" multiple onChange={handleFileChange} className="w-full" required />
+        </div>
+        {error && <div className="bg-red-500 text-white p-2 rounded-lg">{error}</div>}
+        <motion.button
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg disabled:opacity-50"
+        >
+          {isSubmitting ? 'Processing...' : 'Upload & Process'}
+        </motion.button>
+      </form>
+      <div className={compact ? "flex gap-2 w-full overflow-x-auto" : "grid grid-cols-2 gap-4 w-full mt-6"}>
         {statList.map((stat, idx) => (
           <StatCard key={idx} {...stat} />
         ))}
       </div>
+      {response && (
+        <div className="mt-6 bg-gray-50 rounded-2xl p-4 shadow-inner border border-gray-200">
+          <h4 className="font-bold mb-2">Processing Result</h4>
+          <div className="mb-2"><b>Name:</b> {response.Name}</div>
+          <div className="mb-2"><b>Subject:</b> {response.Subject}</div>
+          <div className="mb-2"><b>Sender Email:</b> {response.SenderEmail}</div>
+          <div className="mb-2"><b>Message ID:</b> {response.messageId}</div>
+          <div className="mb-2"><b>Processed Attachments:</b> {response.stats?.processedAttachments}</div>
+          <div className="mb-2"><b>Failed Attachments:</b> {response.stats?.failedAttachments}</div>
+          <div className="mb-2"><b>Expected Files:</b> {response.expected?.join(', ')}</div>
+          <div className="mb-2"><b>Received Files:</b> {response.received_files?.join(', ')}</div>
+          <div className="mb-2"><b>Missing Files:</b> {response.missing?.join(', ')}</div>
+          <div className="mb-2"><b>Processing Status:</b></div>
+          <ul className="list-disc ml-6">
+            {response.processingStatus?.map((item, idx) => (
+              <li key={idx} className="mb-1">
+                <b>{item.fileName}</b> - {item.status} {item.error && <span className="text-red-500">({item.error})</span>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <motion.button
         whileHover={{ scale: 1.05, boxShadow: '0 8px 32px 0 #61868d33' }}
         whileTap={{ scale: 0.97 }}
         onClick={() => navigate('/workflows/email-attachment')}
-        className={compact ? "w-full bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white py-2 rounded-lg font-bold text-base shadow hover:from-blue-600 hover:to-yellow-600 transition-colors" : "w-full bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-blue-600 hover:to-yellow-600 transition-colors"}
+        className={compact ? "w-full bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white py-2 rounded-lg font-bold text-base shadow hover:from-blue-600 hover:to-yellow-600 transition-colors" : "w-full bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-blue-600 hover:to-yellow-600 transition-colors mt-4"}
       >
         View Details
       </motion.button>

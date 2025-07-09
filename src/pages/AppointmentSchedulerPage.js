@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCalendarAlt, FaUser, FaEnvelope, FaPhone, FaClock, FaClipboardList } from 'react-icons/fa';
-import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
+import PageRevealWrapper from '../components/PageRevealWrapper';
 import { bookAppointment } from '../services/workflows/appointmentScheduler';
 
 const AppointmentSchedulerPageContent = () => {

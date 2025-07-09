@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5678/webhook';
+const API_BASE_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook';
 
 const handleRequest = async (endpoint, formData) => {
   try {
@@ -37,18 +37,16 @@ export const startQuiz = (topic) => {
   return handleRequest('start-quiz', formData);
 };
 
-export const submitAnswer = (question_id, user_answer) => {
+export const submitAnswer = (id, user_answer) => {
   const formData = new FormData();
-  formData.append('question_id', question_id);
+  formData.append('id', id);
   formData.append('user_answer', user_answer);
-  // The endpoint in the curl example seems to have query params, but the body is form-data.
-  // Replicating the user's curl command structure. The form data might be what the webhook expects.
   return handleRequest(`submit-answer`, formData);
 };
 
 export const getTopics = async () => {
   try {
-    const response = await axios.get('http://localhost:5678/webhook/topics');
+    const response = await axios.get('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/topics');
     return response.data;
   } catch (error) {
     console.error('Error fetching topics:', error);
