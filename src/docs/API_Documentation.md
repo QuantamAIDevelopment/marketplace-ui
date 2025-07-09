@@ -292,6 +292,75 @@ Authorization: Bearer <your-jwt-token>
 - Recent activity data is real-time
 - Use WebSocket connections for live updates (optional)
 
+## 10. Interview Panel Auto Assignment
+
+### Endpoint: `https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/assign-interview`
+**Method:** POST
+
+#### Request Body
+```json
+{
+  "Candidate Name": "string",
+  "Role": "string",
+  "Department": "string",
+  "Preferred Time": "string (MM/DD/YYYY HH:MM AM/PM)"
+}
+```
+
+#### Response
+```json
+[
+  {
+    "Candidate Name": "string",
+    "Department": "string",
+    "email": "string",
+    "Availability time": "string",
+    "Interviewers Assigned": "string",
+    "Status": "string",
+    "Role": "string",
+    "Id": "string"
+  }
+]
+```
+
+#### Example Request
+```bash
+curl --location 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/assign-interview' \
+--header 'Content-Type: application/json' \
+--data '{
+  "Candidate Name": "Asha Patel",
+  "Role": "Data Analyst",
+  "Department": "Analytics",
+  "Preferred Time": "2025-07-04 11:00 AM"
+}'
+```
+
+#### Example Response
+```json
+[
+  {
+    "Candidate Name": "Rohan Shah",
+    "Department": "Analytics",
+    "email": "rohan.shah@company.com",
+    "Availability time": "2025-07-04 11:00 AM",
+    "Interviewers Assigned": "Asha Patel",
+    "Status": "Available",
+    "Role": "Data Scientist",
+    "Id": "2.1"
+  },
+  {
+    "Candidate Name": "Neha Jain",
+    "Department": "Analytics",
+    "email": "nehajain@company.com",
+    "Availability time": "2025-07-04 11:00 AM",
+    "Interviewers Assigned": "Asha Patel",
+    "Status": "Available",
+    "Role": "Business Analyst",
+    "Id": "2.2"
+  }
+]
+```
+
 ## WebSocket Events
 
 For real-time updates, connect to the WebSocket endpoint:

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5678/webhook/product-feedback-trigger';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/product-feedback-trigger';
 
 export const triggerProductFeedbackSummarizer = async (feedbackArray) => {
   try {

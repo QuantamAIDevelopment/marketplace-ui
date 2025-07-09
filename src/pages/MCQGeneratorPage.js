@@ -182,16 +182,12 @@ const RevisionTrainer = ({ topics }) => {
                     <div key={q.id}>
                         <p className="font-semibold">{index + 1}. {q.question}</p>
                         <div className="mt-2 space-y-2">
-                            {q.options.map((option, i) => {
-                                // Extract the letter (A, B, C, D) from the option string
-                                const optionLetter = option.match(/^[A-D]/)?.[0];
-                                return (
-                                    <label key={i} className="flex items-center space-x-2">
-                                        <input type="radio" name={`question-${q.id}`} value={optionLetter || ''} onChange={(e) => handleAnswerChange(q.id, e.target.value)} className="form-radio" />
-                                        <span>{option}</span>
-                                    </label>
-                                );
-                            })}
+                            {Object.entries(q.options).map(([key, value], i) => (
+                                <label key={i} className="flex items-center space-x-2">
+                                    <input type="radio" name={`question-${q.id}`} value={key} onChange={(e) => handleAnswerChange(q.id, e.target.value)} className="form-radio" />
+                                    <span>{key}. {value}</span>
+                                </label>
+                            ))}
                         </div>
                     </div>
                 ))}

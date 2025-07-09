@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaVial } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
@@ -15,7 +15,21 @@ import ResumeToProfileExtractor from './workflows/ResumeToProfileExtractor';
 import AICustomerSupport from './workflows/AICustomerSupport';
 import ProductRecommendation from './workflows/ProductRecommendation';
 
+import { FaRegComments } from 'react-icons/fa';
+
 const workflows = [
+  {
+    title: 'Product Feedback Summarizer',
+    icon: FaRegComments,
+    path: '/workflows/product-feedback-summarizer',
+    description: 'Summarize customer feedback for each product, including praises, complaints, keywords, and sentiment.',
+  },
+  // {
+  //   title: 'Automating Research with AI Agent',
+  //   icon: FaFilePdf,
+  //   path: '/automated-research-ai',
+  //   description: 'Give a topic as input and get a downloadable PDF research report as output.',
+  // },
   {
     title: 'AI Customer Support',
     icon: FaRobot,
@@ -75,18 +89,14 @@ const workflows = [
     icon: FaFileContract,
     path: '/workflows/contract-red-flag',
     description: 'Detect red flags in contracts using AI.',
+    isButton: true,
+    buttonText: 'Go to Detector',
   },
   {
     title: 'Product Recommendation Agent',
     icon: FaBoxOpen,
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
-  },
-  {
-    title: 'Test Case Generator',
-    icon: FaVial,
-    path: '/test-generator',
-    description: 'Generate QA test cases from your feature docs using AI.',
   },
 ];
 
