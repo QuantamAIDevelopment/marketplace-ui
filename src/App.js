@@ -68,6 +68,7 @@ import PRReviewerAIAgentFormPage from './pages/PRReviewerAIAgentFormPage';
 import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
 import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
 import FraudDetectionSystemPage from './pages/FraudDetectionSystemPage.jsx';
+import SalesForecastingPage from './pages/SalesForecastingPage';
 
 function App() {
   return (
@@ -138,6 +139,7 @@ function App() {
               <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
               <Route path="/fraud-detection-system" element={<FraudDetectionSystemPage />} />
+              <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
             </Routes>
           </main>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChartLine, FaExclamationTriangle, FaUsers, FaCalendarAlt, FaBullseye, FaPercentage } from 'react-icons/fa';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
@@ -240,14 +240,6 @@ const SalesForecastingContent = () => {
 
     return (
         <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-6xl mx-auto">
-            <motion.h1 
-                initial={{ opacity: 0, y: -30 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                className="text-3xl font-bold text-center mb-6 text-gray-800"
-            >
-                Sales Forecasting Agent
-            </motion.h1>
-
             <form onSubmit={handleSubmit} className="space-y-6 mb-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -308,53 +300,54 @@ const SalesForecastingContent = () => {
     );
 };
 
-const SalesForecastingPage = () => (
+const SalesForecastingPage = () => {
+  const workflowRef = useRef(null);
+
+  const handleStartNavigation = () => {
+    if (workflowRef.current) {
+      workflowRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
     <PageRevealWrapper
-        heading="AI-Powered Sales Forecasting & Pipeline Analytics"
-        description="Transform your sales data into actionable insights with our advanced AI forecasting system. This intelligent agent analyzes your pipeline and historical data to predict revenue outcomes, identify high-probability deals, and assess risk factors. Built for sales teams, managers, and executives, it provides week/month/quarter forecasts with confidence scores, highlights top deals, and visualizes sales funnel performance. The system uses machine learning to account for seasonality, deal cycles, and market trends, helping you make data-driven decisions and optimize your sales strategy."
-        details={
-            <div className="space-y-6">
-                <div>
-                    <h2 className="font-semibold text-blue-700 mb-2">Features</h2>
-                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-                        <li>Multi-file Input: Accepts pipeline and historical data via CSV uploads.</li>
-                        <li>AI-Powered Analysis: Uses advanced algorithms to process lead data and historical performance.</li>
-                        <li>Revenue Forecasting: Predicts weekly, monthly, and quarterly revenue with confidence ranges.</li>
-                        <li>Risk Assessment: Calculates probability of shortfall and identifies potential gaps.</li>
-                        <li>Deal Prioritization: Ranks top 5 high-confidence deals with detailed metrics.</li>
-                        <li>Sales Funnel Analytics: Visualizes pipeline stages and conversion rates.</li>
-                        <li>Seasonality Adjustment: Accounts for regional and product-specific seasonal factors.</li>
-                        <li>Real-time Processing: Provides instant forecasts with comprehensive visualizations.</li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h2 className="font-semibold text-purple-700 mb-2">Example Use Cases</h2>
-                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-                        <li>Sales Teams: Get weekly forecasts to plan activities and prioritize leads.</li>
-                        <li>Sales Managers: Monitor team performance and identify coaching opportunities.</li>
-                        <li>Executives: Make strategic decisions based on revenue projections and risk assessment.</li>
-                        <li>Finance Teams: Plan budgets and cash flow based on predicted revenue.</li>
-                        <li>Marketing Teams: Align campaigns with sales pipeline and forecasted demand.</li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h2 className="font-semibold text-blue-700 mb-2">⚡ Why This Stands Out</h2>
-                    <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
-                        <li>Advanced AI Processing: Uses machine learning to analyze patterns and predict outcomes.</li>
-                        <li>Comprehensive Analytics: Provides multiple forecast horizons and detailed deal analysis.</li>
-                        <li>Risk Management: Identifies potential shortfalls and provides actionable insights.</li>
-                        <li>Visual Reporting: Clear, intuitive dashboards for easy interpretation.</li>
-                        <li>Real-time Updates: Instant processing and results for timely decision-making.</li>
-                        <li>Scalable Architecture: Handles large datasets and complex forecasting scenarios.</li>
-                    </ul>
-                </div>
-            </div>
-        }
+      heading="Sales Forecasting Agent"
+      description="Instantly forecast your sales pipeline using AI. Upload your pipeline and historical data to receive actionable forecasts, risk analysis, and insights—no data science expertise required."
+      details={
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-semibold text-blue-700 mb-2">Example Use Cases</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>Sales Teams: Predict revenue and identify at-risk deals.</li>
+              <li>Management: Set realistic targets and monitor progress.</li>
+              <li>Startups: Plan cash flow and growth with confidence.</li>
+              <li>Finance: Align forecasts with budgeting and resource allocation.</li>
+            </ul>
+          </div>
+          <div>
+            <h2 className="font-semibold text-purple-700 mb-2">Why This Stands Out</h2>
+            <ul className="list-disc list-inside text-gray-700 text-sm space-y-1">
+              <li>AI-Powered Forecasting<br/>Leverages advanced models for accurate sales predictions.</li>
+              <li>Actionable Insights<br/>Highlights risks, opportunities, and next steps.</li>
+              <li>Visual Analytics<br/>Interactive charts and summaries for quick understanding.</li>
+              <li>Secure & Confidential<br/>Your data is processed securely and never stored.</li>
+            </ul>
+          </div>
+          <div className="mt-6 text-center">
+            <span className="inline-block bg-gradient-to-r from-blue-500 via-green-500 to-purple-500 text-white px-6 py-3 rounded-xl font-bold text-lg shadow-lg mb-4">Use the Sales Forecasting Agent to drive revenue growth and make informed decisions—instantly and effortlessly!</span>
+            <br />
+            {/* Remove Start Navigation button, keep Start Now if present */}
+          </div>
+        </div>
+      }
     >
+      <div ref={workflowRef} className="max-w-2xl mx-auto py-8">
+        <h1 className="text-3xl font-bold mb-6 text-center">Sales Forecasting Agent</h1>
+        {/* Existing workflow content below */}
         <SalesForecastingContent />
+      </div>
     </PageRevealWrapper>
-);
+  );
+};
 
 export default SalesForecastingPage; 
