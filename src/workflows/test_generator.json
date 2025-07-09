@@ -1,5 +1,5 @@
 {
-  "name": "Test case generator",
+  "name": "test generator",
   "nodes": [
     {
       "parameters": {
@@ -8,13 +8,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "5a4cab11-614c-44ae-8d04-3e6b96b0ef40",
+      "id": "09ffd10f-6ea4-46df-935c-b65add50d75a",
       "name": "Webhook1",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -780,
-        180
+        -2420,
+        860
       ],
       "webhookId": "c7d78fd8-3a34-4398-9fa5-90d32cc3eee2"
     },
@@ -25,10 +25,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -220,
-        140
+        -1860,
+        820
       ],
-      "id": "78f5d828-23b7-49e7-bf0b-47eea7c7906c",
+      "id": "a4cc64d6-9232-4627-803e-b9ad6093e975",
       "name": "Code"
     },
     {
@@ -41,10 +41,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2,
       "position": [
-        -20,
-        -60
+        -1660,
+        620
       ],
-      "id": "2be96c19-6578-4c91-996e-4730443d1651",
+      "id": "82da07ce-8e64-4270-9be3-7157e762dcba",
       "name": "AI Agent"
     },
     {
@@ -54,33 +54,13 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        340,
-        20
+        -1300,
+        700
       ],
-      "id": "8e85290f-2985-4f66-9180-421043fcb9cc",
+      "id": "e7525935-850a-4099-926a-745c4d9f081e",
       "name": "Code3",
       "alwaysOutputData": true,
       "executeOnce": true
-    },
-    {
-      "parameters": {
-        "operation": "get",
-        "documentURL": "={{ $json.body.docId }}"
-      },
-      "type": "n8n-nodes-base.googleDocs",
-      "typeVersion": 2,
-      "position": [
-        -480,
-        60
-      ],
-      "id": "19d4a457-4517-4c6a-8c7a-e63b6c073faa",
-      "name": "Get a document",
-      "credentials": {
-        "googleDocsOAuth2Api": {
-          "id": "p3ZSdsTU8ABw0BOE",
-          "name": "Google Docs account"
-        }
-      }
     },
     {
       "parameters": {
@@ -89,10 +69,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        880,
-        -200
+        -760,
+        480
       ],
-      "id": "f9430ce6-d319-4a35-ba79-ca595d46e5f2",
+      "id": "1ee6beb4-f7ca-43ba-bb39-47a07974f239",
       "name": "Respond to Webhook"
     },
     {
@@ -102,10 +82,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        660,
-        60
+        -980,
+        740
       ],
-      "id": "58546a96-be39-4c0e-b970-f371018a39b3",
+      "id": "a1baa9f3-a832-4135-8a9e-c0cf0efff325",
       "name": "Code1"
     },
     {
@@ -135,10 +115,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        540,
-        380
+        -1100,
+        1060
       ],
-      "id": "6982164b-f4d6-40c1-9ff8-92d1e46916b5",
+      "id": "b4e80b11-2fd5-4085-989c-93b5c4ba03bc",
       "name": "If"
     },
     {
@@ -151,44 +131,46 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        860,
-        60
+        -780,
+        740
       ],
-      "id": "6775884f-dc96-4bee-a6f4-ba73fe662377",
+      "id": "4257bc51-ecb0-488f-9ff0-69e1477dc7d2",
       "name": "Send a message",
       "webhookId": "535e2112-bb4a-43ee-815f-ab7bb7c6d73f",
       "credentials": {
         "gmailOAuth2": {
-          "id": "RtD3gLN5RtoL2HT7",
-          "name": "Gmail account"
+          "id": "3EkL7v0Op6Dkojd6",
+          "name": "Gmail account 13"
         }
       }
     },
     {
       "parameters": {
-        "operation": "append",
+        "operation": "appendOrUpdate",
         "documentId": {
           "__rl": true,
-          "value": "1zr4GtqwwISlhZdM-GB3kAqxYHUJqic_ztPJx7KDi1r0",
+          "value": "15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U",
           "mode": "list",
-          "cachedResultName": "tester",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zr4GtqwwISlhZdM-GB3kAqxYHUJqic_ztPJx7KDi1r0/edit?usp=drivesdk"
+          "cachedResultName": "test case generator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 2111323128,
+          "value": 583250223,
           "mode": "list",
           "cachedResultName": "logs",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zr4GtqwwISlhZdM-GB3kAqxYHUJqic_ztPJx7KDi1r0/edit#gid=2111323128"
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit#gid=583250223"
         },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "title": "={{ $('Webhook1').item.json.body.doctitle }}",
             "Number of test cases generated": "={{ $json.test_id }}",
-            "Timestamp and author": "={{ $('Webhook1').item.json.body.author }}{{ $now }}"
+            "title": "={{ $('Webhook1').item.json.body['doc title'] }}",
+            "Timestamp and author": "={{ $now }}"
           },
-          "matchingColumns": [],
+          "matchingColumns": [
+            "title"
+          ],
           "schema": [
             {
               "id": "title",
@@ -197,7 +179,8 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": true
+              "canBeUsedToMatch": true,
+              "removed": false
             },
             {
               "id": "Number of test cases generated",
@@ -226,15 +209,15 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        800,
-        260
+        -840,
+        940
       ],
-      "id": "aab74efe-5a34-4996-8b61-f095b31b8f10",
+      "id": "69d1adb0-5717-45df-8859-11a86244c407",
       "name": "Append row in sheet1",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "mAbBUrO2MoIY7E9T",
-          "name": "Google Sheets account"
+          "id": "PlxPPnnNjyQv8Pvk",
+          "name": "Google Sheets account 17"
         }
       }
     },
@@ -249,16 +232,16 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        800,
-        480
+        -840,
+        1160
       ],
-      "id": "e4f72086-27b1-4f11-a5a8-ec8519c570ac",
+      "id": "84f98af1-62be-49ec-b550-d2e2b89605f1",
       "name": "Send a message1",
       "webhookId": "6f676f57-f7b6-406a-8054-a03c1f87a5b0",
       "credentials": {
         "gmailOAuth2": {
-          "id": "RtD3gLN5RtoL2HT7",
-          "name": "Gmail account"
+          "id": "3EkL7v0Op6Dkojd6",
+          "name": "Gmail account 13"
         }
       }
     },
@@ -269,15 +252,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
       "typeVersion": 1,
       "position": [
-        -20,
-        240
+        -1660,
+        900
       ],
-      "id": "d8ce5dba-5af6-4873-b5fe-69a76810a124",
+      "id": "ce62a4d7-8e95-4bf6-8acd-e4e1c0be2ee6",
       "name": "Groq Chat Model",
       "credentials": {
         "groqApi": {
-          "id": "6LGRNoanxZ6SwwRc",
-          "name": "Groq account"
+          "id": "T3JSWp24iw5DKNUK",
+          "name": "Groq account 17"
         }
       }
     },
@@ -286,17 +269,17 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1zr4GtqwwISlhZdM-GB3kAqxYHUJqic_ztPJx7KDi1r0",
+          "value": "15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U",
           "mode": "list",
-          "cachedResultName": "tester",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zr4GtqwwISlhZdM-GB3kAqxYHUJqic_ztPJx7KDi1r0/edit?usp=drivesdk"
+          "cachedResultName": "test case generator",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit?usp=drivesdk"
         },
         "sheetName": {
           "__rl": true,
-          "value": 1334181979,
+          "value": "gid=0",
           "mode": "list",
-          "cachedResultName": "tests",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1zr4GtqwwISlhZdM-GB3kAqxYHUJqic_ztPJx7KDi1r0/edit#gid=1334181979"
+          "cachedResultName": "result",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15j4tENtFMcnzzsxLYIhOf_RuT6Gcy7qJog7xuT1LR1U/edit#gid=0"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -363,15 +346,35 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.6,
       "position": [
-        620,
-        -180
+        -1020,
+        500
       ],
-      "id": "ca256852-f99d-4b71-bc82-cad069139e70",
+      "id": "99c43681-c7fb-4005-8f4e-217d64c1886d",
       "name": "Append row in sheet",
       "credentials": {
         "googleSheetsOAuth2Api": {
-          "id": "mAbBUrO2MoIY7E9T",
-          "name": "Google Sheets account"
+          "id": "PlxPPnnNjyQv8Pvk",
+          "name": "Google Sheets account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "={{ $json.body['doc id'] }}"
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        -2200,
+        860
+      ],
+      "id": "472ac0be-840e-4af1-8d54-616269e5ddd2",
+      "name": "Google Docs",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "uq8MU1t2vjpC61Tu",
+          "name": "Google Docs account 2"
         }
       }
     }
@@ -382,7 +385,7 @@
       "main": [
         [
           {
-            "node": "Get a document",
+            "node": "Google Docs",
             "type": "main",
             "index": 0
           }
@@ -405,17 +408,6 @@
         [
           {
             "node": "Code3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get a document": {
-      "main": [
-        [
-          {
-            "node": "Code",
             "type": "main",
             "index": 0
           }
@@ -493,17 +485,28 @@
           }
         ]
       ]
+    },
+    "Google Docs": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d35ff709-6f1c-4258-ba88-3b2a467c24bd",
+  "versionId": "0d03e389-d15e-4b4e-b16d-36af67e1c92a",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "3f8ce854eb218784800a9adee4286c7a7f35f42b7492a2e67fda154decef7217"
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
   },
-  "id": "75jMIduHNCwz7EF8",
+  "id": "zuVR53lyo7gSEGIP",
   "tags": []
 }

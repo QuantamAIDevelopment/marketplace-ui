@@ -1,0 +1,192 @@
+{
+  "name": "Dynamic Model Selector for Optimal AI Responses",
+  "nodes": [
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"prompt\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"model\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+      },
+      "id": "0de30ab9-df8b-45e2-9794-324a96661832",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        540,
+        180
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "content": "## Dynamic Model Selector for Optimal AI Responses\n\nThe **Agent Decisioner** is a dynamic, AI-powered routing system that automatically selects the most appropriate large language model (LLM) to respond to a user's query based on the query’s content and purpose.\n\nThis workflow ensures **dynamic, optimized AI responses** by intelligently routing queries to the best-suited model.",
+        "height": 180,
+        "width": 840
+      },
+      "id": "521b905c-b981-4ceb-8a15-ecf7dcd9f073",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        -300
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.question }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a **Routing Agent**.\n\nYour task is to analyze user queries and determine the most appropriate model to handle each specific use case.\n\n## Available Models\n\nYou have access to the following models:\n\n1. **perplexity/sonar**\n2. **openai/gpt-4o-mini**\n3. **anthropic/claude-3.7-sonnet**\n4. **meta-llama/llama-3-70b-instruct**\n5. **google/gemini-2.5-pro-preview**\n6. **qwen/qwen-qwq-32b**\n7. **openai/codex-mini**\n8. **openai/o1-pro**\n\n## Model Strengths\n\n### 1. perplexity/sonar\n- Built-in web search capability\n- Provides citations and customizable sources\n- Ideal for retrieving live, up-to-date information from the web\n\n### 2. openai/gpt-4o-mini\n- Cost-efficient language model optimized for advanced reasoning tasks\n- Excels in science and mathematics\n- Best suited for problems requiring careful, well-thought-out responses involving multiple variables or connections\n\n### 3. anthropic/claude-3.7-sonnet\n- High proficiency in coding tasks, scoring ~94% on SWE-Bench Verified\n- Enhances data science expertise by navigating unstructured data and utilizing multiple tools for insights\n- Handles very long documents and maintains coherence over extended conversations or analyses\n- Performs well in creative writing tasks such as storytelling, dialogue generation, and summarization\n- Tends to produce responses that are more aligned with safety and ethical guidelines\n\n### 4. meta-llama/llama-3-70b-instruct\n- Strong performance in coding and reasoning tasks\n- Suitable for complex programming and technical problem-solving\n- Supports long context windows, making it ideal for extended analyses\n\n### 5. google/gemini-2.5-pro-preview\n- Advanced multimodal capabilities, handling both text and images\n- Excels in tasks requiring integration of visual and textual information\n- Ideal for complex problem-solving involving diverse data types\n\n### 6. qwen/qwen-qwq-32b\n- Specialized in reasoning and problem-solving tasks\n- Effective in handling logical puzzles and complex analytical queries\n\n### 7. openai/codex-mini\n- Optimized for code generation and completion tasks\n- Suitable for lightweight coding tasks and quick code snippets\n\n### 8. openai/o1-pro\n- Designed for complex reasoning with enhanced computational resources\n- Performs well in STEM-related tasks, including physics, chemistry, and biology\n- Capable of handling large context windows, making it suitable for in-depth analyses\n\n## Output Format\n\nYour output must always be a valid JSON object in the following format:\n\n```json\n{\n  \"prompt\": \"user query goes here\",\n  \"model\": \"selected-model-name\"\n}\n```\n\n- The **\"prompt\"** field should contain the exact query to be sent to the selected model.\n- The **\"model\"** field should contain the model name (one of: perplexity/sonar, openai/gpt-4o-mini, anthropic/claude-3.7-sonnet, meta-llama/llama-3-70b-instruct, google/gemini-2.5-pro-preview, qwen/qwen-qwq-32b, openai/codex-mini, openai/o1-pro).\n\n**Important:** Only return the JSON object. Do not include any explanations or additional text."
+        }
+      },
+      "id": "537aef4f-8b7a-4398-a630-f074adef8bd8",
+      "name": "Routing Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        360,
+        -60
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output.prompt }}",
+        "options": {}
+      },
+      "id": "31c33945-dccf-49ba-b69a-bcd6c742328f",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        720,
+        -60
+      ],
+      "typeVersion": 1.9
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dynamic routing agent",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -60
+      ],
+      "id": "6bbfc3a1-e6fb-44a0-84ca-717c5438af20",
+      "name": "Webhook",
+      "webhookId": "d05d6d08-ae84-4c13-94c3-d17789af19e0"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1080,
+        -60
+      ],
+      "id": "cf7fa948-f26c-4172-aeda-f191f0e47b8b",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        380,
+        160
+      ],
+      "id": "f24f9e9c-1a4c-415c-84e3-dba7b8c9d791",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "tdgSgEu1lFYJ0T6k",
+          "name": "OpenRouter account 5"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Routing Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Routing Agent": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Routing Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Routing Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0b521088-7230-47e6-89a7-f0beaa87f4ef",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "nkxDPcDr5dS8gioY",
+  "tags": []
+}

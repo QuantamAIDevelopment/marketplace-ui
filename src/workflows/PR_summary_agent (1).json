@@ -1,0 +1,744 @@
+{
+  "name": "PR summary agent",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "allowUnauthorizedCerts": true,
+        "options": {}
+      },
+      "name": "Fetch PR Metadata",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        60,
+        180
+      ],
+      "id": "d7c8a8b7-0155-4267-8771-69d60c0bf688"
+    },
+    {
+      "parameters": {
+        "resource": "review",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').item.json.body.owner }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').item.json.repo }}",
+          "mode": "name"
+        },
+        "pullRequestNumber": "={{ $json.pr_number }}",
+        "event": "comment",
+        "body": "={{ $json.summary }}\n\nTimestamp: {{ $json.timestamp }}\n\nWarnings: {{ $json.warning }}\n\nStatus: {{ $json.status }}\n\n",
+        "additionalFields": {}
+      },
+      "name": "Post Summary to GitHub",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        1920,
+        340
+      ],
+      "id": "4daf8aa4-6c44-46e0-9bae-1a60f735ad8c",
+      "webhookId": "6b59f9f8-af6a-4164-a27e-ab7c5838d566",
+      "credentials": {
+        "githubApi": {
+          "id": "hN5Uek7fSNOoMt0R",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "akhilqaid@gmail.com",
+        "subject": "PR summary",
+        "emailType": "text",
+        "message": "=PR number:{{ $('Fetch PR Metadata').item.json.number }}\n\nSummary \n{{ $json.body }}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2140,
+        340
+      ],
+      "id": "1b3ddaad-329d-4f33-b0f1-48b547af355a",
+      "name": "Send a message",
+      "webhookId": "6adac8c8-fc1d-48ba-b724-fed72fe2f3d1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "x1rSHsKo8WLWbNLO",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        740,
+        520
+      ],
+      "id": "3db93cdf-e108-4215-8fc5-6c87fcac6cf6",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}/commits",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        180,
+        520
+      ],
+      "id": "eb6aa5ab-2e83-4235-ae55-cee840dbbfd3",
+      "name": "commits data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = [];\nfor (const item of $input.all()) {\n  const pr = item.json;\n\n  results.push({\n    json: {\n      title: pr.title ?? null,\n      description: pr.body ?? null,\n      author: pr.user?.login ?? null,\n      baseBranch: pr.base?.ref ?? null,\n      headBranch: pr.head?.ref ?? null,\n      prNumber: pr.number ?? null,\n      labels: Array.isArray(pr.labels)\n        ? pr.labels.map(label => label.name).join(', ')\n        : null\n    }\n  });\n}\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        180
+      ],
+      "id": "3680cfbc-f4b9-4f96-a5f3-80cfe9ee7161",
+      "name": "extract the pr details"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Explain the purpose and changes in the following pull request in non-technical terms. List affected modules, summarize functionality changes, and highlight potential risks (e.g., breaking changes, edge cases, missing tests).\n\nUse the following format:\n\n🧠 PR Summary\n\n🔹 Purpose:\n[Brief explanation of what the PR is trying to achieve]\n\n🔹 Changes Made:\n[List of key changes, such as added functions, updated files, new routes, etc.]\n\n🔹 Risks:\n[Highlight any areas that may introduce bugs, require regression testing, or lack test coverage]\n\n🔍 Reviewer Note:\n[Optional suggestions for reviewers to pay attention to specific logic or edge cases]\n\n---\n\nPR Title: {{ $json.title }}\nDescription: {{ $json.description }}\nAuthor:{{ $json.author }}\nBase Branch: {{ $json.baseBranch }}\nHead Branch: {{ $json.headBranch }}\nChanged Files:{{ $('Fetch PR Metadata').item.json.changed_files }}\nFunctions Touched:{{ $json.data }}\nCommit Messages: {{ $json.commit.message }}\nLabels: {{ $json.labels }}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        940,
+        520
+      ],
+      "id": "732536e6-2690-4cbd-bd23-447657fae23c",
+      "name": "summary generater"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.status }}",
+              "operation": "contains",
+              "value2": "error"
+            }
+          ]
+        }
+      },
+      "name": "Check Summary",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1900,
+        800
+      ],
+      "id": "49d843c0-d9c9-4786-90db-3aaf50f6ab96"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "fallbackMessage",
+              "value": "={{ $json.summary }}\n\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Fallback Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        2140,
+        780
+      ],
+      "id": "553dd078-6dfe-4b34-842c-018454461b4d"
+    },
+    {
+      "parameters": {
+        "resource": "review",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').item.json.body.owner }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $('Edit Fields').item.json.repo }}",
+          "mode": "name"
+        },
+        "pullRequestNumber": "={{ $json.pr_number }}",
+        "event": "comment",
+        "body": "={{ $json.fallbackMessage }}\n\n{{ $json.timestamp }}\n\n{{ $json.status }}",
+        "additionalFields": {}
+      },
+      "name": "Post Fallback to GitHub",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1,
+      "position": [
+        2360,
+        780
+      ],
+      "id": "5cc32ed7-a496-4336-91a7-22aba2756f44",
+      "webhookId": "2fe939b2-2a56-418e-9b4a-cfa373a5a0c3",
+      "credentials": {
+        "githubApi": {
+          "id": "hN5Uek7fSNOoMt0R",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.diff_url }}",
+        "responseFormat": "string",
+        "options": {}
+      },
+      "name": "Fetch Diff",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        180,
+        920
+      ],
+      "id": "d4dc1a3d-e4df-43b8-a8f2-0974a708c657"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map((item) => {\n  const summary = item.json.text ?? null;\n  const status = summary ? \"success\" : \"error\";\n\n  return {\n    json: {\n      pr_number: item.json.prNumber ?? null,\n      warning: item.json.prNumber ? null : \"prNumber property missing.\",\n      timestamp: new Date().toISOString(),\n      summary: summary || \"PR summary could not be generated – invalid diff or API error.\",\n      status: status,\n      latency_ms: $execution.startedAt\n        ? Date.now() - new Date($execution.startedAt).getTime()\n        : null\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        540
+      ],
+      "id": "98cb6ac8-36ae-4ff9-9701-ce000f99a29b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1320,
+        540
+      ],
+      "id": "ad4c095e-e148-498f-ab95-5093714d4f45",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "content": "## IT tregger when the PR request is created in the github\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 280,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -520,
+        380
+      ],
+      "typeVersion": 1,
+      "id": "e218eb2f-d77b-47b6-9e29-4eb3a2b043be",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## The HTTP node will fetch the metadata from the github by using the PR url and the Code node will extract the pr details from thr pr metadata\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 280,
+        "width": 460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "72e1537f-6b25-4d7f-aa02-42e8ece20f70",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## It fetch the Commits data from thr github by using the commits url\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 240,
+        "width": 280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "d76f2787-d57a-4439-91b9-7b9e8f749796",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## It fetch the deff data from thr github by using the diff url\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 240,
+        "width": 260
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        800
+      ],
+      "typeVersion": 1,
+      "id": "be7f5b17-ed4d-45ed-a90b-64f4f66fb862",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## it will merge the all 3 inputs to 1 output\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 300,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        360
+      ],
+      "typeVersion": 1,
+      "id": "71c1c94b-504f-4fa2-8ffa-ddc2912abe81",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## It is a openai chat llm model which generate the summary of the give data\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 420,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        900,
+        400
+      ],
+      "typeVersion": 1,
+      "id": "92d9055f-8a26-438a-bf66-1a8c9c90717f",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## It is used to merge the openai summary and the merge output data\n\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 440,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1300,
+        260
+      ],
+      "typeVersion": 1,
+      "id": "65965e1c-7521-4b71-89f2-fb6e3be36e72",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "## This code node is used to generate the status,warnings messages  and add the timestamp\n \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 500,
+        "width": 150
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1500,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "dc8644f9-b8b3-4391-ae9f-ffde10a89830",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "## post the summary and details to the github and the mail\n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 360,
+        "width": 460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1860,
+        140
+      ],
+      "typeVersion": 1,
+      "id": "fb88ebc9-2a3e-4f9e-b6f4-c130c5a8abe2",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "## fallback message with the details send to the github as responce when it get the error or invalid diff \n**Double click** to edit me. [Guide](https://docs.n8n.io/workflows/sticky-notes/)",
+        "height": 340,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1820,
+        620
+      ],
+      "typeVersion": 1,
+      "id": "db3f802e-99e7-49b7-8460-299397d6e1d3",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "pr-config",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Receive Config1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -600,
+        560
+      ],
+      "id": "93da839b-9d69-458b-b4e1-57fd6a3b776d",
+      "webhookId": "9ec72d88-ffe4-477f-94d3-31f49150e105"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0bedd704-b41f-4452-9e29-f7ba3a0a50ae",
+              "name": "body.owner",
+              "value": "={{ $json.body.owner }}",
+              "type": "string"
+            },
+            {
+              "id": "76b0cc1a-d2b3-438a-93e0-6e79898e827d",
+              "name": "repo",
+              "value": "={{ $json.body.repo }}",
+              "type": "string"
+            },
+            {
+              "id": "22eea95d-8073-4e95-92f5-8d6c9ac6b8de",
+              "name": "body.openaiKey",
+              "value": "={{ $json.body.openaiKey }}",
+              "type": "string"
+            },
+            {
+              "id": "58395bd6-2501-432d-9227-fcf831b89c5f",
+              "name": "body.githubToken",
+              "value": "={{ $json.body.githubToken }}",
+              "type": "string"
+            },
+            {
+              "id": "16062442-f086-4108-8965-e38e902ff5d8",
+              "name": "body.gmail",
+              "value": "={{ $json.body.gmail }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -400,
+        560
+      ],
+      "id": "7c132068-3b9f-449f-a527-773c21fef564",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "repository",
+        "operation": "getPullRequests",
+        "owner": {
+          "__rl": true,
+          "value": "={{ $json.body.owner }}",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ $json.repo }}",
+          "mode": "name"
+        },
+        "getRepositoryPullRequestsFilters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        -220,
+        560
+      ],
+      "id": "d9a5c88d-1cab-4b26-a2b5-5612e445b4ab",
+      "name": "Get pull requests of a repository",
+      "webhookId": "bfc51285-675a-4e67-b11f-1f9988e6b52c",
+      "credentials": {
+        "githubApi": {
+          "id": "hN5Uek7fSNOoMt0R",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        980,
+        700
+      ],
+      "id": "b8b70ebe-63b8-4502-ac23-abeb217aaf05",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "1tyCa1jGjxUkrTlK",
+          "name": "OpenAi account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1840,
+        40
+      ],
+      "id": "d387e5a5-bf0f-4ef4-840a-cbe44272ac01",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch PR Metadata": {
+      "main": [
+        [
+          {
+            "node": "extract the pr details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Summary to GitHub": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "summary generater",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "commits data": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "extract the pr details": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "summary generater": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Summary": {
+      "main": [
+        [
+          {
+            "node": "Set Fallback Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Set Fallback Message": {
+      "main": [
+        [
+          {
+            "node": "Post Fallback to GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Diff": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Post Summary to GitHub",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Config1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get pull requests of a repository",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get pull requests of a repository": {
+      "main": [
+        [
+          {
+            "node": "Fetch PR Metadata",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "commits data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Fetch Diff",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "summary generater",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5e2153f6-648c-4951-b070-2997c57114be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "6muK6jL05VhQhjQQ",
+  "tags": []
+}

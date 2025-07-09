@@ -1,0 +1,680 @@
+{
+  "name": "SmartInvoice",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "invoice summary",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1200,
+        340
+      ],
+      "id": "280cc3c1-9f14-44d1-bd98-5fe5e53b1b99",
+      "name": "Webhook",
+      "webhookId": "485f4659-979b-4163-8417-0f0e4c0ca6d9"
+    },
+    {
+      "parameters": {
+        "sendTo": "balabhavaniilla@gmail.com",
+        "subject": "=❌ Invoice Not Found Requires Attention {{ $json.invoiceNumber }}\n",
+        "emailType": "text",
+        "message": "=⚠️ A flagged invoice has been detected:  - Invoice Number: Issue(s) Please review it in the Flagged Invoices{{ $('Categorization & Mapping').item.json['Invoice Number'] }} sheet.{{ $('Categorization & Mapping').item.json.validationErrors[0] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        560,
+        220
+      ],
+      "id": "9b8cdd32-98bf-4337-9abe-2a0454916993",
+      "name": "Send a message",
+      "webhookId": "afdb8639-0677-4004-9ad8-5d9b1d1a7ded",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rBXkQp220zeIzeVf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "balabhavaniilla@gmail.com",
+        "subject": "=invoice{{ $json['Invoice Number'] }} verifiedis true",
+        "emailType": "text",
+        "message": "=Dear Accounts Team,\n\nThe invoice with number has {{ $json['Invoice Number'] }}been successfully verified.\n\n🧾 Invoice Details\n- Invoice Number:{{ $json['Invoice Number'] }}\n- Vendor:{{ $json.Vendor }}\n- Date: {{ $json.Date }}\n- Total Amount: ₹{{ $json['Total Amount'] }}\n-gst:{{ $json.Gst }}\nledgercode:{{ $json['Ledger Code'] }}\n✅ This invoice exists in the Google Sheet and has passed all validations.\n\nRegards,  \nSmartInvoice AI\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        -120
+      ],
+      "id": "824b6200-6fb7-4db2-9dce-dfd284238a3a",
+      "name": "Send a message1",
+      "webhookId": "6cefad43-9b17-4b89-96c9-228eb49bb32f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rBXkQp220zeIzeVf",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1260,
+        -40
+      ],
+      "id": "0674ee50-805a-421e-8c46-9c64736110ec",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "const vendor = ($json.vendorName || \"\").toLowerCase();\nlet lineItems = $json.lineItems || [];\nif (!Array.isArray(lineItems)) {\n  lineItems = [];\n}\n\nfunction categorize(item) {\n  const desc = (item.description || \"\").toLowerCase();\n\n  // Rule-based categorization\n  if (desc.includes(\"flight\") || desc.includes(\"hotel\") || desc.includes(\"travel\")) {\n    return { category: \"Travel\", ledgerCode: \"4001\" };\n  } else if (desc.includes(\"aws\") || desc.includes(\"azure\") || desc.includes(\"hosting\")) {\n    return { category: \"Hosting\", ledgerCode: \"5001\" };\n  } else if (desc.includes(\"stationery\") || desc.includes(\"paper\") || desc.includes(\"printer\")) {\n    return { category: \"Office Supplies\", ledgerCode: \"5329\" };\n  } else {\n    return { category: \"General Expense\", ledgerCode: \"9999\" };\n  }\n}\n\n// Map each line item\nconst updatedItems = lineItems.map(item => {\n  const mapped = categorize(item);\n  return {\n    ...item,\n    category: mapped.category,\n    ledgerCode: mapped.ledgerCode\n  };\n});\n\n// Assign payment status\nconst status = $json.hasValidationIssues === true ? \"Flagged\" : \"Pending\";\n\n// Final output\nreturn [\n  {\n    json: {\n      ...$json,\n      paymentStatus: status,\n      lineItems: updatedItems\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        200
+      ],
+      "id": "901b4325-e7ea-4c75-91b4-2f09e7f93131",
+      "name": "Categorization & Mapping"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "df08f388-9503-4a4e-be58-f44fb41dce6f",
+              "leftValue": "={{ $json.hasValidationIssues }}",
+              "rightValue": "={{ $json.validationStatus }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        60,
+        -120
+      ],
+      "id": "72373d1e-2e98-4dc1-9224-6409f9d0d454",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1IDpPeYHTJUzvSYgDg-Xvp0X2sgc0WFErHg664WdrPJo",
+          "mode": "list",
+          "cachedResultName": "duplicate invoices",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IDpPeYHTJUzvSYgDg-Xvp0X2sgc0WFErHg664WdrPJo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IDpPeYHTJUzvSYgDg-Xvp0X2sgc0WFErHg664WdrPJo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "invoiceNumber": "={{ $json['Invoice Number'] }}",
+            "validationErrors": "={{ $json.validationErrors[0] }}",
+            "vendor": "={{ $json.Vendor }}",
+            "validationStatus": "={{ $json.validationStatus }}"
+          },
+          "matchingColumns": [
+            "invoiceNumber"
+          ],
+          "schema": [
+            {
+              "id": "invoiceNumber",
+              "displayName": "invoiceNumber",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "vendor",
+              "displayName": "vendor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "validationStatus",
+              "displayName": "validationStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "validationErrors",
+              "displayName": "validationErrors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "hasValidationIssues",
+              "displayName": "hasValidationIssues",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        360,
+        220
+      ],
+      "id": "e0c46fa9-285a-42cf-9e56-67e68a5ad3c5",
+      "name": "duplicate invoices",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const {\n  invoiceNumber,\n  vendorName,\n  gstin,\n  invoiceDate,\n  subtotal,\n  taxAmount,\n  totalAmount,\n  lineItems,\n} = $json;\nlet errors = [];\n\n// 1. Required fields check\nif (!invoiceNumber || !vendorName || !invoiceDate || !totalAmount) {\n  errors.push(\"Missing required fields (invoiceNumber, vendorName, invoiceDate, or totalAmount)\");\n}\n\n// 2. GSTIN format check\nif (gstin && !/^\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}Z[A-Z\\d]{1}$/.test(gstin)) {\n  errors.push(\"Invalid GSTIN format\");\n}\n\n// 3. Subtotal + Tax = Total (± ₹1 allowed)\nconst subtotalNum = parseFloat(subtotal || 0);\nconst taxAmountNum = parseFloat(taxAmount || 0);\nconst totalNum = parseFloat(totalAmount || 0);\n\nconst calculatedTotal = subtotalNum + taxAmountNum;\n\nif (Math.abs(calculatedTotal - totalNum) > 1) {\n  errors.push(`Subtotal + Tax ≠ Total: ${calculatedTotal} ≠ ${totalNum}`);\n}\n\n// 4. Line item total check\nif (Array.isArray(lineItems)) {\n  const itemTotalSum = lineItems.reduce((sum, item) => sum + parseFloat(item.total || 0), 0);\n  if (Math.abs(itemTotalSum - totalNum) > 1) {\n    errors.push(`Line item total mismatch: ${itemTotalSum} ≠ ${totalNum}`);\n  }\n}\n\n// ✅ Final result object\nreturn [\n  {\n    json: {\n      ...$json,\n      validationStatus: errors.length > 0 ? \"Flagged\" : \"Valid\",\n      validationErrors: errors,\n      hasValidationIssues: errors.length > 0 // Use in IF node\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -280,
+        200
+      ],
+      "id": "4b909e83-892c-4dd6-bfac-b43774adfeab",
+      "name": "validation check1"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Dear Accounts Team,\n\nThe invoice with number{{ $('Append or update row in sheet').item.json['Invoice Number'] }} has been successfully verified.\n\n🧾 Invoice Details\n- Invoice Number:{{ $('Append or update row in sheet').item.json['Invoice Number'] }}\n- Vendor:{{ $('Append or update row in sheet').item.json.Vendor }}\n- Date: {{ $('Append or update row in sheet').item.json.Date }}\n- Total Amount: ₹{{ $('Append or update row in sheet').item.json['Total Amount'] }}\n-gst:{{ $('Append or update row in sheet').item.json.Gst }}\nledgercode:{{ $('Append or update row in sheet').item.json['Ledger Code'] }}\n✅ This invoice exists in the Google Sheet and has passed all validations.\n\nRegards,  \nSmartInvoice AI\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        700,
+        -120
+      ],
+      "id": "123a5021-fcee-471d-aee9-7c2110df74f0",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputText = $input.first().json.text;  // Assuming 'text' contains the input summary\n\nconst lines = inputText.split('\\n').map(line => line.trim()).filter(Boolean);\nconst data = {};\n\nfor (const line of lines) {\n  const [key, ...rest] = line.split(':');\n  const value = rest.join(':').trim();\n\n  switch (key.toLowerCase()) {\n    case 'invoice number':\n      data.invoiceNumber = value;\n      break;\n    case 'vendor':\n      data.vendorName = value;\n      break;\n    case 'date':\n      data.invoiceDate = value;\n      break;\n    case 'gst':\n      data.gst = value;\n      break;\n    case 'amount':\n      data.subtotal = value.replace('Rs.', '').trim();\n      break;\n    case 'total amount':\n      data.totalAmount = value.replace('Rs.', '').trim();\n      break;\n    case 'category':\n      data.category = value;\n      break;\n    case 'ledger code':\n      data.ledgerCode = value;\n      break;\n    case 'erp entry id':\n      data.erpEntryId = value;\n      break;\n    case 'processed by':\n      data.processedBy = value;\n      break;\n    case 'validation status':\n      data.validationStatus = value;\n      break;\n  }\n}\n\nreturn [{ json: data }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -740,
+        200
+      ],
+      "id": "1378906a-38ba-49fb-8c27-97941785a72d",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1LKiYGMAVG3npvAg0WkGx9D18cu8laM6aYCu5s71OLIc",
+          "mode": "list",
+          "cachedResultName": "invoice for automate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LKiYGMAVG3npvAg0WkGx9D18cu8laM6aYCu5s71OLIc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LKiYGMAVG3npvAg0WkGx9D18cu8laM6aYCu5s71OLIc/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Vendor",
+              "lookupValue": "={{ $json.vendorName }}"
+            },
+            {
+              "lookupColumn": "Invoice Number",
+              "lookupValue": "={{ $json.invoiceNumber }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -500,
+        200
+      ],
+      "id": "4be87360-7ee9-4c98-b841-93783d5153c2",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8d4676a8-9db1-4e30-8f72-9cfa709c2aa3",
+              "leftValue": "={{ $json.hasValidationIssues }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        120,
+        200
+      ],
+      "id": "5e25bb89-f5d7-48de-9d63-b8e4f0887e3e",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1LKiYGMAVG3npvAg0WkGx9D18cu8laM6aYCu5s71OLIc",
+          "mode": "list",
+          "cachedResultName": "invoice for automate",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LKiYGMAVG3npvAg0WkGx9D18cu8laM6aYCu5s71OLIc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1LKiYGMAVG3npvAg0WkGx9D18cu8laM6aYCu5s71OLIc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Gst": "={{ $json.Gst }}",
+            "Total Amount": "={{ $json['Total Amount'] }}",
+            "Category": "={{ $json.Category }}",
+            "Vendor": "={{ $json.Vendor }}",
+            "Date": "={{ $json.Date }}",
+            "Ledger Code": "={{ $json.Category }}",
+            "Invoice Number": "={{ $json['Invoice Number'] }}",
+            "validation errors": "={{ $('Categorization & Mapping').item.json.hasValidationIssues }}",
+            "validationStatus": "={{ $json.validationStatus }}",
+            "Amount": "={{ $json.Amount }}"
+          },
+          "matchingColumns": [
+            "Invoice Number"
+          ],
+          "schema": [
+            {
+              "id": "Invoice Number",
+              "displayName": "Invoice Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Vendor",
+              "displayName": "Vendor",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gst",
+              "displayName": "Gst",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "displayName": "Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Total Amount",
+              "displayName": "Total Amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ledger Code",
+              "displayName": "Ledger Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "validationStatus",
+              "displayName": "validationStatus",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "validation errors",
+              "displayName": "validation errors",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        300,
+        -120
+      ],
+      "id": "d0534071-4555-4995-9701-f30376279dd2",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "invoice",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        200
+      ],
+      "id": "d4c29dce-7ef9-45bb-b5df-fb0800bde7a0",
+      "name": "Extract from File"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Categorization & Mapping": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "duplicate invoices": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "validation check1": {
+      "main": [
+        [
+          {
+            "node": "Categorization & Mapping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "validation check1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "duplicate invoices",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "65f4e210-81e7-4b72-ac99-9cc81a982d95",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "23ec5a40302af986e1c42a75c2db95ceb57d0b69f89c20293eabeeb3079fd22f"
+  },
+  "id": "cIFdvuxgkWtxYuwP",
+  "tags": []
+}
