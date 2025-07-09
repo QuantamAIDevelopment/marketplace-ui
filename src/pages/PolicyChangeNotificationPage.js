@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaFileContract, FaCheckCircle, FaUsers, FaChartBar, FaExclamationCircle } from 'react-icons/fa';
 import axios from 'axios';
@@ -11,6 +11,7 @@ const PolicyChangeNotificationPageContent = () => {
   const [error, setError] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     // Load initial data from localStorage if available
@@ -43,7 +44,7 @@ const PolicyChangeNotificationPageContent = () => {
     }
 
     const formData = new FormData();
-    formData.append('fileName', selectedFile);
+    formData.append('file', selectedFile); // <-- FIXED KEY
 
     try {
       setLoading(true);
@@ -114,18 +115,30 @@ const PolicyChangeNotificationPageContent = () => {
                 className="hidden"
                 id="policy-file"
                 accept=".pdf,.doc,.docx"
+                ref={fileInputRef}
               />
               <label
                 htmlFor="policy-file"
                 className="bg-dark-400 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-dark-500 transition-colors flex-1"
+                onClick={e => {
+                  e.preventDefault();
+                  if (fileInputRef.current) fileInputRef.current.click();
+                }}
               >
                 {selectedFile ? selectedFile.name : 'Select Policy File'}
               </label>
               <motion.button
                 whileHover={{ scale: 1.05, boxShadow: '0 8px 32px 0 #61868d33' }}
                 whileTap={{ scale: 0.95 }}
-                onClick={handleUpload}
-                disabled={!selectedFile || loading}
+                onClick={e => {
+                  e.preventDefault();
+                  if (!selectedFile) {
+                    if (fileInputRef.current) fileInputRef.current.click();
+                  } else {
+                    handleUpload();
+                  }
+                }}
+                disabled={loading}
                 className="bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-6 py-2 rounded-lg font-bold text-lg shadow-lg hover:from-blue-600 hover:to-purple-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               >
                 <FaUsers />
