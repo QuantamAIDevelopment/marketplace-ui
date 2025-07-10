@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CoverScreen from './CoverScreen';
 
-const PageRevealWrapper = ({ children, heading, description, details }) => {
+const PageRevealWrapper = ({ children, heading, description, details, coverImage }) => {
   const [isCoverVisible, setCoverVisible] = useState(true);
 
   const handleStart = () => {
@@ -22,6 +22,7 @@ const PageRevealWrapper = ({ children, heading, description, details }) => {
             heading={heading}
             description={description}
             details={details}
+            coverImage={coverImage}
           />
         </motion.div>
       ) : (
