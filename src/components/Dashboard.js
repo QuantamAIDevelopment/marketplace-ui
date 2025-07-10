@@ -1,13 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaChartBar } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 // Workflow Components
 import LeavesClassifier from './workflows/LeavesClassifier';
 import BirthdayWorkAnniversary from './workflows/BirthdayWorkAnniversary';
 import DocumentUploadReminder from './workflows/DocumentUploadReminder';
-import CandidateDetailsSync from './workflows/CandidateDetailsSync';
+// import CandidateDetailsSync from './workflows/CandidateDetailsSync';
 import PayslipAutoEncrypted from './workflows/PayslipAutoEncrypted';
 import EmailAttachmentProcessing from './workflows/EmailAttachmentProcessing';
 import PolicyChangeNotification from './workflows/PolicyChangeNotification';
@@ -36,6 +36,7 @@ const workflows = [
     path: '/ai-customer-support',
     description: 'Automate customer support with AI-driven responses.',
   },
+  
   {
     title: 'Leaves Classifier',
     icon: FaCalendarAlt,
@@ -97,6 +98,12 @@ const workflows = [
     icon: FaBoxOpen,
     path: '/workflows/product-recommendation',
     description: 'Recommend products based on user data.',
+  },
+  {
+    title: 'Business Intelligence Explainer Bot',
+    icon: FaChartBar,
+    path: '/workflows/business-intelligence-bot',
+    description: 'Upload sales data for instant AI-powered business insights and suggestions.',
   },
 ];
 

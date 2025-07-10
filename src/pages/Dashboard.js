@@ -1,13 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-
 import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
-
-
 import { useNavigate } from 'react-router-dom';
-
-import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard, FraudDetectionSystemCard } from '../components/workflows';
-
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 import AutomatedResearch from '../components/workflows/AutomatedResearch';
 import InterviewPanelAutoAssignment from '../components/workflows/InterviewPanelAutoAssignment';
@@ -124,12 +119,6 @@ const workflowData = [
     icon: FaMoneyBillWave,
     path: '/workflows/dynamic-pricing',
     summary: 'Upload a CSV to get AI-powered dynamic price recommendations.'
-  },
-  {
-    title: 'Business Insights Agent',
-    icon: FaChartLine,
-    path: '/workflows/business-insights',
-    summary: 'Upload a sales CSV to get KPIs, error detection, and suggestions.'
   },
   {
     title: 'Metrics Business Analytics',
@@ -286,7 +275,6 @@ const workflowData = [
     icon: FaUserCheck,
     path: '/automate-candidate-acceptance/cover',
     summary: 'Automate candidate acceptance and onboarding notifications.'
-
   },
   {
     title: 'Fraud Detection System',
