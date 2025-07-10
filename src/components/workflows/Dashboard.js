@@ -134,12 +134,6 @@ const workflows = [
     isButton: true,
     buttonText: 'Open Support Agent',
   },
-  {
-    title: 'AI Background Verification Agent',
-    icon: FaUserShield,
-    path: '/background-verification-agent',
-    description: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.',
-  },
 ];
 
 const WorkflowCard = ({ title, icon: Icon, description, onClick, isButton, buttonText }) => (
