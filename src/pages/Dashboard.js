@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus, FaAmazon } from 'react-icons/fa';
 
 
 import { useNavigate } from 'react-router-dom';
@@ -219,7 +219,7 @@ const workflowData = [
     title: 'Test Case Generator',
     icon: FaVial,
     path: '/test-generator',
-    summary: 'Generate QA test cases from your feature docs using AI.'
+    summary: 'Generate QA test cases for your feature document using AI. Upload your feature document and let the AI generate comprehensive test cases to ensure quality and coverage.',
   },
   {
     title: 'Gmail Categorization',
@@ -293,6 +293,12 @@ const workflowData = [
     icon: FaShieldAlt,
     path: '/fraud-detection-system',
     summary: 'Upload transaction data to detect fraud, get AI risk scores, and see triggered rules for each order.'
+  },
+  {
+    title: 'Amazon Product Scraper',
+    icon: FaAmazon,
+    path: '/amazon-web-scrape',
+    summary: 'Extract product details (name, description, rating, reviews, price) from any Amazon URL for market research, price tracking, and product analysis.'
   },
 ];
 

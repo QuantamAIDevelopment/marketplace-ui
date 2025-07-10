@@ -138,6 +138,7 @@ function App() {
               <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
               <Route path="/fraud-detection-system" element={<FraudDetectionSystemPage />} />
+              <Route path="/test-generator" element={<TestGeneratorPage />} />
             </Routes>
           </main>
         </div>

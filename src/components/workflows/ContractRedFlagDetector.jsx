@@ -36,6 +36,12 @@ const ContractRedFlagDetector = ({ compact = false }) => {
       const response = await axios.post(API_URL, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      // Handle empty or non-string response gracefully
+      if (!response.data || typeof response.data !== 'string') {
+        setError('No result returned from server. Please try again later.');
+        setLoading(false);
+        return;
+      }
       // The response is plain text, parse it into fields
       const lines = response.data.split('\n');
       const parsed = {};
@@ -145,4 +151,4 @@ const ContractRedFlagDetector = ({ compact = false }) => {
   );
 };
 
-export default ContractRedFlagDetector; 
+export default ContractRedFlagDetector;
