@@ -1,64 +1,133 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaFileAlt, FaBell, FaCheckCircle, FaClock } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { FaBell, FaFileAlt } from 'react-icons/fa';
 
-const PolicyChangeNotification = ({ compact = false }) => {
-  const navigate = useNavigate();
-  const [stats] = React.useState({
-    acknowledgedPolicies: 12,
-    pendingAcknowledgments: 3,
-    totalPolicies: 15,
-    recentUpdates: 2,
-  });
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/policy-update';
 
-  const statList = [
-    { title: 'Total Policies', value: stats.totalPolicies, icon: FaFileAlt, color: 'bg-blue-500' },
-    { title: 'Acknowledged', value: stats.acknowledgedPolicies, icon: FaCheckCircle, color: 'bg-green-500' },
-    { title: 'Pending', value: stats.pendingAcknowledgments, icon: FaBell, color: 'bg-yellow-500' },
-    { title: 'Recent Updates', value: stats.recentUpdates, icon: FaClock, color: 'bg-purple-500' },
-  ];
+const PolicyChangeNotification = () => {
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [data, setData] = useState(null);
 
-  const StatCard = ({ title, value, icon: Icon, color }) => (
-    <motion.div
-      className={compact ? "bg-white border border-gray-200 rounded-xl p-3 shadow flex flex-col gap-2 min-w-[120px]" : "bg-white border border-gray-200 rounded-2xl p-6 shadow-2xl flex flex-col gap-2 min-w-[160px] w-full max-w-xs mx-auto"}
-      whileHover={compact ? { scale: 1.03, boxShadow: '0 2px 8px 0 #61868d22' } : { scale: 1.05, boxShadow: '0 8px 32px 0 #61868d33' }}
-      whileTap={{ scale: 0.97 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-    >
-      <div className="flex items-center gap-3 mb-2">
-        <div className={compact ? `p-2 rounded-lg ${color}` : `p-3 rounded-lg ${color}`}>
-          <Icon className={compact ? "w-5 h-5 text-white" : "w-6 h-6 text-white"} />
-        </div>
-        <div className={compact ? "font-bold text-base text-anthropic-dark truncate" : "font-bold text-lg text-anthropic-dark truncate"}>{title}</div>
-      </div>
-      <div className={compact ? "text-lg font-bold text-anthropic-dark" : "text-2xl font-bold text-anthropic-dark"}>{value}</div>
-    </motion.div>
-  );
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+      // Remove focus from the input after selection for better UX
+      e.target.blur();
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setData(null);
+    try {
+      const formData = new FormData();
+      if (file) formData.append('policy', file);
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        let msg = `Failed to fetch policy stats (Status: ${response.status})`;
+        if (response.status === 404) msg += ' - Endpoint not found.';
+        if (response.status === 500) msg += ' - Server error.';
+        throw new Error(msg);
+      }
+      const result = await response.json();
+      setData(result);
+    } catch (err) {
+      if (err instanceof TypeError && err.message === 'Failed to fetch') {
+        setError('Network error or CORS issue. Please check your backend, CORS settings, and browser console for details.');
+      } else {
+        setError(err.message || 'Something went wrong');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className={compact ? "space-y-4 w-full overflow-hidden" : "space-y-8 w-full"}>
-      <div className={compact ? "flex items-center space-x-2 mb-1" : "flex items-center space-x-4 mb-2"}>
-        <div className={compact ? "bg-blue-500 p-2 rounded-lg shadow" : "bg-blue-500 p-3 rounded-lg shadow-lg"}>
-          <FaFileAlt className={compact ? "w-5 h-5 text-white" : "w-6 h-6 text-white"} />
+    <div className="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow-lg mt-8">
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="bg-blue-500 p-3 rounded-lg shadow">
+          <FaBell className="w-6 h-6 text-white" />
         </div>
-        <h3 className={compact ? "text-lg font-display text-anthropic-dark font-bold" : "text-2xl font-display text-anthropic-dark font-bold"}>Policy Change Notification</h3>
+        <h2 className="text-2xl font-bold text-gray-800">Policy Change Notifications</h2>
       </div>
-      <div className={compact ? "flex gap-2 w-full overflow-x-auto" : "grid grid-cols-2 gap-4 w-full"}>
-        {statList.map((stat, idx) => (
-          <StatCard key={idx} {...stat} />
-        ))}
-      </div>
-      <motion.button
-        whileHover={{ scale: 1.05, boxShadow: '0 8px 32px 0 #61868d33' }}
-        whileTap={{ scale: 0.97 }}
-        onClick={() => navigate('/policy-notifications')}
-        className={compact ? "w-full bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white py-2 rounded-lg font-bold text-base shadow hover:from-blue-600 hover:to-yellow-600 transition-colors" : "w-full bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:from-blue-600 hover:to-yellow-600 transition-colors"}
-      >
-        View Details
-      </motion.button>
+      <form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center gap-4 mb-6">
+        <div className="relative">
+          <label htmlFor="policy-upload-input">
+            <span
+              className="flex items-center gap-2 bg-purple-100 px-4 py-2 rounded-lg shadow hover:bg-purple-200 transition-colors text-base font-semibold text-purple-700 focus:outline-none cursor-pointer"
+              tabIndex={0}
+            >
+              <FaFileAlt className="text-purple-500" />
+              {file ? file.name : 'Upload Policy'}
+            </span>
+          </label>
+          <input
+            id="policy-upload-input"
+            type="file"
+            accept="application/pdf"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-700 transition-colors"
+        >
+          {loading ? 'Processing...' : 'Get Policy Stats'}
+        </motion.button>
+      </form>
+      {error && <div className="text-red-600 mb-4">{error}</div>}
+      {data && (
+        <div>
+          <div className="mb-6">
+            <h3 className="font-semibold text-lg mb-2">Policy Stats</h3>
+            <ul className="space-y-1">
+              <li>Total Policies: <b>{data.stats.totalPolicies}</b></li>
+              <li>Acknowledged: <b>{data.stats.acknowledgedPolicies}</b></li>
+              <li>Pending Acknowledgments: <b>{data.stats.pendingAcknowledgments}</b></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold text-lg mb-2">Recent Notifications</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border text-sm">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="py-2 px-3 border">Email</th>
+                    <th className="py-2 px-3 border">User Name</th>
+                    <th className="py-2 px-3 border">Policy ID</th>
+                    <th className="py-2 px-3 border">Pending Ack</th>
+                    <th className="py-2 px-3 border">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.recentNotifications.slice(0, 5).map((n, idx) => (
+                    <tr key={idx} className="hover:bg-blue-50">
+                      <td className="py-2 px-3 border">{n.email}</td>
+                      <td className="py-2 px-3 border">{n.userName}</td>
+                      <td className="py-2 px-3 border">{n.policyId}</td>
+                      <td className="py-2 px-3 border">{n.pendingAck}</td>
+                      <td className="py-2 px-3 border">{n.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default PolicyChangeNotification; 
+export default PolicyChangeNotification;

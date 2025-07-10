@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5678/webhook/bi-insights';
+const API_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/bi-insights';
 
 export const triggerMetricsBusinessAnalyticsWorkflow = async (files) => {
   const formData = new FormData();

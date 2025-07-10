@@ -1,17 +1,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus, FaAmazon } from 'react-icons/fa';
+// import { FraudDetectionSystemCard } from '../components/workflows';
 
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus, FaAmazon, FaFileCsv, FaUserTie } from 'react-icons/fa';
 
-import { useNavigate } from 'react-router-dom';
-
-import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard, FraudDetectionSystemCard } from '../components/workflows';
-
+import { useNavigate, Link } from 'react-router-dom';
+import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
 import AutomateCandidateAcceptance from '../components/workflows/AutomateCandidateAcceptance';
 import AutomatedResearch from '../components/workflows/AutomatedResearch';
 import InterviewPanelAutoAssignment from '../components/workflows/InterviewPanelAutoAssignment';
 import PerformanceReviewSummary from '../components/workflows/PerformanceReviewSummary';
+import ComplaintHandlerAgent from '../components/workflows/ComplaintHandlerAgent';
+import BusinessIntelligenceBOT from '../components/workflows/BusinessIntelligenceBOT';
 
 const WorkflowCard = ({ title, icon: Icon, path, summary }) => {
   const navigate = useNavigate();
@@ -40,12 +41,6 @@ const workflowData = [
     icon: FaUserCheck,
     path: '/onboarding-q',
     summary: 'Generate onboarding emails from ODS files using the On_Boarding.Q workflow.'
-  },
-  {
-    title: 'OnBoarding Email Generator',
-    icon: FaUserPlus,
-    path: '/onboarding',
-    summary: 'Generate onboarding emails from client files with AI.'
   },
   {
     title: 'AI Customer Support',
@@ -126,12 +121,6 @@ const workflowData = [
     summary: 'Upload a CSV to get AI-powered dynamic price recommendations.'
   },
   {
-    title: 'Business Insights Agent',
-    icon: FaChartLine,
-    path: '/workflows/business-insights',
-    summary: 'Upload a sales CSV to get KPIs, error detection, and suggestions.'
-  },
-  {
     title: 'Metrics Business Analytics',
     icon: FaChartBar,
     path: '/workflows/metrics-business-analytics',
@@ -156,12 +145,6 @@ const workflowData = [
     summary: 'Book and manage appointments with ease.'
   },
   {
-    title: 'AI Background Verification Agent',
-    icon: FaUserShield,
-    path: '/background-verification-agent',
-    summary: 'Upload a candidate resume or background file to automatically analyze, cross-check, and risk-rate candidates using AI.'
-  },
-  {
     title: 'MCQ Generator & Trainer',
     icon: FaBrain,
     path: '/mcq-generator',
@@ -178,6 +161,24 @@ const workflowData = [
     icon: FaBook,
     path: '/ai-book-price-tracker',
     summary: 'Track book prices, availability, and details using AI-powered extraction.'
+  },
+  {
+    title: 'Automate Candidate Acceptance',
+    icon: FaUserCheck,
+    path: '/automate-candidate-acceptance',
+    summary: 'Automate candidate acceptance and send onboarding notifications.'
+  },
+  {
+    title: 'Attendance Anomalies',
+    icon: FaFileCsv,
+    path: '/attendance-anomalies',
+    summary: 'Upload attendance CSVs to detect anomalies and escalate to HR.'
+  },
+  {
+    title: 'Fetch Leads',
+    icon: FaUserTie,
+    path: '/fetch-leads',
+    summary: 'Trigger the fetch leads workflow and get a personalized response.'
   },
   {
     title: 'AI Testmonial Extractor',
@@ -286,7 +287,6 @@ const workflowData = [
     icon: FaUserCheck,
     path: '/automate-candidate-acceptance/cover',
     summary: 'Automate candidate acceptance and onboarding notifications.'
-
   },
   {
     title: 'Fraud Detection System',
@@ -299,6 +299,18 @@ const workflowData = [
     icon: FaAmazon,
     path: '/amazon-web-scrape',
     summary: 'Extract product details (name, description, rating, reviews, price) from any Amazon URL for market research, price tracking, and product analysis.'
+  },
+  {
+    title: 'Complaint Handler Agent',
+    icon: FaCommentDots,
+    path: '/complaint-handler-agent',
+    summary: 'Handle customer complaints and escalate issues to the appropriate team.'
+  },
+  {
+    title: 'Business Intelligence BOT',
+    icon: FaChartBar,
+    path: '/business-intelligence-bot',
+    summary: 'Analyze business data, generate reports, and provide insights for decision-making.'
   },
 ];
 

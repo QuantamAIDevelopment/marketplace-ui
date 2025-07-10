@@ -2,8 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaRobot, FaArrowRight, FaUser } from 'react-icons/fa';
 import axios from 'axios';
+
 import CoverScreen from '../components/CoverScreen';
 import AICustomerSupportWorkflowSVG from '../components/AICustomerSupportWorkflowSVG';
+
 
 // Workflow node icons
 const workflowNodes = [
@@ -70,7 +72,6 @@ const AICustomerSupportContent = () => {
   useEffect(() => {
     scrollToBottom();
   }, [chatHistory]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
@@ -79,24 +80,23 @@ const AICustomerSupportContent = () => {
     setMessage('');
     setIsLoading(true);
     setShowWorkflow(true);
-
-    // Add user message to chat history
     setChatHistory(prev => [...prev, { type: 'user', content: userMessage, timestamp: new Date() }]);
 
-    // Simulate workflow execution
+    // Simulate workflow animation (optional, can be removed for speed)
     for (const node of workflowNodes) {
       setCurrentNode(node.id);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 400));
     }
 
     try {
       const formData = new FormData();
-      formData.append('message', userMessage);
+      formData.append('chat', userMessage); // Use 'chat' as the field name
 
-      const result = await axios.post('http://localhost:5678/webhook/chat', formData);
+      const result = await axios.post(
+        'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/chat',
+        formData
+      );
       const aiResponse = result.data.output || 'No response received';
-      
-      // Add AI response to chat history
       setChatHistory(prev => [...prev, { type: 'ai', content: aiResponse, timestamp: new Date() }]);
     } catch (error) {
       const errorMessage = 'Error: Failed to get response from the server';
@@ -113,69 +113,42 @@ const AICustomerSupportContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-dark-100 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 text-gray-900">
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-dark-300 rounded-lg p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">AI Customer Support</h1>
-          <div className="text-gray-700 space-y-4">
-            <p>Welcome to AI Customer Support! Please use the following formats for your queries to get the best assistance:</p>
-            <ol className="list-decimal pl-6 space-y-4">
-              <li>
-                <strong className="text-white">General Questions (FAQs)</strong>
-                <ul className="list-disc pl-6 mt-2 space-y-2">
-                  <li>Ask about our services, e.g., 'What is your return policy?' or 'Do you offer free shipping?'</li>
-                  <li>Use words like 'what is', 'do you', 'explain', or 'hi' to get quick answers</li>
-                  <li>Example: 'Explain your loyalty program' or 'Hi, how can I contact support?'</li>
-                </ul>
-              </li>
-              <li>
-                <strong className="text-white">Order Tracking</strong>
-                <ul className="list-disc pl-6 mt-2 space-y-2">
-                  <li>Provide a 7-digit order ID, e.g., 'Track my order 1234567' or 'What is the order status of 7890123?'</li>
-                  <li>Use phrases like 'order status', 'track my order', or 'order id'</li>
-                </ul>
-              </li>
-              <li>
-                <strong className="text-white">Issues or Refunds</strong>
-                <ul className="list-disc pl-6 mt-2 space-y-2">
-                  <li>Mention your issue with an order ID, e.g., 'I have a problem with order 2348901' or 'I need a refund for 3459012'</li>
-                  <li>Use words like 'refund', 'issue', 'problem', or 'complaint'</li>
-                </ul>
-              </li>
-              <li>
-                <strong className="text-white">Other Queries</strong>
-                <ul className="list-disc pl-6 mt-2 space-y-2">
-                  <li>For anything else, describe your request clearly, e.g., 'I want to buy shoes'</li>
-                  <li>We'll forward complex queries to our support team</li>
-                </ul>
-              </li>
-            </ol>
+        {/* Modern Header */}
+        <div className="flex items-center gap-3 mb-8">
+          <div className="bg-gradient-to-br from-blue-500 via-pink-500 to-purple-500 p-3 rounded-2xl shadow-lg">
+            <FaRobot className="text-white text-2xl drop-shadow" />
           </div>
+          <h1 className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 via-pink-500 to-purple-600 text-transparent bg-clip-text drop-shadow-lg tracking-tight">AI Customer Support</h1>
         </div>
-
-        <div className="bg-dark-300 rounded-lg p-6 h-[60vh] flex flex-col">
-          <div className="flex-1 overflow-y-auto mb-4 space-y-4">
-            {chatHistory.map((chat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${chat.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`flex items-start space-x-2 max-w-[80%] ${chat.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                  <div className={`p-2 rounded-full ${chat.type === 'user' ? 'bg-primary-500' : 'bg-green-500'}`}>
-                    {chat.type === 'user' ? <FaUser className="w-4 h-4 text-white" /> : <FaRobot className="w-4 h-4 text-white" />}
-                  </div>
-                  <div className={`rounded-lg p-3 ${chat.type === 'user' ? 'bg-primary-500' : 'bg-dark-400'}`}>
-                    <p className="text-white">{chat.content}</p>
-                    <span className="text-xs text-gray-400 mt-1 block">{formatTimestamp(chat.timestamp)}</span>
-                  </div>
+        {/* Details Section */}
+        <div className="bg-white bg-opacity-80 rounded-3xl shadow-xl p-6 mb-8">
+          {details}
+        </div>
+        {/* Modern Chat UI */}
+        <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 rounded-3xl shadow-xl p-6 min-h-[400px] flex flex-col">
+          <div className="flex-1 overflow-y-auto mb-4" style={{ maxHeight: 350 }}>
+            {chatHistory.length === 0 && (
+              <div className="text-gray-400 text-center mt-20">Start the conversation by asking a question...</div>
+            )}
+            {chatHistory.map((msg, idx) => (
+              <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
+                <div className={`rounded-2xl px-5 py-3 max-w-[70%] shadow-lg flex items-end gap-2 ${msg.type === 'user' ? 'bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white rounded-br-3xl' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-3xl'}`}>
+                  {msg.type === 'user' && <FaUser className="text-white text-lg mr-1" />}
+                  <span>{msg.content}</span>
+                  {msg.type === 'ai' && <FaRobot className="text-blue-500 text-lg ml-1" />}
                 </div>
-              </motion.div>
+              </div>
             ))}
+            {isLoading && (
+              <div className="flex justify-start mb-2">
+                <div className="rounded-2xl px-5 py-3 max-w-[70%] bg-gray-100 text-gray-500 animate-pulse shadow-lg">AI is typing...</div>
+              </div>
+            )}
             <div ref={messagesEndRef} />
           </div>
-
+          {/* Workflow Animation */}
           {showWorkflow && (
             <div className="flex justify-center items-center mb-4">
               {workflowNodes.map((node) => (
@@ -195,32 +168,25 @@ const AICustomerSupportContent = () => {
               ))}
             </div>
           )}
-
-          <form onSubmit={handleSubmit} className="flex gap-4">
+          {/* Input Area */}
+          <form onSubmit={handleSubmit} className="flex items-center gap-2 mt-auto">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               disabled={isLoading}
-              placeholder="Type your message here..."
-              className="flex-1 bg-white text-gray-900 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 border border-gray-200"
+              placeholder="Type your message..."
+              className="flex-1 rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white shadow-md text-base"
+              autoFocus
             />
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               type="submit"
-              disabled={isLoading}
-              className="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center space-x-2 shadow-md"
+              className="bg-gradient-to-r from-blue-500 via-pink-500 to-purple-500 text-white px-5 py-3 rounded-xl font-bold shadow-lg hover:from-blue-600 hover:to-purple-600 transition-colors flex items-center gap-2 disabled:opacity-60 text-base"
+              disabled={isLoading || !message.trim()}
             >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Send</span>
-                  <FaArrowRight />
-                </>
-              )}
-            </motion.button>
+              <span>Send</span>
+              <FaArrowRight />
+            </button>
           </form>
         </div>
       </div>

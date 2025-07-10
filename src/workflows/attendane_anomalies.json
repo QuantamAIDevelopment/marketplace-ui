@@ -1,0 +1,425 @@
+{
+  "name": "attendane_anomalies",
+  "nodes": [
+    {
+      "parameters": {
+        "functionCode": "const LATE_CHECKIN_HOUR = 9; // 09:00 AM\nconst MAX_LUNCH_MINUTES = 45;\n\nreturn items.map(item => {\n  const log = item.json;\n  const anomalies = [];\n\n  try {\n    // Parse times\n    const checkIn = new Date(log.checkIn);\n    const lunchStart = new Date(log.lunchStart);\n    const lunchEnd = new Date(log.lunchEnd);\n\n    // Check for invalid times\n    if (\n      isNaN(checkIn.getTime()) ||\n      isNaN(lunchStart.getTime()) ||\n      isNaN(lunchEnd.getTime())\n    ) {\n      throw new Error(\"Invalid time value\");\n    }\n\n    // ✅ Late Check-In\n    if (\n      checkIn.getHours() > LATE_CHECKIN_HOUR ||\n      (checkIn.getHours() === LATE_CHECKIN_HOUR && checkIn.getMinutes() > 1)\n    ) {\n      anomalies.push(\"Late Check-In\");\n    }\n\n    // ✅ Long Lunch Break\n    const lunchDurationMins = (lunchEnd - lunchStart) / (1000 * 60);\n    if (lunchDurationMins > MAX_LUNCH_MINUTES) {\n      anomalies.push(`Long Lunch (${Math.round(lunchDurationMins)} mins)`);\n    }\n\n    return {\n      json: {\n        ...log,\n        anomalies,\n        isAnomaly: anomalies.length > 0,\n        status: \"Pending\" // ✅ Added\n      }\n    };\n\n  } catch (err) {\n    return {\n      json: {\n        ...log,\n        anomalies: [\"Late Check-In\"],\n        isAnomaly: true,\n        error: err.message,\n        status: \"Pending\" // ✅ Also here\n      }\n    };\n  }\n});\n"
+      },
+      "id": "3a0af47b-675d-474e-9808-ad66c7194fea",
+      "name": "Function: Detect Anomalies",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        -300,
+        180
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "attandance anomiles - Sheet1 (1).csv",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -700,
+        180
+      ],
+      "id": "9f035944-0d11-4ce0-ba4c-964c21d49328",
+      "name": "Webhook",
+      "webhookId": "cae64b11-8fec-433c-8a1e-ec42ae8fc901"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "6f102474-636f-4fba-bf0b-1870ee4179e3",
+              "leftValue": "={{ $json.isAnomaly }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -120,
+        180
+      ],
+      "id": "47394bb2-40cf-4a88-9e9b-ab0fc3659f2e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        180
+      ],
+      "id": "f9a5e4c3-0451-4c96-8f6c-e11e6f6396a2",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BrYFbvBaHlz2r7Wa2ECoEFhtDbBPQYLE_scDPopa4mc",
+          "mode": "list",
+          "cachedResultName": "hr feedback responce",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BrYFbvBaHlz2r7Wa2ECoEFhtDbBPQYLE_scDPopa4mc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BrYFbvBaHlz2r7Wa2ECoEFhtDbBPQYLE_scDPopa4mc/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Employee ID": "={{ $('Extract from File').item.json['Employee ID'] }}",
+            "Date": "={{ $('Extract from File').item.json.Date }}",
+            "checkIn": "={{ $('Extract from File').item.json.checkIn }}",
+            "lunch start": "={{ $('Extract from File').item.json['lunch start'] }}",
+            "lunchEnd": "={{ $('Extract from File').item.json.lunchEnd }}",
+            "checkOut": "={{ $('Extract from File').item.json.checkOut }}",
+            "Anomalies": "={{ $('Extract from File').item.json.Anomalies }}",
+            "status": "={{ $('Extract from File').item.json.status }}",
+            "hr remarks": "={{ $('Extract from File').item.json['hr remarks'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Employee ID",
+              "displayName": "Employee ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "checkIn",
+              "displayName": "checkIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lunch start",
+              "displayName": "lunch start",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lunchEnd",
+              "displayName": "lunchEnd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "checkOut",
+              "displayName": "checkOut",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Anomalies",
+              "displayName": "Anomalies",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "hr remarks",
+              "displayName": "hr remarks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "58335773-7ba3-46b2-a270-4e2cc1b1dd91",
+      "name": "attendance anomiles",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        140,
+        160
+      ],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Hello HR Team,  A feedback record has been escalated:  📌 Employee ID:{{ $('Function: Detect Anomalies').item.json['Employee ID'] }}📅 Date{{ $('Function: Detect Anomalies').item.json.Date }} 📝 Remarks:{{ $('Function: Detect Anomalies').item.json['hr remarks'] }}Please take necessary action as per company policy.  Thanks,   Attendance Monitoring System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        500,
+        360
+      ],
+      "id": "7e826689-b7f1-4afe-8c92-79c80261ddf3",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "sendTo": "balabhavaniilla@gmail.com",
+        "subject": "=🚩 Escalated Feedback {{ $json['Employee ID'] }}",
+        "emailType": "text",
+        "message": "=Hello HR Team,  A feedback record has been escalated:  📌 Employee ID:{{ $json['Employee ID'] }} 📅 Date {{ $json.Date }} 📝 Remarks:{{ $json['hr remarks'] }} Please take necessary action as per company policy.  Thanks,   Attendance Monitoring System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        260,
+        360
+      ],
+      "id": "014efa87-3bd4-4f48-830a-8b38084ca59f",
+      "name": "Send a message",
+      "webhookId": "73c68bb6-265a-4b6e-9aa2-7e1947c12010",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4JHRDzaim874IYLH",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "balabhavaniilla@gmail.com",
+        "subject": "=Anomaly Alert for {{ $json['Employee ID'] }}",
+        "emailType": "text",
+        "message": "=Dear HR Team,  An attendance anomaly was detected:  📌 Employee ID:{{ $json['Employee ID'] }}  📅 Date{{ $json.Date }}🕒 Check-In:{{ $json.checkIn }}🕒 Check-Out:{{ $json.checkOut }}🚩 Anomalies: {{$json.anomalies.join(\", \")}}  Please review and mark as \"Valid\" or \"Escalated\" in the dashboard.  Regards,   Attendance Monitoring System",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        100,
+        -20
+      ],
+      "id": "24cca8c6-ffb1-4bb9-b3d6-3fbe2adec047",
+      "name": "Send a message1",
+      "webhookId": "e5a833a0-dd4e-455a-a42c-0449f1c6edb0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4JHRDzaim874IYLH",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ee45b165-adc6-4298-bf81-38b5ee330d93",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "Escalated",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        160
+      ],
+      "id": "962777d5-89ef-4c91-bc8f-ea5a2f248ef9",
+      "name": "If1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Function: Detect Anomalies": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "attendance anomiles",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Function: Detect Anomalies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "attendance anomiles": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message1": {
+      "main": [
+        []
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2a1ca4e3-6460-4578-a377-2a0b2685f3f7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "23ec5a40302af986e1c42a75c2db95ceb57d0b69f89c20293eabeeb3079fd22f"
+  },
+  "id": "D85coZRyLlTKyvEo",
+  "tags": []
+}

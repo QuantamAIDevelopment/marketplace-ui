@@ -1,7 +1,6 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
-const CoverScreen = ({ onStart, heading, description, details, workflowSVG: WorkflowSVG }) => {
+const CoverScreen = ({ onStart, heading, description, details, workflowSVG: WorkflowSVG, coverImage }) => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-start p-4 font-sans bg-gradient-to-br from-pink-100 via-white to-indigo-100">
       {/* Main Heading */}
@@ -18,7 +17,13 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
 
       {/* Centered Image or SVG */}
       <div className="w-full flex justify-center mb-12">
-        {WorkflowSVG ? (
+        {coverImage ? (
+          <img
+            src={coverImage}
+            alt="Dynamic Pricing Agent Cover"
+            className="rounded-2xl shadow-xl w-full max-w-2xl object-cover border-4 border-white"
+          />
+        ) : WorkflowSVG ? (
           <div className="w-full max-w-2xl rounded-2xl shadow-xl border-4 border-white bg-gradient-to-br from-[#232946] to-[#181c2f] flex items-center justify-center" style={{ minHeight: 260 }}>
             <WorkflowSVG width={820} height={260} />
           </div>
@@ -46,7 +51,7 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
                     // Color key words in headings
                     let text = child.props.children;
                     if (typeof text === 'string') {
-                      text = text.replace(/(AI|Use Cases|Stands Out|Features|Components Used)/g, match => `<span class=\"text-indigo-600 font-extrabold\">${match}</span>`);
+                      text = text.replace(/(AI|Use Cases|Stands Out|Features|Components Used)/g, match => `<span class="text-indigo-600 font-extrabold">${match}</span>`);
                       return <h2 className="text-2xl md:text-3xl font-bold mb-4" dangerouslySetInnerHTML={{__html: text}} />;
                     }
                     return <h2 className="text-2xl md:text-3xl font-bold mb-4">{text}</h2>;
@@ -72,4 +77,4 @@ const CoverScreen = ({ onStart, heading, description, details, workflowSVG: Work
   );
 };
 
-export default CoverScreen; 
+export default CoverScreen;

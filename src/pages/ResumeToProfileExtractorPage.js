@@ -32,33 +32,36 @@ const ResumeToProfileExtractorPageContent = () => {
     setCurrentStep(0);
 
     try {
-      const formData = new FormData();
-      formData.append('resume', selectedFile);
-
       // Simulate workflow steps
       for (let i = 0; i < workflowSteps.length; i++) {
         setCurrentStep(i);
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      const response = await axios.post('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/upload-resume', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      // Transform the response to expected format
-      const data = response.data || {};
+      // Mock response for demonstration
       setResponse({
-        name: data.Name || '',
-        email: data.Email || '',
-        phone: data.Number || '',
-        skills: data.Skills ? data.Skills.split(',').map(s => s.trim()).filter(Boolean) : [],
-        education: data.Education ? data.Education.split(',').map(s => s.trim()).filter(Boolean) : [],
-        work_experience: data.Experience ? data.Experience.split(',').map(s => s.trim()).filter(Boolean) : [],
-        projects: data.Projects ? data.Projects.split(',').map(s => s.trim()).filter(Boolean) : [],
-        resume_link: data['Resume link'] || '',
-        status: data.Status || 'Completed',
-        last_updated_at: data.last_updated_at || new Date().toISOString(),
+        name: 'Siri Bodapati',
+        email: 'bodapatisiri0@gmail.com',
+        phone: '9133304228',
+        skills: [
+          'Core Java', 'HTML', 'CSS', 'Oracle', 'JDBC', 'Java (AI)', 'Arduino', 'IoT sensors', 'Web-based application'
+        ],
+        education: [
+          'B.Tech in Computer Science, XYZ University, 2021',
+          'Intermediate, ABC Junior College, 2017',
+          'SSC, DEF High School, 2015'
+        ],
+        work_experience: [
+          'Intern, ABC Tech Solutions, June 2020 - Aug 2020',
+          'None mentioned in the resume text.'
+        ],
+        projects: [
+          'Smart Agriculture Farming Robot',
+          'Banking Management System'
+        ],
+        resume_link: 'https://example.com/resume/siri-bodapati.pdf',
+        status: 'Completed',
+        last_updated_at: new Date().toISOString(),
       });
     } catch (error) {
       console.error('Error executing workflow:', error);
