@@ -4,35 +4,12 @@ import { FaChartLine, FaFileUpload } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { uploadInventoryAndGetForecast } from '../../services/workflows/inventoryPredictAI';
 
-const parseForecastSummary = (text) => {
-  // Split by SKU blocks
-  const blocks = text.split(/SKU:/).filter(Boolean);
-  return blocks.map((block) => {
-    const lines = block.trim().split('\n').map(l => l.trim()).filter(Boolean);
-    const skuLine = lines[0] || '';
-    const skuMatch = skuLine.match(/^(\S+)\s+—\s+(.+)/);
-    const sku = skuMatch ? skuMatch[1] : skuLine;
-    const productName = skuMatch ? skuMatch[2] : '';
-    const details = {};
-    lines.slice(1).forEach(line => {
-      if (line.startsWith('🔹 Predicted Sales:')) details.predictedSales = line.replace('🔹 Predicted Sales:', '').trim();
-      else if (line.startsWith('🔹 Current Stock:')) details.currentStock = line.replace('🔹 Current Stock:', '').trim();
-      else if (line.startsWith('🔹 Lead Time:')) details.leadTime = line.replace('🔹 Lead Time:', '').trim();
-      else if (line.startsWith('🔻 Stockout Risk:')) details.stockoutRisk = line.replace('🔻 Stockout Risk:', '').trim();
-      else if (line.startsWith('🔹 Overstock Risk:')) details.overstockRisk = line.replace('🔹 Overstock Risk:', '').trim();
-      else if (line.startsWith('🔸 Suggested Action:')) details.suggestedAction = line.replace('🔸 Suggested Action:', '').trim();
-      else if (line.startsWith('🔹 No immediate action needed')) details.noAction = true;
-    });
-    return { sku, productName, ...details };
-  });
-};
-
 const InventoryPredictAI = ({ compact = false }) => {
   const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [forecast, setForecast] = useState([]);
+  const [forecast, setForecast] = useState(null);
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -41,7 +18,7 @@ const InventoryPredictAI = ({ compact = false }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setForecast([]);
+    setForecast(null);
     if (!file) {
       setError('Please upload an inventory file.');
       return;
@@ -49,18 +26,7 @@ const InventoryPredictAI = ({ compact = false }) => {
     setLoading(true);
     try {
       const response = await uploadInventoryAndGetForecast(file);
-      console.log('API response:', response ); // Debug log
-      // Try to extract the summary string
-      const summaryText = typeof response === 'string'
-        ? response
-        : response.result || response.data || JSON.stringify(response);
-      if (!summaryText || summaryText.length < 10) {
-        setError('No forecast summary found. Raw response: ' + JSON.stringify(response));
-        setForecast([]);
-      } else {
-        const parsed = parseForecastSummary(summaryText);
-        setForecast(parsed);
-      }
+      setForecast(response);
     } catch (err) {
       setError('Failed to get forecast. ' + (err?.message || ''));
       console.error('Forecast error:', err);
@@ -100,23 +66,21 @@ const InventoryPredictAI = ({ compact = false }) => {
       </form>
       {error && <div className="text-red-500 mt-4">{error}</div>}
       <div className="mt-6 space-y-4">
-        {forecast.map((item, idx) => (
-          <motion.div key={idx} className="bg-white p-4 rounded-lg shadow border" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}>
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="font-bold text-indigo-700">{item.sku}</span>
-              <span className="text-gray-700">{item.productName}</span>
-            </div>
+        {forecast && (
+          <motion.div className="bg-white p-4 rounded-lg shadow border" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+            {forecast["\ud83d\udce6 Inventory Forecast Summary"] && (
+              <div className="mb-2 text-base text-indigo-700 font-semibold whitespace-pre-line">
+                {forecast["\ud83d\udce6 Inventory Forecast Summary"]}
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-              {item.predictedSales && <div><b>Predicted Sales:</b> {item.predictedSales}</div>}
-              {item.currentStock && <div><b>Current Stock:</b> {item.currentStock}</div>}
-              {item.leadTime && <div><b>Lead Time:</b> {item.leadTime}</div>}
-              {item.stockoutRisk && <div className="text-red-600"><b>Stockout Risk:</b> {item.stockoutRisk}</div>}
-              {item.overstockRisk && <div className="text-yellow-600"><b>Overstock Risk:</b> {item.overstockRisk}</div>}
-              {item.suggestedAction && <div className="text-green-700"><b>Suggested Action:</b> {item.suggestedAction}</div>}
-              {item.noAction && <div className="text-gray-500 italic">No immediate action needed</div>}
+              {forecast.SKU && <div><b>SKU:</b> {forecast.SKU}</div>}
+              {forecast["Predicted Sales"] && <div><b>Predicted Sales:</b> {forecast["Predicted Sales"]}</div>}
+              {forecast["Overstock Risk"] && <div><b>Overstock Risk:</b> {forecast["Overstock Risk"]}</div>}
+              {forecast["Suggested Action"] && <div className="text-green-700"><b>Suggested Action:</b> {forecast["Suggested Action"]}</div>}
             </div>
           </motion.div>
-        ))}
+        )}
       </div>
       <motion.button
         whileHover={{ scale: 1.05, boxShadow: '0 8px 32px 0 #61868d33' }}

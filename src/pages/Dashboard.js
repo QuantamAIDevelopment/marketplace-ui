@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 // import { FraudDetectionSystemCard } from '../components/workflows';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus, FaAmazon, FaFileCsv, FaUserTie } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus, FaAmazon, FaFileCsv, FaUserTie, FaBell } from 'react-icons/fa';
 
 import { useNavigate, Link } from 'react-router-dom';
 import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
@@ -311,6 +311,18 @@ const workflowData = [
     icon: FaChartBar,
     path: '/business-intelligence-bot',
     summary: 'Analyze business data, generate reports, and provide insights for decision-making.'
+  },
+  {
+    title: 'AI-Powered Restaurant Order Chatbot',
+    icon: FaVial, // You may want to use a more appropriate icon
+    path: '/ai-restaurant-order-chatbot',
+    summary: 'Chat with our AI assistant to place your restaurant order in natural language.'
+  },
+  {
+    title: 'Leave Approval Reminder',
+    icon: FaBell,
+    path: '/leave-approval-reminder',
+    summary: 'Upload XLSX to send leave approval reminders and track status.'
   },
 ];
 

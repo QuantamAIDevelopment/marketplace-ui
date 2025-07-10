@@ -59,6 +59,7 @@ import BusinessIntelligenceBOTPage from './pages/BusinessIntelligenceBOTPage';
 import DynamicModelSelectorPage from './pages/DynamicModelSelectorPage';
 import TestmonialExtractorPage from './pages/TestmonialExtractorPage';
 import ContractRedFlagDetectorPage from './pages/ContractRedFlagDectectorPage';
+import LeaveApprovalRemainder from './components/workflows/LeaveApprovalRemainder.jsx';
 
 function App() {
   return (
@@ -126,6 +127,8 @@ function App() {
               <Route path="/workflows/dynamic-model-selector" element={<DynamicModelSelectorPage />} />
               <Route path="/workflows/testmonial-extractor" element={<TestmonialExtractorPage />} />
               <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
+              <Route path="/ai-restaurant-order-chatbot" element={<AIPoweredRestaurantOrderChatbotPage />} />
+              <Route path="/leave-approval-reminder" element={<LeaveApprovalRemainder />} />
             </Routes>
           </main>
         </div>
