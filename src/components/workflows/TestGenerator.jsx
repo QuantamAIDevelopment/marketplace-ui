@@ -10,17 +10,27 @@ const TestGenerator = () => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [apiCalled, setApiCalled] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setResult(null);
+    setApiCalled(false);
     try {
+      console.log('Calling generateTestCases API with:', docTitle, author, docId);
       const response = await generateTestCases(docTitle, author, docId);
-      setResult(response);
+      setApiCalled(true);
+      if (response && response["test id"]) {
+        setResult(response);
+      } else {
+        setResult(null);
+        setError('No valid test case returned. Please check your input or try again.');
+      }
     } catch (err) {
       setError('Failed to generate test cases. Please check your input and try again.');
+      setResult(null);
     } finally {
       setLoading(false);
     }
@@ -73,6 +83,9 @@ const TestGenerator = () => {
         </motion.button>
       </form>
       {error && <div className="text-red-500 mt-4">{error}</div>}
+      {apiCalled && !result && !error && (
+        <div className="text-gray-500 mt-4">No test case generated. Please check your input or try again.</div>
+      )}
       {result && (
         <div className="mt-6">
           <h4 className="text-lg font-bold mb-2">Test Case Result</h4>

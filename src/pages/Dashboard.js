@@ -277,7 +277,7 @@ const workflowData = [
     summary: 'Automated code review and actionable suggestions for your GitHub PRs.'
   },
   {
-    title: 'Project Coast Reports',
+    title: 'Project Cost Reports',
     icon: FaTable,
     path: '/project-coast-reports',
     summary: 'Upload project data and get a detailed cost report for your projects.'

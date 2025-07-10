@@ -34,7 +34,7 @@ const BirthdayWorkAnniversaryPageContent = () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      const response = await axios.post('http://localhost:5678/webhook/birthday-anniversary', formData);
+      const response = await axios.post('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/birthday-anniversary', formData);
       setResponse(response.data);
     } catch (error) {
       console.error('Error executing workflow:', error);

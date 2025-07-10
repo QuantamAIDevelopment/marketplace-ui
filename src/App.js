@@ -10,7 +10,6 @@ import PolicyChangeNotificationPage from './pages/PolicyChangeNotificationPage';
 import PayslipAutoEncryptedPage from './pages/PayslipAutoEncryptedPage';
 import AICustomerSupport from './pages/AICustomerSupport';
 import ProductRecommendationPage from './pages/ProductRecommendationPage';
-import ContractRedFlagDetectorPage from './pages/ContractRedFlagDetectorPage';
 import InventoryManagementPage from './pages/InventoryManagementPage';
 import MCQGeneratorPage from './pages/MCQGeneratorPage';
 import AutomatedResearchPage from './pages/AutomatedResearchPage';
@@ -59,6 +58,7 @@ import ComplaintHandlerAgentPage from './pages/ComplaintHandlerAgentPage';
 import BusinessIntelligenceBOTPage from './pages/BusinessIntelligenceBOTPage';
 import DynamicModelSelectorPage from './pages/DynamicModelSelectorPage';
 import TestmonialExtractorPage from './pages/TestmonialExtractorPage';
+import ContractRedFlagDetectorPage from './pages/ContractRedFlagDectectorPage';
 
 function App() {
   return (
@@ -78,7 +78,6 @@ function App() {
               <Route path="/workflows/policy-notifications" element={<PolicyChangeNotificationPage />} />
               <Route path="/ai-customer-support" element={<AICustomerSupport />} />
               <Route path="/workflows/product-recommendation" element={<ProductRecommendationPage />} />
-              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
               <Route path="/inventory-management" element={<InventoryManagementPage />} />
               <Route path="/mcq-generator" element={<MCQGeneratorPage />} />
               <Route path="/automated-research" element={<AutomatedResearchPage />} />
@@ -126,6 +125,7 @@ function App() {
               <Route path="/business-intelligence-bot" element={<BusinessIntelligenceBOTPage />} />
               <Route path="/workflows/dynamic-model-selector" element={<DynamicModelSelectorPage />} />
               <Route path="/workflows/testmonial-extractor" element={<TestmonialExtractorPage />} />
+              <Route path="/workflows/contract-red-flag" element={<ContractRedFlagDetectorPage />} />
             </Routes>
           </main>
         </div>

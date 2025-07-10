@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import CoverScreen from '../components/CoverScreen';
 import { FaVial } from 'react-icons/fa';
+import TestGenerator from '../components/workflows/TestGenerator';
 
 const TestGeneratorCoverContent = (
   <>
@@ -40,29 +41,7 @@ const TestGeneratorCoverContent = (
 
 const TestGeneratorPage = () => {
   const [showForm, setShowForm] = useState(false);
-  const [docTitle, setDocTitle] = useState('');
-  const [author, setAuthor] = useState('');
-  const [docId, setDocId] = useState('');
-  const [output, setOutput] = useState(null);
-
   const handleStart = () => setShowForm(true);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Replace this with your API call
-    setOutput({
-      "test id": "TC001",
-      "title": "Login with valid credentials",
-      "type": "Positive",
-      "steps": [
-        "The user enters a valid email address and password on the login form.",
-        "The user clicks the login button.",
-        "The system displays a loading spinner while processing the login request.",
-        "The system redirects the user to the admin dashboard upon successful login."
-      ],
-      "expected result": "User is logged in and redirected to the admin dashboard."
-    });
-  };
 
   if (!showForm) {
     return (
@@ -78,71 +57,7 @@ const TestGeneratorPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-tr from-pink-100 to-blue-100 flex flex-col items-center justify-center py-12">
       <div className="w-full max-w-2xl bg-white bg-opacity-90 rounded-2xl shadow-xl p-8 flex flex-col items-center">
-        <form className="w-full max-w-xl mb-8" onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Google Doc Title</label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-300"
-              value={docTitle}
-              onChange={e => setDocTitle(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold mb-2">Author</label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-300"
-              value={author}
-              onChange={e => setAuthor(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-gray-700 font-semibold mb-2">Document ID</label>
-            <input
-              type="text"
-              className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-purple-300"
-              value={docId}
-              onChange={e => setDocId(e.target.value)}
-              required
-            />
-          </div>
-          <div className="flex justify-center">
-            <button type="submit" className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xl font-bold py-4 px-16 rounded-full shadow-lg hover:from-purple-600 hover:to-pink-600 transition-colors">
-              Start Now
-            </button>
-          </div>
-        </form>
-        {output && (
-          <div className="w-full max-w-xl bg-gray-100 rounded-lg p-6 mt-4 text-left">
-            <h3 className="text-xl font-bold text-purple-700 mb-2">Generated Test Case</h3>
-            <div className="mb-2"><span className="font-semibold">Test ID:</span> {output["test id"]}</div>
-            <div className="mb-2"><span className="font-semibold">Title:</span> {output.title}</div>
-            <div className="mb-2"><span className="font-semibold">Type:</span> {output.type}</div>
-            <div className="mb-2"><span className="font-semibold">Steps:</span>
-              <ul className="list-decimal list-inside ml-4">
-                {output.steps.map((step, idx) => (
-                  <li key={idx}>{step}</li>
-                ))}
-              </ul>
-            </div>
-            <div><span className="font-semibold">Expected Result:</span> {output["expected result"]}</div>
-          </div>
-        )}
-        {/* Small content below the card */}
-        <div className="w-full max-w-2xl mt-4 text-center">
-          <p className="text-base text-gray-600">
-            The Test Case Generator helps you quickly convert feature documentation into actionable, ready-to-use test cases for your QA and automation needs.
-          </p>
-        </div>
-        {/* New description added here */}
-        <div className="w-full max-w-2xl mt-2 text-center">
-          <p className="text-base text-gray-600">
-            Generate QA test cases from your feature docs using AI.
-          </p>
-        </div>
+        <TestGenerator />
       </div>
     </div>
   );

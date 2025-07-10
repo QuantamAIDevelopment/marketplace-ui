@@ -1,8 +1,8 @@
 import React from 'react';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
-import ContractRedFlagDectector from '../components/workflows/ContractRedFlagDectector';
+import ContractRedFlagDetector from '../components/workflows/ContractRedFlagDetector.jsx';
 
-const ContractRedFlagDectectorPage = () => (
+const ContractRedFlagDetectorPage = () => (
   <PageRevealWrapper
     heading="Contract Red Flag Detector"
     description="Upload a contract and get an instant AI-powered risk assessment. Detects red flags, missing sections, and provides actionable recommendations."
@@ -28,9 +28,9 @@ const ContractRedFlagDectectorPage = () => (
     }
   >
     <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-2xl mx-auto">
-      <ContractRedFlagDectector />
+      <ContractRedFlagDetector />
     </div>
   </PageRevealWrapper>
 );
 
-export default ContractRedFlagDectectorPage; 
+export default ContractRedFlagDetectorPage; 

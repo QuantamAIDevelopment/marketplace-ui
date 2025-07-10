@@ -5,7 +5,6 @@ export { default as MonthlyExpenditure } from './MonthlyExpenditure';
 export { default as MCQGenerator } from './MCQGenerator';
 export { default as AutomatedResearch } from './AutomatedResearch';
 export { default as InterviewPanelAutoAssignment } from './InterviewPanelAutoAssignment';
-export { default as OnBoardingQ } from './OnBoardingQ';
 export { default as LeaveApprovalReminder } from './LeaveApprovalReminder';
 export { default as ATS_TO_HRMS_CANDIDATES_Status_sync } from '../ATS_TO_HRMS_CANDIDATE_StatusSync.jsx';
 export { default as AutomateCandidateAcceptance } from './AutomateCandidateAcceptance';

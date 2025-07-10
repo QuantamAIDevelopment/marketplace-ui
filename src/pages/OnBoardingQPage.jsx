@@ -1,6 +1,6 @@
 import React from 'react';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
-import { OnBoardingQ } from '../components/workflows';
+import OnBoardingQ from '../components/workflows/OnBoardingQ';
 
 const OnBoardingQPage = () => (
   <PageRevealWrapper
