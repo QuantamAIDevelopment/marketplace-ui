@@ -119,6 +119,7 @@ function App() {
               <Route path="/project-coast-reports" element={<ProjectCoastReportsPage />} />
               <Route path="/ai-book-price-tracker" element={<AI_Powered_Book_Price_TrackerPage />} />
               <Route path="/fraud-detection-system" element={<FraudDetectionSystemPage />} />
+              <Route path="/test-generator" element={<TestGeneratorPage />} />
               <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
               <Route path="/complaint-handler-agent" element={<ComplaintHandlerAgentPage />} />

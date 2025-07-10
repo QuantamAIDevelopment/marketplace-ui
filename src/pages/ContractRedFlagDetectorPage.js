@@ -1,10 +1,6 @@
 import React from 'react';
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaFileContract, FaUpload, FaSpinner, FaCheckCircle, FaEnvelope } from 'react-icons/fa';
-import axios from 'axios';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
-import ContractRedFlagDetector from '../components/workflows/ContractRedFlagDetector';
+import ContractRedFlagDetectorForm from '../workflows/ContractRedFlagDetectorForm';
 
 const ContractRedFlagDetectorPage = () => (
   <PageRevealWrapper
@@ -39,9 +35,9 @@ const ContractRedFlagDetectorPage = () => (
   >
     <div className="max-w-2xl mx-auto py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Contract Red Flag Detector</h1>
-      <ContractRedFlagDetector />
+      <ContractRedFlagDetectorForm />
     </div>
   </PageRevealWrapper>
 );
 
-export default ContractRedFlagDetectorPage; 
+export default ContractRedFlagDetectorPage;

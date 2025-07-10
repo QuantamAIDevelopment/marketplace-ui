@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus, FaFileCsv, FaUserTie } from 'react-icons/fa';
+// import { FraudDetectionSystemCard } from '../components/workflows';
+
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaDatabase, FaUserShield, FaBook, FaVial, FaCalendarCheck, FaEnvelopeOpenText, FaFilePdf, FaTable, FaUserCheck, FaSync, FaUserPlus, FaAmazon, FaFileCsv, FaUserTie } from 'react-icons/fa';
 
 import { useNavigate, Link } from 'react-router-dom';
 import { AmazonWebScrapeCard, AIBackroundVerificationCard, ContractRedFlagDetectorCard } from '../components/workflows';
@@ -218,7 +220,7 @@ const workflowData = [
     title: 'Test Case Generator',
     icon: FaVial,
     path: '/test-generator',
-    summary: 'Generate QA test cases from your feature docs using AI.'
+    summary: 'Generate QA test cases for your feature document using AI. Upload your feature document and let the AI generate comprehensive test cases to ensure quality and coverage.',
   },
   {
     title: 'Gmail Categorization',
@@ -291,6 +293,12 @@ const workflowData = [
     icon: FaShieldAlt,
     path: '/fraud-detection-system',
     summary: 'Upload transaction data to detect fraud, get AI risk scores, and see triggered rules for each order.'
+  },
+  {
+    title: 'Amazon Product Scraper',
+    icon: FaAmazon,
+    path: '/amazon-web-scrape',
+    summary: 'Extract product details (name, description, rating, reviews, price) from any Amazon URL for market research, price tracking, and product analysis.'
   },
   {
     title: 'Complaint Handler Agent',
