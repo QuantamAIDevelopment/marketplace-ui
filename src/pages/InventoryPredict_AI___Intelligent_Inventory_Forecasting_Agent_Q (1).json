@@ -1,0 +1,1011 @@
+{
+  "name": "InventoryPredict AI – Intelligent Inventory Forecasting Agent.Q",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        680
+      ],
+      "id": "cdc25adb-5f79-4f9e-86a0-c1bd6b2d946c",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY",
+          "mode": "list",
+          "cachedResultName": "Inventory Ai agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        280,
+        340
+      ],
+      "id": "bec62222-72d8-43c9-b905-8545b77cafc7",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XJDhgsFGPx1HeQal",
+          "name": "Google Sheets account 19"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Inventory Forecast Assistant.\n\nYour task is to analyze the inventory and forecast data for each product and generate a clear, human-readable summary.\n\nUse the following fields for each product:\n\n- SKU  \n- Product Name  \n- Sales History (Last 30 Days)  \n- Forecasted Demand (30 Days)  \n- Inventory On Hand  \n- Reorder Quantity  \n- Lead Time (Days)  \n- Expected Stock-out Date  \n- Stockout Risk  \n- Overstock Risk  \n- Suggestion / Action  \n\n📝 Format your output like this:\n\n📦 Inventory Forecast Summary\n\nSKU: [SKU] — [Product Name]  \n🔹 Predicted Sales: [Forecasted Demand] units  \n🔹 Current Stock: [Inventory On Hand] units  \n🔹 Reorder Quantity: [Reorder Quantity] units  \n🔹 Lead Time: [Lead Time (Days)] days → Order before [Expected Stock-out Date minus Lead Time]  \n🔻 Stockout Risk: HIGH (projected on [Expected Stock-out Date])  \n🔹 Overstock Risk: Inventory [Inventory On Hand] vs Demand [Forecasted Demand]  \n🔸 Suggested Action: [Suggestion / Action]\n\nSkip irrelevant lines. If Reorder Quantity is 0, do not mention it. Only mention stockout or overstock risks when they are marked \"Yes\".\n\nHere is the product data:\n\n\n {{ $json.SKU }}\nbased on this generate output:\n{{ $('On form submission').item.json.product }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        520,
+        340
+      ],
+      "id": "5c409e64-4af4-4fa9-8472-56788b34d42b",
+      "name": "AI Agent",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "Alert the Stock",
+        "emailType": "text",
+        "message": "={{ $json.output }}{{ $('Google Sheets').item.json.SKU }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        340
+      ],
+      "id": "39e365e7-137b-465d-9464-a49ac445a25b",
+      "name": "Gmail",
+      "webhookId": "79f6c917-6e89-412b-9d18-8a15fcf77d95",
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AGCssk6pei2wkW8N",
+          "name": "Gmail account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Agent",
+        "formDescription": "Intelligent Inventory Forecasting Agent",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "product"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        20,
+        340
+      ],
+      "id": "80716df8-32dc-449b-8a5c-49f542c8a20f",
+      "name": "On form submission",
+      "webhookId": "7d28c18a-1739-4bd9-b921-164f18ea9576"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY",
+          "mode": "list",
+          "cachedResultName": "Inventory Ai agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        260,
+        680
+      ],
+      "id": "e6011036-ed2a-49e3-8d10-0c1c35497b94",
+      "name": "Google Sheets1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XJDhgsFGPx1HeQal",
+          "name": "Google Sheets account 19"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Inventory Forecast Assistant.\n\nYour task is to analyze the inventory and forecast data for each product and generate a clear, human-readable summary.\n\nUse the following fields for each product:\n\n- SKU  \n- Product Name  \n- Sales History (Last 30 Days)  \n- Forecasted Demand (30 Days)  \n- Inventory On Hand  \n- Reorder Quantity  \n- Lead Time (Days)  \n- Expected Stock-out Date  \n- Stockout Risk  \n- Overstock Risk  \n- Suggestion / Action  \n\n📝 Format your output like this:\n\n📦 Inventory Forecast Summary\n\nSKU: [SKU] — [Product Name]  \n🔹 Predicted Sales: [Forecasted Demand] units  \n🔹 Current Stock: [Inventory On Hand] units  \n🔹 Reorder Quantity: [Reorder Quantity] units  \n🔹 Lead Time: [Lead Time (Days)] days → Order before [Expected Stock-out Date minus Lead Time]  \n🔻 Stockout Risk: HIGH (projected on [Expected Stock-out Date])  \n🔹 Overstock Risk: Inventory [Inventory On Hand] vs Demand [Forecasted Demand]  \n🔸 Suggested Action: [Suggestion / Action]\n\nSkip irrelevant lines. If Reorder Quantity is 0, do not mention it. Only mention stockout or overstock risks when they are marked \"Yes\".\n\nHere is the product data:\n{{ $json.SKU }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        780,
+        660
+      ],
+      "id": "503a1eb9-fe29-4e1f-814c-2deded0eeea3",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "Alert",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        660
+      ],
+      "id": "f0474349-f08c-47a4-9686-dee556fcb74a",
+      "name": "Gmail1",
+      "webhookId": "c38d98e6-b030-428e-aa4e-4e16e2108b71",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AGCssk6pei2wkW8N",
+          "name": "Gmail account 17"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "8ecbc862-2879-4a40-b126-e7400e52bc39",
+              "leftValue": "={{ $json['Sales History (Last 30 Days)'] }}",
+              "rightValue": 15,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        520,
+        680
+      ],
+      "id": "b61cc8eb-e730-46b3-b3c9-662e47560e5a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "inventory",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e70381bd-3498-4948-bc10-cfd0e289ee1e",
+      "name": "Webhook",
+      "webhookId": "6df2dcad-bf89-4b74-b51c-7ad2de6aed74"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI Inventory Forecast Assistant.\n\nYour task is to analyze the inventory and forecast data for each product and generate a clear, human-readable summary.\n\nUse the following fields for each product:\n\n- SKU  \n- Product Name  \n- Sales History (Last 30 Days)  \n- Forecasted Demand (30 Days)  \n- Inventory On Hand  \n- Reorder Quantity  \n- Lead Time (Days)  \n- Expected Stock-out Date  \n- Stockout Risk  \n- Overstock Risk  \n- Suggestion / Action  \n\n📝 Format your output like this:\n\n📦 Inventory Forecast Summary\n\nSKU: {{ $json.SKU }}  \n🔹 Predicted Sales:{{ $json['Current Stock'] }} units  \n🔹 Current Stock: \n🔹 Reorder Quantity:{{ $json['Forecasted Demand (30 Days)'] }} \n🔹 Lead Time:{{ $json['Lead Time (Days)'] }}→ Order before [Expected Stock-out Date minus Lead Time]  \n🔻 Stockout Risk: {{ $json['Stockout Risk'] }}\n🔹 Overstock Risk: {{ $json['Overstock Risk'] }}\n🔸 Suggested Action:{{ $json['Suggestion / Action'] }}\n\nSkip irrelevant lines. If Reorder Quantity is 0, do not mention it. Only mention stockout or overstock risks when they are marked \"Yes\".\n\nHere is the product data:\n{{ $('Webhook').item.json.webhookUrl }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        420,
+        0
+      ],
+      "id": "fcb5ca89-4b97-4ed6-a6a9-c2d59db649ec",
+      "name": "AI Agent2",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1480,
+        80
+      ],
+      "id": "0516cc27-9f7e-4aad-b9ff-08a1c25830a9",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY",
+          "mode": "list",
+          "cachedResultName": "Inventory Ai agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1700,
+        80
+      ],
+      "id": "17ec61b9-bcde-4edb-bd39-c9b1b80d70e5",
+      "name": "Google Sheets2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XJDhgsFGPx1HeQal",
+          "name": "Google Sheets account 19"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function addDays(startDate, days) {\n  const date = new Date(startDate);\n  date.setDate(date.getDate() + days);\n  return date.toISOString().split('T')[0];\n}\n\nconst today = new Date();\nconst daysToProject = 30;\nconst dailyConsumption = 10; // Replace with actual dynamic value\nlet currentStock = 300; // Replace with actual inventory from input\n\nconst labels = [];\nconst values = [];\n\nfor (let i = 0; i < daysToProject; i++) {\n  labels.push(addDays(today, i));\n  values.push(Math.max(0, currentStock));\n  currentStock -= dailyConsumption;\n}\n\nreturn [{\n  json: {\n    labels,\n    values\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1920,
+        80
+      ],
+      "id": "50f4b204-5c2a-48b5-a4fc-a9e6aa1ed7a1",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://quickchart.io/chart",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"chart\": {\n    \"type\": \"line\",\n    \"data\": {\n      \"labels\": {{ JSON.stringify($json.labels) }},\n      \"datasets\": [\n        {\n          \"label\": \"Inventory Projection\",\n          \"data\": {{ JSON.stringify($json.values) }},\n          \"borderColor\": \"rgba(75, 192, 192, 1)\",\n          \"fill\": false\n        }\n      ]\n    },\n    \"options\": {\n      \"title\": {\n        \"display\": true,\n        \"text\": \"Projected Inventory Over Time\"\n      }\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2120,
+        80
+      ],
+      "id": "cca3681d-0ab8-40aa-82d5-db9a4a5380bf",
+      "name": "HTTP Request",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "csv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        220,
+        0
+      ],
+      "id": "5185a8c4-7446-4672-a2b9-71dd81ec0594",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY",
+          "mode": "list",
+          "cachedResultName": "Inventory Ai agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 26718893,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit#gid=26718893"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SKU": "={{ $('Google Sheets').item.json.SKU }}",
+            "Product Name": "={{ $('Google Sheets').item.json['Product Name'] }}",
+            "Sales History (Last 30 Days)": "={{ $('Google Sheets').item.json['Sales History (Last 30 Days)'] }}",
+            "Forecasted Demand (30 Days)": "={{ $('Google Sheets').item.json['Forecasted Demand (30 Days)'] }}",
+            "Current Stock": "={{ $('Google Sheets').item.json['Current Stock'] }}",
+            "Reorder Quantity": "={{ $('Google Sheets').item.json['Reorder Quantity'] }}",
+            "Lead Time (Days)": "={{ $('Google Sheets').item.json['Lead Time (Days)'] }}",
+            "Stockout Risk": "={{ $('Google Sheets').item.json['Stockout Risk'] }}",
+            "Expected Stock-out Date": "={{ $('Google Sheets').item.json['Expected Stock-out Date'] }}",
+            "Suggestion / Action": "={{ $('Google Sheets').item.json['Suggestion / Action'] }}",
+            "Overstock Risk": "={{ $('Google Sheets').item.json['Overstock Risk'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sales History (Last 30 Days)",
+              "displayName": "Sales History (Last 30 Days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Forecasted Demand (30 Days)",
+              "displayName": "Forecasted Demand (30 Days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reorder Quantity",
+              "displayName": "Reorder Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Time (Days)",
+              "displayName": "Lead Time (Days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Expected Stock-out Date",
+              "displayName": "Expected Stock-out Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stockout Risk",
+              "displayName": "Stockout Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Overstock Risk",
+              "displayName": "Overstock Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggestion / Action",
+              "displayName": "Suggestion / Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1220,
+        340
+      ],
+      "id": "22dcf76c-41ec-4da9-b76e-66b2fa63eaa6",
+      "name": "Google Sheets3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XJDhgsFGPx1HeQal",
+          "name": "Google Sheets account 19"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('AI Agent2').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.3,
+      "position": [
+        1060,
+        0
+      ],
+      "id": "bbc67766-7053-4086-8c62-80c895e373bb",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY",
+          "mode": "list",
+          "cachedResultName": "Inventory Ai agent",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 26718893,
+          "mode": "list",
+          "cachedResultName": "Sheet2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NzUCC71acv1Hq--RnOSXI0PpPt-oW5FrZTXOpkmcxYY/edit#gid=26718893"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "SKU": "={{ $('Google Sheets1').item.json.SKU }}",
+            "Product Name": "={{ $('Google Sheets1').item.json['Product Name'] }}",
+            "Sales History (Last 30 Days)": "={{ $('Google Sheets1').item.json['Sales History (Last 30 Days)'] }}",
+            "Forecasted Demand (30 Days)": "={{ $('Google Sheets1').item.json['Forecasted Demand (30 Days)'] }}",
+            "Current Stock": "={{ $('Google Sheets1').item.json['Current Stock'] }}",
+            "Reorder Quantity": "={{ $('Google Sheets1').item.json['Reorder Quantity'] }}",
+            "Lead Time (Days)": "={{ $('Google Sheets1').item.json['Lead Time (Days)'] }}",
+            "Expected Stock-out Date": "={{ $('Google Sheets1').item.json['Expected Stock-out Date'] }}",
+            "Stockout Risk": "={{ $('Google Sheets1').item.json['Stockout Risk'] }}",
+            "Overstock Risk": "={{ $('Google Sheets1').item.json['Overstock Risk'] }}",
+            "Suggestion / Action": "={{ $('Google Sheets1').item.json['Suggestion / Action'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "SKU",
+              "displayName": "SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sales History (Last 30 Days)",
+              "displayName": "Sales History (Last 30 Days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Forecasted Demand (30 Days)",
+              "displayName": "Forecasted Demand (30 Days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reorder Quantity",
+              "displayName": "Reorder Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lead Time (Days)",
+              "displayName": "Lead Time (Days)",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Expected Stock-out Date",
+              "displayName": "Expected Stock-out Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Stockout Risk",
+              "displayName": "Stockout Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Overstock Risk",
+              "displayName": "Overstock Risk",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Suggestion / Action",
+              "displayName": "Suggestion / Action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1320,
+        660
+      ],
+      "id": "978447d5-8e3b-4b80-8a4e-5f38fa025683",
+      "name": "Google Sheets4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XJDhgsFGPx1HeQal",
+          "name": "Google Sheets account 19"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\n\"📦 Inventory Forecast Summary\":\"\",\n\n\"SKU\": \"\",  \n \"Predicted Sales\":\"\", \n\" Current Stock\":\"\", \n \" Reorder Quantity\":\"\",\n\" Lead Time\":\"\",\n\"Overstock Risk\": \"\",\n\"Suggested Action\":\"\",\n\"Here is the product data\":\"\",\n\"{{ $('Webhook').item.json.webhookUrl }}\":\"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        600,
+        220
+      ],
+      "id": "e19f8d72-b4d4-404e-b933-7aa44b067fa3",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        540,
+        560
+      ],
+      "id": "c334225d-1297-4cff-afe2-db11b49618dd",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "hPYt80yRBymYDVvf",
+          "name": "OpenRouter account 24"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        820,
+        880
+      ],
+      "id": "98aa68d3-d305-4413-9a66-9e9816d0f34f",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "hPYt80yRBymYDVvf",
+          "name": "OpenRouter account 24"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        440,
+        220
+      ],
+      "id": "4f599c2d-3ea1-4a44-a431-7f8b6b03db61",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "hPYt80yRBymYDVvf",
+          "name": "OpenRouter account 24"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "gugulothusony07@gmail.com",
+        "subject": "Alert",
+        "message": "={{ $json.output['📦 Inventory Forecast Summary'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        780,
+        0
+      ],
+      "id": "9be150d4-2b89-4970-8935-e8f95b004ac9",
+      "name": "Gmail3",
+      "webhookId": "ef171d5d-3255-4f09-8e75-9038d55681da",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "AGCssk6pei2wkW8N",
+          "name": "Gmail account 17"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent2": {
+      "main": [
+        [
+          {
+            "node": "Gmail3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets2": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent2",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail3": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6391ccbc-8029-4f16-a1c1-a7ed204b5fc5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4da3e4feddd42df58fa861bd27ff786155b680eb2d7948e126da15f5d08ab036"
+  },
+  "id": "T5iJ2KRQ9kCYC4VA",
+  "tags": []
+}
