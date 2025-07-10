@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
-import InventoryPredictAIPage from './pages/InventoryPredictAIPage';
 import LeavesClassifierPage from './pages/LeavesClassifierPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 import DocumentUploadReminderPage from './pages/DocumentUploadReminderPage';
@@ -41,6 +40,9 @@ import CustomerSupportAgentPage from './pages/CustomerSupportAgentPage';
 import LeaveBalanceChatbotPage from './pages/LeaveBalanceChatbotPage';
 import ErrorBoundary from './components/workflows/ErrorBoundary';
 import PdfSummarizerPage from './pages/PdfSummarizerPage';
+import LeaveApprovalRemainder from './components/workflows/LeaveApprovalRemainder';
+import AIPoweredRestaurantOrderChatbot from './components/workflows/AIPoweredRestaurantOrderChatbot';
+import InventoryForecastingAgentPage from './pages/InventoryForecastingAgentPage';
 
 function App() {
   return (
@@ -50,7 +52,6 @@ function App() {
           <main className="flex-1 flex flex-col items-center justify-center p-4">
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/inventory-predict-ai" element={<InventoryPredictAIPage />} />
               <Route path="/onboarding-q" element={<OnBoardingQPage />} />
               <Route path="/workflows/leaves-classifier" element={<LeavesClassifierPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
@@ -90,6 +91,9 @@ function App() {
               <Route path="/customer-support-agent" element={<CustomerSupportAgentPage />} />
               <Route path="/pdf-summarizer" element={<PdfSummarizerPage />} />
               <Route path="/leave-balance-chatbot" element={<LeaveBalanceChatbotPage />} />
+              <Route path="/ai-restaurant-order-chatbot" element={<AIPoweredRestaurantOrderChatbot />} />
+              <Route path="/leave-approval-reminder" element={<LeaveApprovalRemainder />} />
+              <Route path="/inventory-forecasting-agent" element={<InventoryForecastingAgentPage />} />
             </Routes>
           </main>
         </div>

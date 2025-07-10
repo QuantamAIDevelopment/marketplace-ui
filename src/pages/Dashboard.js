@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserPlus, FaUserCheck, FaBook, FaDatabase, FaVial, FaEnvelopeOpenText, FaFilePdf, FaCalendarCheck } from 'react-icons/fa';
+import { FaCalendarAlt, FaFileAlt, FaEnvelope, FaUserAlt, FaBirthdayCake, FaFileInvoiceDollar, FaRobot, FaFileContract, FaBoxOpen, FaWarehouse, FaBrain, FaCommentDots, FaMoneyBillWave, FaChartLine, FaChartBar, FaRupeeSign, FaShieldAlt, FaUserPlus, FaUserCheck, FaBook, FaDatabase, FaVial, FaEnvelopeOpenText, FaFilePdf, FaCalendarCheck, FaBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { AmazonWebScrapeCard } from '../components/workflows';
 
@@ -247,6 +247,24 @@ const workflowData = [
     icon: FaCalendarCheck,
     path: '/leave-balance-chatbot',
     summary: 'Get instant leave balance information through AI-powered HR assistant.'
+  },
+  {
+    title: 'AI Powered Restaurant Order Chatbot',
+    icon: FaRobot,
+    path: '/ai-restaurant-order-chatbot',
+    summary: 'Take restaurant orders with AI-powered natural language understanding.'
+  },
+  {
+    title: 'Leave Approval Reminder',
+    icon: FaBell,
+    path: '/leave-approval-reminder',
+    summary: 'Upload leave data and get automated approval reminders.'
+  },
+  {
+    title: 'Inventory Forecasting Agent',
+    icon: FaChartLine,
+    path: '/inventory-forecasting-agent',
+    summary: 'Upload your inventory CSV to get AI-powered sales forecasts, stockout/overstock risks, and actionable suggestions.'
   },
 ];
 
