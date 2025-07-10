@@ -1,6 +1,6 @@
 import React from 'react';
-import PageRevealWrapper from '../components/PageRevealWrapper';
-import { BusinessIntelligenceBOT } from '../components/workflows';
+import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
+import BusinessIntelligenceBOT from '../components/workflows/BusinessIntelligenceBOT';
 
 const BusinessIntelligenceBOTPage = () => (
   <PageRevealWrapper

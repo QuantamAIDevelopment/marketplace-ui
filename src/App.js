@@ -52,6 +52,13 @@ import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
 import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
 import SalesForecastingPage from './pages/SalesForecastingPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
+import AttendanceAnomaliesPage from "./pages/AttendanceAnomaliesPage"
+import FetchLeadsPage from "./pages/FetchLeadsPage"
+import AppNav from "../src/components/AppNav"
+import ComplaintHandlerAgentPage from './pages/ComplaintHandlerAgentPage';
+import BusinessIntelligenceBOTPage from './pages/BusinessIntelligenceBOTPage';
+import DynamicModelSelectorPage from './pages/DynamicModelSelectorPage';
+import TestmonialExtractorPage from './pages/TestmonialExtractorPage';
 
 function App() {
   return (
@@ -89,6 +96,9 @@ function App() {
               <Route path="/smart-invoice-ai" element={<SmartInvoiceAIPage />} />
               <Route path="/automate-candidate-acceptance" element={<AutomateCandidateAcceptancePage />} />
               <Route path="/automate-candidate-acceptance/cover" element={<AutomateCandidateAcceptanceCoverPage />} />
+
+              <Route path="/attendance-anomalies" element={<AttendanceAnomaliesPage />} />
+              <Route path="/fetch-leads" element={<FetchLeadsPage />} />
               <Route path="/workflows/database-migration-ai" element={<DatabaseMigrationAIPage />} />
               <Route path="/workflows/notion-knowledge-base-ai" element={<NotionKnowledgeBaseAIAssistantPage />} />
               <Route path="/workflows/ats-to-hrms-candidate-status-sync" element={<ATS_TO_HRMS_CANDIDATE_StatusSyncPage />} />
@@ -111,6 +121,10 @@ function App() {
               <Route path="/fraud-detection-system" element={<FraudDetectionSystemPage />} />
               <Route path="/sales-forecasting" element={<SalesForecastingPage />} />
               <Route path="/workflows/birthday-anniversary" element={<BirthdayWorkAnniversaryPage />} />
+              <Route path="/complaint-handler-agent" element={<ComplaintHandlerAgentPage />} />
+              <Route path="/business-intelligence-bot" element={<BusinessIntelligenceBOTPage />} />
+              <Route path="/workflows/dynamic-model-selector" element={<DynamicModelSelectorPage />} />
+              <Route path="/workflows/testmonial-extractor" element={<TestmonialExtractorPage />} />
             </Routes>
           </main>
         </div>

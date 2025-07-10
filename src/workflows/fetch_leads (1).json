@@ -1,0 +1,287 @@
+{
+  "name": "fetch leads",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "24e2c447-a1ef-438d-b368-04b84aeea3c0",
+      "name": "Batch Processing of Leads",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        340,
+        -20
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Fetch Leads').item.json.Email }}",
+        "subject": "Need Help with Your Website, App, or Online Growth?",
+        "emailType": "text",
+        "message": "=Hello {{ $json.Name }}\n\nI’m a software developer and automation expert. I work with businesses and individuals to build websites, mobile apps, and powerful digital solutions that help save time and grow online.\n\nI offer a range of services including:\n- Website & App Development\n- SEO & Digital Marketing\n- Business Process Automation\n\nIf you’re looking to start a new project or improve your current setup, I’d love to connect and see how I can help.\n\nAre you interested in discussing any of these services?\n\nBest regards,\nSoftware Developer | Automation Expert",
+        "options": {
+          "appendAttribution": false,
+          "senderName": "Developer"
+        }
+      },
+      "id": "a5dd0d38-629d-42b6-a587-7fc403a9806d",
+      "name": "Send Personalized Email",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        560,
+        0
+      ],
+      "webhookId": "ad8c804e-857d-4a94-b722-65b0776f1d10",
+      "typeVersion": 2.1,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4JHRDzaim874IYLH",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1JzgirASdswSnzfkSyqWjY5CxJrTlix0edQ2xlBxa8Kk",
+          "mode": "list",
+          "cachedResultName": "fetch data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzgirASdswSnzfkSyqWjY5CxJrTlix0edQ2xlBxa8Kk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1JzgirASdswSnzfkSyqWjY5CxJrTlix0edQ2xlBxa8Kk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "0e103426-a942-465b-840c-ffaedd638572",
+      "name": "Fetch Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        140,
+        -20
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1IpHzLvgZlIhS5HLPFtANt66vIvgQBXIosZR5g7XKJaQ",
+          "mode": "list",
+          "cachedResultName": "Updated leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IpHzLvgZlIhS5HLPFtANt66vIvgQBXIosZR5g7XKJaQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1IpHzLvgZlIhS5HLPFtANt66vIvgQBXIosZR5g7XKJaQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Fetch Leads').item.json.Name }}",
+            "Email": "={{ $('Fetch Leads').item.json.Email }}",
+            "Company": "={{ $('Fetch Leads').item.json.Company }}",
+            "STATUS": "={{ $('Fetch Leads').item.json.STATUS }}"
+          },
+          "matchingColumns": [
+            "Name"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LAST CONTACTED",
+              "displayName": "LAST CONTACTED",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "2293ea77-4551-469d-b9b3-3688c029a9b8",
+      "name": "Update Lead Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        740,
+        -20
+      ],
+      "typeVersion": 4.5,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "uaG6KZzzdL2QIGAf",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "fetch-data",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -60,
+        -20
+      ],
+      "id": "2fba07e1-002b-4297-a434-952c67886c94",
+      "name": "Webhook",
+      "webhookId": "65623a52-3743-4b95-9bb6-888391ebaa0f"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=Hello {{ $json.Name }}\n\nI’m a software developer and automation expert. I work with businesses and individuals to build websites, mobile apps, and powerful digital solutions that help save time and grow online.\n\nI offer a range of services including:\n- Website & App Development\n- SEO & Digital Marketing\n- Business Process Automation\n\nIf you’re looking to start a new project or improve your current setup, I’d love to connect and see how I can help.\n\nAre you interested in discussing any of these services?\n\nBest regards,\nSoftware Developer | Automation Expert",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        940,
+        -20
+      ],
+      "id": "15eb820d-e3f7-43ca-8010-e5f50e0203eb",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Fetch Leads": {
+      "main": [
+        [
+          {
+            "node": "Batch Processing of Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead Status": {
+      "main": [
+        [
+          {
+            "node": "Batch Processing of Leads",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Personalized Email": {
+      "main": [
+        [
+          {
+            "node": "Update Lead Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Processing of Leads": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send Personalized Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fetch Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "18b37636-6e6d-41fb-8cee-e2c3097e63f9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "23ec5a40302af986e1c42a75c2db95ceb57d0b69f89c20293eabeeb3079fd22f"
+  },
+  "id": "za9NRr2YoBPgA0HE",
+  "tags": []
+}

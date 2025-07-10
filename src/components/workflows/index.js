@@ -12,6 +12,7 @@ export { default as AutomateCandidateAcceptance } from './AutomateCandidateAccep
 export { default as TestmonialExtractor } from './TestmonialExtractor';
 export { default as AmazonWebScrapeCard } from './AmazonWebScrapeCard.jsx';
 export { default as ContractRedFlagDetectorCard } from './ContractRedFlagDetectorCard';
+// export { default as FraudDetection } from './FraudDetection'; 
 export { default as SalesForecasting } from './SalesForecasting';
 export { default as LeaveBalanceChatbot } from './LeaveBalanceChatbot';
 export { default as AIBackroundVerificationCard } from './AIBackroundVerificationCard.jsx';

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Use the proxy path for development
-const BASE_URL = '/api/monthly-expenditure';
+const BASE_URL = 'https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook';
 
 // Chat Expenditure (input: text)
 export const chatExpenditure = async (message) => {

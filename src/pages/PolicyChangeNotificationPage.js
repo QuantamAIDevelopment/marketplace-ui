@@ -5,6 +5,7 @@ import axios from 'axios';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const PolicyChangeNotificationPageContent = () => {
+  const [stats, setStats] = useState({ totalPolicies: 0, acknowledgedPolicies: 0, pendingAcknowledgments: 0 });
   const [notifications, setNotifications] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,8 @@ const PolicyChangeNotificationPageContent = () => {
     const storedData = localStorage.getItem('policyData');
     if (storedData) {
       const data = JSON.parse(storedData);
-      setNotifications(data.recentNotifications);
+      setStats(data.stats || { totalPolicies: 0, acknowledgedPolicies: 0, pendingAcknowledgments: 0 });
+      setNotifications(data.recentNotifications || []);
     }
   }, []);
 
@@ -57,7 +59,7 @@ const PolicyChangeNotificationPageContent = () => {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      const response = await axios.post('http://localhost:5678/webhook/policy-update', formData, {
+      const response = await axios.post('https://qaid-marketplace-ayf0bggnfxbyckg5.australiaeast-01.azurewebsites.net/webhook/policy-update', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -71,7 +73,8 @@ const PolicyChangeNotificationPageContent = () => {
       localStorage.setItem('policyData', JSON.stringify(response.data));
       
       // Update the local state with new data
-      setNotifications(response.data.recentNotifications);
+      setStats(response.data.stats || { totalPolicies: 0, acknowledgedPolicies: 0, pendingAcknowledgments: 0 });
+      setNotifications(response.data.recentNotifications || []);
       setSelectedFile(null);
       setUploadProgress(0);
       setError(null);
@@ -101,6 +104,21 @@ const PolicyChangeNotificationPageContent = () => {
         >
           Policy Change Notifications
         </motion.h1>
+        {/* Stats Display */}
+        <div className="flex justify-around mb-8">
+          <div className="text-center">
+            <div className="text-lg font-bold text-blue-700">{stats.totalPolicies}</div>
+            <div className="text-xs text-gray-500">Total Policies</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-green-700">{stats.acknowledgedPolicies}</div>
+            <div className="text-xs text-gray-500">Acknowledged</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-yellow-600">{stats.pendingAcknowledgments}</div>
+            <div className="text-xs text-gray-500">Pending</div>
+          </div>
+        </div>
         <div className="relative z-10 w-full max-w-2xl mx-auto">
           {/* File Upload Section */}
           <motion.div
@@ -119,7 +137,7 @@ const PolicyChangeNotificationPageContent = () => {
               />
               <label
                 htmlFor="policy-file"
-                className="bg-dark-400 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-dark-500 transition-colors flex-1"
+                className="bg-dark-400 text-black px-4 py-2 rounded-lg cursor-pointer hover:bg-dark-500 transition-colors flex-1"
                 onClick={e => {
                   e.preventDefault();
                   if (fileInputRef.current) fileInputRef.current.click();
@@ -204,32 +222,30 @@ const PolicyChangeNotificationPageContent = () => {
                 <div className="space-y-3">
                   {notifications.map((notification, index) => (
                     <motion.div
-                      key={notification.id || index}
+                      key={notification.policyId || index}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
                       className="p-3 bg-white rounded-lg shadow-sm flex items-center justify-between"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className={`p-2 rounded-full ${
-                          notification.status === 'PENDING' ? 'bg-yellow-100' : 'bg-green-100'
-                        }`}>
-                          {notification.status === 'PENDING' ? (
+                        <div className={`p-2 rounded-full ${notification.status === 'Pending' ? 'bg-yellow-100' : notification.status === 'Solved' ? 'bg-green-100' : 'bg-gray-100'}`}>
+                          {notification.status === 'Pending' ? (
                             <FaExclamationCircle className="w-4 h-4 text-yellow-600" />
-                          ) : (
+                          ) : notification.status === 'Solved' ? (
                             <FaCheckCircle className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <FaFileContract className="w-4 h-4 text-gray-400" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium text-gray-800 truncate">{notification.policyName}</h3>
-                          <p className="text-xs text-gray-500">Version {notification.version}</p>
+                          <h3 className="text-sm font-medium text-gray-800 truncate">{notification.policyId || 'N/A'}</h3>
+                          <p className="text-xs text-gray-500">{notification.pendingAck || 'No pending acknowledgment'}</p>
+                          <p className="text-xs text-gray-500">User: {notification.userName} ({notification.email})</p>
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0 ml-4">
-                        <p className="text-xs text-gray-500">{formatDate(notification.publishDate)}</p>
-                        <p className="text-xs text-gray-500">
-                          {notification.acknowledgmentCount} acks
-                        </p>
+                        <span className="text-xs font-semibold text-gray-600">{notification.status || 'N/A'}</span>
                       </div>
                     </motion.div>
                   ))}

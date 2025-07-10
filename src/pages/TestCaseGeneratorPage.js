@@ -1,5 +1,7 @@
 import React from 'react';
+
 import TestGenerator from '../components/workflows/TestGenerator';
+import TestCaseGenerator from '../components/workflows/TestCaseGenerator';
 import PageRevealWrapper from '../components/workflows/PageRevealWrapper';
 
 const TestCaseGeneratorPage = () => {
