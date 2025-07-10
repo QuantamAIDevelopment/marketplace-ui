@@ -50,7 +50,6 @@ import PRSummaryAgentFormPage from './pages/PRSummaryAgentFormPage';
 import PRReviewerAIAgentFormPage from './pages/PRReviewerAIAgentFormPage';
 import ProjectCoastReportsPage from './pages/ProjectCoastReportsPage';
 import AI_Powered_Book_Price_TrackerPage from './pages/AI_Powered_Book_Price_TrackerPage';
-import FraudDetectionSystemPage from './pages/FraudDetectionSystemPage.jsx';
 import SalesForecastingPage from './pages/SalesForecastingPage';
 import BirthdayWorkAnniversaryPage from './pages/BirthdayWorkAnniversaryPage';
 
